@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/SuperAdminController.php
 
 namespace App\Http\Controllers;
 
@@ -14,14 +15,13 @@ class SuperAdminController extends Controller
 
     public function index2()
     {
-        $tenants = Tenants::all();
+       $tenants = Tenants::with('user')->orderBy('id', 'desc')->get();
         return view('super-admin.index2', compact('tenants'));
     }
 
     public function index3()
     {
-        $tenants = Tenants::all();
-        return view('super-admin.index3', compact('tenants'));
+         return view('super-admin.index3');
     }
 
     public function index4()
