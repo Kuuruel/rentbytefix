@@ -15,40 +15,41 @@ use App\Http\Controllers\CryptocurrencyController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\DashboardController;
 
 
-Route::get('/', [SuperAdminController::class, 'index'])->name('super-admin.index');
+Route::get('/', [DashboardController::class, 'index'])->name('super-admin.index');
+
 
 Route::controller(HomeController::class)->group(function () {
-    Route::get('calendar-Main','calendarMain')->name('calendarMain');
-    Route::get('chatempty','chatempty')->name('chatempty');
-    Route::get('chat-message','chatMessage')->name('chatMessage');
-    Route::get('chat-profile','chatProfile')->name('chatProfile');
-    Route::get('email','email')->name('email');
-    Route::get('faq','faq')->name('faq');
-    Route::get('gallery','gallery')->name('gallery');
-    Route::get('image-upload','imageUpload')->name('imageUpload');
-    Route::get('kanban','kanban')->name('kanban');
-    Route::get('page-error','pageError')->name('pageError');
-    Route::get('pricing','pricing')->name('pricing');
-    Route::get('starred','starred')->name('starred');
-    Route::get('terms-condition','termsCondition')->name('termsCondition');
-    Route::get('veiw-details','veiwDetails')->name('veiwDetails');
-    Route::get('widgets','widgets')->name('widgets');
+    Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
+    Route::get('chatempty', 'chatempty')->name('chatempty');
+    Route::get('chat-message', 'chatMessage')->name('chatMessage');
+    Route::get('chat-profile', 'chatProfile')->name('chatProfile');
+    Route::get('email', 'email')->name('email');
+    Route::get('faq', 'faq')->name('faq');
+    Route::get('gallery', 'gallery')->name('gallery');
+    Route::get('image-upload', 'imageUpload')->name('imageUpload');
+    Route::get('kanban', 'kanban')->name('kanban');
+    Route::get('page-error', 'pageError')->name('pageError');
+    Route::get('pricing', 'pricing')->name('pricing');
+    Route::get('starred', 'starred')->name('starred');
+    Route::get('terms-condition', 'termsCondition')->name('termsCondition');
+    Route::get('veiw-details', 'veiwDetails')->name('veiwDetails');
+    Route::get('widgets', 'widgets')->name('widgets');
+});
 
-    });
-
-    // aiApplication
+// aiApplication
 Route::prefix('aiapplication')->group(function () {
     Route::controller(AiapplicationController::class)->group(function () {
         Route::get('/code-generator', 'codeGenerator')->name('codeGenerator');
         Route::get('/code-generatornew', 'codeGeneratorNew')->name('codeGeneratorNew');
-        Route::get('/image-generator','imageGenerator')->name('imageGenerator');
-        Route::get('/text-generator','textGenerator')->name('textGenerator');
-        Route::get('/text-generatornew','textGeneratorNew')->name('textGeneratorNew');
-        Route::get('/video-generator','videoGenerator')->name('videoGenerator');
-        Route::get('/voice-generator','voiceGenerator')->name('voiceGenerator');
-});
+        Route::get('/image-generator', 'imageGenerator')->name('imageGenerator');
+        Route::get('/text-generator', 'textGenerator')->name('textGenerator');
+        Route::get('/text-generatornew', 'textGeneratorNew')->name('textGeneratorNew');
+        Route::get('/video-generator', 'videoGenerator')->name('videoGenerator');
+        Route::get('/voice-generator', 'voiceGenerator')->name('voiceGenerator');
+    });
 });
 
 // Authentication
@@ -100,7 +101,7 @@ Route::prefix('componentspage')->group(function () {
 // Dashboard
 Route::prefix('cryptocurrency')->group(function () {
     Route::controller(CryptocurrencyController::class)->group(function () {
-        Route::get('/wallet','wallet')->name('wallet');
+        Route::get('/wallet', 'wallet')->name('wallet');
     });
 });
 
@@ -184,4 +185,3 @@ Route::prefix('users')->group(function () {
 });
 
 Route::resource('tenants', TenantController::class);
-

@@ -17,7 +17,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Tenants</p>
-                        <h6 class="mb-0 dark:text-white">40</h6>
+                        <h6 class="mb-0 dark:text-white">{{ $totalTenants }}</h6>
                     </div>
                     <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
                         <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>

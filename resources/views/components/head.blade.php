@@ -34,4 +34,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/lib/audioplayer.css') }}">
     <!-- main css -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
 </head>
