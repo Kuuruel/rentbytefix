@@ -54,25 +54,20 @@
         deleteCancel: document.getElementById('deleteCancel')
     };
 
-    // Enhanced fetch function with better error handling
     async function apiRequest(url, options = {}) {
         try {
-            // Get CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            
-            // Default headers
+
             const defaultHeaders = {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json', // This is crucial - tells Laravel we expect JSON
-                'X-Requested-With': 'XMLHttpRequest' // Identifies as AJAX request
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             };
 
-            // Add CSRF token if available
             if (csrfToken) {
                 defaultHeaders['X-CSRF-TOKEN'] = csrfToken;
             }
 
-            // Merge headers
             const headers = { ...defaultHeaders, ...options.headers };
 
             const response = await fetch(url, {
@@ -80,16 +75,13 @@
                 headers
             });
 
-            // Check if response is HTML (likely an error page or redirect)
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('text/html')) {
                 console.error('Received HTML response instead of JSON:', response.url);
-                
-                // Log the HTML content for debugging
+ 
                 const htmlText = await response.text();
                 console.error('HTML Response:', htmlText.substring(0, 500) + '...');
-                
-                // Check if it's a Laravel error page
+
                 if (htmlText.includes('<!DOCTYPE') || htmlText.includes('<html')) {
                     throw new Error('Server returned an error page instead of JSON. Please check the server logs.');
                 }
@@ -97,10 +89,8 @@
                 throw new Error('Unexpected response format. Expected JSON but received HTML.');
             }
 
-            // Parse JSON response
             const data = await response.json();
 
-            // Handle non-2xx status codes
             if (!response.ok) {
                 throw new Error(data.message || `HTTP Error: ${response.status} ${response.statusText}`);
             }
@@ -113,8 +103,7 @@
                 error: error.message,
                 stack: error.stack
             });
-            
-            // Re-throw with more context
+
             throw new Error(`API Request Failed: ${error.message}`);
         }
     }
@@ -132,7 +121,6 @@
     }
 
     function showNotification(message, type = 'success') {
-        // Remove existing notifications
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
         
         const notification = document.createElement('div');
@@ -141,11 +129,9 @@
         }`;
         notification.textContent = message;
         document.body.appendChild(notification);
-        
-        // Fade in
+
         setTimeout(() => notification.classList.add('opacity-100'), 10);
-        
-        // Auto remove after 5 seconds for errors, 3 for success
+ 
         const timeout = type === 'error' ? 5000 : 3000;
         setTimeout(() => {
             notification.classList.add('opacity-0');
@@ -300,7 +286,6 @@
             }).join('');
         }
 
-        // Update pagination info
         const total = filtered.length;
         const startCount = total === 0 ? 0 : start + 1;
         const endCount = Math.min(total, start + state.perPage);
@@ -308,7 +293,6 @@
             DOM.paginationInfo.textContent = `Showing ${startCount} to ${endCount} of ${total} entries`;
         }
 
-        // Update pagination buttons
         if (DOM.prevBtn) DOM.prevBtn.disabled = state.page === 1;
         if (DOM.nextBtn) DOM.nextBtn.disabled = state.page === totalPages;
 
@@ -322,13 +306,11 @@
         const maxVisiblePages = 5;
         let startPage = Math.max(1, state.page - Math.floor(maxVisiblePages / 2));
         let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-        
-        // Adjust if we don't have enough pages at the end
+
         if (endPage - startPage < maxVisiblePages - 1) {
             startPage = Math.max(1, endPage - maxVisiblePages + 1);
         }
-        
-        // First page and ellipsis
+
         if (startPage > 1) {
             pageHTML += `
                 <li class="page-item">
@@ -348,8 +330,7 @@
                     </li>`;
             }
         }
-        
-        // Page numbers
+
         for (let i = startPage; i <= endPage; i++) {
             pageHTML += `
                 <li class="page-item">
@@ -362,8 +343,7 @@
                     </button>
                 </li>`;
         }
-        
-        // Last page and ellipsis
+
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 pageHTML += `
@@ -390,23 +370,20 @@
     function openCreateModal() {
         state.isEditing = false;
         if (DOM.modalTitle) DOM.modalTitle.textContent = 'Add New Tenant';
-        
-        // Reset form
+
         if (DOM.tenantForm) DOM.tenantForm.reset();
         if (DOM.formId) DOM.formId.value = '';
         if (DOM.formMethod) DOM.formMethod.value = 'POST';
         if (DOM.formStatus) DOM.formStatus.value = 'Active';
         if (DOM.formPassword) DOM.formPassword.required = true;
         if (DOM.passwordHint) DOM.passwordHint.textContent = '*';
-        
-        // Update submit button text
+
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Create Tenant';
         
         hideErrors();
         showModal(true);
-        
-        // Focus first input
+
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
@@ -416,8 +393,7 @@
         
         state.isEditing = true;
         if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
-        
-        // Fill form with tenant data
+
         if (DOM.formId) DOM.formId.value = tenant.id;
         if (DOM.formMethod) DOM.formMethod.value = 'PUT';
         if (DOM.formName) DOM.formName.value = tenant.name || '';
@@ -429,15 +405,13 @@
         if (DOM.formStatus) DOM.formStatus.value = tenant.status || 'Active';
         if (DOM.formNote) DOM.formNote.value = tenant.note || '';
         if (DOM.passwordHint) DOM.passwordHint.textContent = '(leave blank to keep current password)';
-        
-        // Update submit button text
+
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Update Tenant';
         
         hideErrors();
         showModal(true);
         
-        // Focus first input
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
@@ -512,7 +486,6 @@
         const deleteLoading = deleteBtn?.querySelector('.delete-loading');
         
         try {
-            // Show loading state
             if (deleteText) deleteText.classList.add('hidden');
             if (deleteLoading) deleteLoading.classList.remove('hidden');
             if (deleteBtn) deleteBtn.disabled = true;
@@ -522,13 +495,11 @@
             });
 
             if (data.success) {
-                // Remove tenant from local array
                 const index = tenants.findIndex(t => t.id === state.selectedToDelete.id);
                 if (index > -1) tenants.splice(index, 1);
                 
                 closeDeleteModal();
-                
-                // Adjust pagination if needed
+
                 const filtered = getFiltered();
                 const totalPages = getTotalPages(filtered);
                 if (state.page > totalPages) state.page = totalPages;
@@ -542,7 +513,6 @@
             console.error('Delete error:', error);
             showNotification(error.message || 'Failed to delete tenant', 'error');
         } finally {
-            // Reset loading state
             if (deleteText) deleteText.classList.remove('hidden');
             if (deleteLoading) deleteLoading.classList.add('hidden');
             if (deleteBtn) deleteBtn.disabled = false;
@@ -558,12 +528,10 @@
         const submitLoading = submitBtn?.querySelector('.submit-loading');
 
         try {
-            // Show loading state
             if (submitText) submitText.classList.add('hidden');
             if (submitLoading) submitLoading.classList.remove('hidden');
             if (submitBtn) submitBtn.disabled = true;
 
-            // Collect form data
             const formData = {
                 name: DOM.formName?.value.trim() || '',
                 email: DOM.formEmail?.value.trim() || '',
@@ -571,7 +539,6 @@
                 note: DOM.formNote?.value.trim() || ''
             };
 
-            // Add password only if provided
             if (DOM.formPassword?.value.trim()) {
                 formData.password = DOM.formPassword.value;
             }
@@ -587,15 +554,13 @@
 
             if (data.success) {
                 if (isEdit) {
-                    // Update existing tenant
                     const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
                     if (index > -1) {
                         tenants[index] = data.tenant;
                     }
                 } else {
-                    // Add new tenant to beginning of array
                     tenants.unshift(data.tenant);
-                    state.page = 1; // Go to first page to see new tenant
+                    state.page = 1;
                 }
 
                 closeModal();
@@ -606,8 +571,7 @@
             }
         } catch (error) {
             console.error('Form submit error:', error);
-            
-            // Try to parse Laravel validation errors
+
             try {
                 const errorData = JSON.parse(error.message);
                 if (errorData.errors) {
@@ -615,12 +579,10 @@
                     return;
                 }
             } catch (parseError) {
-                // Not a JSON error, continue with original error
             }
             
             showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
         } finally {
-            // Reset loading state
             if (submitText) submitText.classList.remove('hidden');
             if (submitLoading) submitLoading.classList.add('hidden');
             if (submitBtn) submitBtn.disabled = false;
@@ -654,13 +616,13 @@
     function updateFilters() {
         state.query = DOM.searchInput?.value || '';
         state.statusFilter = DOM.statusFilter?.value || '';
-        state.page = 1; // Reset to first page
+        state.page = 1;
         render();
     }
 
     function updatePerPage() {
         state.perPage = parseInt(DOM.perPageSelect?.value || '10');
-        state.page = 1; // Reset to first page
+        state.page = 1;
         render();
     }
 
@@ -672,21 +634,16 @@
         });
     }
 
-    // Event Listeners
     function initEventListeners() {
-        // Form submission
         DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
 
-        // Search and filters
         DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
         DOM.statusFilter?.addEventListener('change', updateFilters);
         DOM.perPageSelect?.addEventListener('change', updatePerPage);
 
-        // Pagination
         DOM.prevBtn?.addEventListener('click', prevPage);
         DOM.nextBtn?.addEventListener('click', nextPage);
 
-        // Modal controls
         DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
         DOM.formCancel?.addEventListener('click', closeModal);
         DOM.closeModalBtn?.addEventListener('click', closeModal);
@@ -694,17 +651,14 @@
             if (e.target === DOM.modalBackdrop) closeModal();
         });
 
-        // Delete modal
         DOM.deleteConfirm?.addEventListener('click', deleteTenant);
         DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
         DOM.deleteBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.deleteBackdrop) closeDeleteModal();
         });
 
-        // Select all checkbox
         DOM.selectAll?.addEventListener('change', toggleSelectAll);
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
@@ -713,7 +667,6 @@
         });
     }
 
-    // Utility function for debouncing
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -726,13 +679,11 @@
         };
     }
 
-    // Global functions for onclick handlers
     window.viewTenant = viewTenant;
     window.editTenant = editTenant;
     window.confirmDelete = confirmDelete;
     window.goToPage = goToPage;
 
-    // Initialize application
     function init() {
         console.log('Initializing Tenant List...');
         console.log('Initial tenants data:', tenants);
@@ -744,7 +695,6 @@
         console.log('Tenant List initialized successfully');
     }
 
-    // Auto-initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
