@@ -11,6 +11,6 @@ class DashboardController extends Controller
         $totalTenants = \App\Models\Tenants::count();
         // $activeCount = \App\Models\Tenants::where('status', 'active')->count(); // Pastikan kolom 'status' ada
 
-        return view('super-admin.index', compact('totalTenants'));
+        return view('super-admin.index', compact('totalTenants', 'activeCount'));
     }
 }

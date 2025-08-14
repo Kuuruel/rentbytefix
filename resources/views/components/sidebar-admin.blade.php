@@ -66,8 +66,8 @@
 
 
 
-            
-            {{-- <li class="">
+
+        <li class="">
                 <a href="{{ route('super-admin.index4') }}"><i
                         class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
             </li>
@@ -91,8 +91,8 @@
                 <a href="{{ route('super-admin.index9') }}"><i
                         class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
             </li>
-            <li class="sidebar-menu-group-title">Application</li> --}}
-            {{-- <li>
+            <li class="sidebar-menu-group-title">Application</li> 
+            <li>
                 <a href="{{ route('email') }}">
                     <iconify-icon icon="mage:email" class="menu-icon"></iconify-icon>
                     <span>Email</span>
@@ -451,7 +451,7 @@
                                 class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Payment Gateway</a>
                     </li>
                 </ul>
-            </li> --}}
+            </li>
         </ul>
     </div>
 </aside>
