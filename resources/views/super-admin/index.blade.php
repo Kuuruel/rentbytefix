@@ -94,7 +94,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
 
-        <div class="xl:col-span-6 2xl:col-span-3">
+        <div class="xl:col-span-8 2xl:col-span-10"> <!-- Lebar lebih besar -->
             <div class="card h-full p-0 border-0 overflow-hidden">
                 <div
                     class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
@@ -105,14 +105,15 @@
                 </div>
             </div>
         </div>
+
         <div class="xl:col-span-4 2xl:col-span-2 max-w-md"> <!-- ~448px -->
 
 
             <div class="card h-full rounded-lg border-0 overflow-hidden">
-                <div class="card-body">
+                <div class="card-body   ">
                     <div class="flex items-center flex-wrap gap-2 justify-between">
-                        <h6 class="mb-2 font-bold text-lg">Owner Distribution</h6>
-                        <div class="">
+                        <h6 class="mb-4 font-bold text-lg">Owner Distribution</h6>
+                        {{-- <div class="">
                             <select
                                 class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
                                 <option>Today</option>
@@ -120,7 +121,7 @@
                                 <option>Monthly</option>
                                 <option>Yearly</option>
                             </select>
-                        </div>
+                        </div> --}}
                     </div>
 
 
@@ -130,15 +131,15 @@
                         <li class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-sm bg-primary-600"></span>
                             <span class="text-secondary-light text-sm font-normal">
-                                New:
-                                <span class="text-neutral-600 dark:text-neutral-200 font-semibold">400</span>
+                                Myanmar
+                                <span class="text-neutral-600 dark:text-neutral-200 font-semibold"></span>
                             </span>
                         </li>
                         <li class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-sm bg-warning-600"></span>
                             <span class="text-secondary-light text-sm font-normal">
-                                Subscribed:
-                                <span class="text-neutral-600 dark:text-neutral-200 font-semibold">300</span>
+                                Spans
+                                <span class="text-neutral-600 dark:text-neutral-200 font-semibold"></span>
                             </span>
                         </li>
                     </ul>
@@ -146,8 +147,130 @@
                 </div>
             </div>
         </div>
+        <div class="xl:col-span-8 2xl:col-span-6">
+            <div class="col-span-12 lg:col-span-6">
+                <div class="card border-0 overflow-hidden">
+                    <div class="card-header ">
+                        <h5 class="card-title text-lg mb-0">Users Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table striped-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"
+                                            class="!bg-neutral-100 dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
+                                            Users</th>
+                                        <th scope="col"
+                                            class="!bg-neutral-100 dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
+                                            Join Date</th>
 
-        <div class="xl:col-span-6 2xl:col-span-3">
+                                        <th scope="col"
+                                            class="!bg-neutral-100  dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600 text-center">
+                                            Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="odd:bg-white dark:odd:bg-neutral-600">
+                                        <td>
+                                            <div class="flex items-center">
+                                                <img src="{{ asset('assets/images/product/product-img1.png') }}"
+                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
+                                                <div class="grow">
+                                                    <h6 class="text-base mb-0 font-normal">Blue t-shirt</h6>
+                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$400.00</td>
+                                 
+                                     
+                                        <td class="text-center">
+                                            <span
+                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white dark:odd:bg-neutral-600">
+                                        <td>
+                                            <div class="flex items-center">
+                                                <img src="{{ asset('assets/images/product/product-img2.png') }}"
+                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
+                                                <div class="grow">
+                                                    <h6 class="text-base mb-0 font-normal">Nike Air Shoe</h6>
+                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$150.00</td>
+                                      
+                                       
+                                        <td class="text-center">
+                                            <span
+                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white dark:odd:bg-neutral-600">
+                                        <td>
+                                            <div class="flex items-center">
+                                                <img src="{{ asset('assets/images/product/product-img3.png') }}"
+                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
+                                                <div class="grow">
+                                                    <h6 class="text-base mb-0 font-normal">Woman Dresses</h6>
+                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$300.00</td>
+                                       
+                                        <td class="text-center">
+                                            <span
+                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white dark:odd:bg-neutral-600">
+                                        <td>
+                                            <div class="flex items-center">
+                                                <img src="{{ asset('assets/images/product/product-img4.png') }}"
+                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
+                                                <div class="grow">
+                                                    <h6 class="text-base mb-0 font-normal">Smart Watch</h6>
+                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$400.00</td>
+                                      
+                                        <td class="text-center">
+                                            <span
+                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">Active</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white dark:odd:bg-neutral-600">
+                                        <td>
+                                            <div class="flex items-center">
+                                                <img src="{{ asset('assets/images/product/product-img5.png') }}"
+                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
+                                                <div class="grow">
+                                                    <h6 class="text-base mb-0 font-normal">Hoodie Rose</h6>
+                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$300.00</td>
+                                   
+                                        <td class="text-center">
+                                            <span
+                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">Active</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div><!-- card end -->
+            </div>
+        </div>
+        <div class="xl:col-span-4 2xl:col-span-3 ">
             <div class="card h-full border-0">
                 <div class="card-body">
                     <div class="flex items-center flex-wrap gap-2 justify-between">
@@ -239,137 +362,7 @@
             </div>
         </div>
 
-        <div class="xl:col-span-6 2xl:col-span-6">
-            <div class="col-span-12 lg:col-span-6">
-                <div class="card border-0 overflow-hidden">
-                    <div class="card-header">
-                        <h5 class="card-title text-lg mb-0">Striped Rows</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table striped-table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th scope="col"
-                                            class="!bg-white dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
-                                            Items</th>
-                                        <th scope="col"
-                                            class="!bg-white dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
-                                            Price</th>
-                                        <th scope="col"
-                                            class="!bg-white dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
-                                            Discount </th>
-                                        <th scope="col"
-                                            class="!bg-white dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
-                                            Sold</th>
-                                        <th scope="col"
-                                            class="!bg-white dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600 text-center">
-                                            Total Orders</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="odd:bg-neutral-100 dark:odd:bg-neutral-600">
-                                        <td>
-                                            <div class="flex items-center">
-                                                <img src="{{ asset('assets/images/product/product-img1.png') }}"
-                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
-                                                <div class="grow">
-                                                    <h6 class="text-base mb-0 font-normal">Blue t-shirt</h6>
-                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>$400.00</td>
-                                        <td>15%</td>
-                                        <td>300</td>
-                                        <td class="text-center">
-                                            <span
-                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">70</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="odd:bg-neutral-100 dark:odd:bg-neutral-600">
-                                        <td>
-                                            <div class="flex items-center">
-                                                <img src="{{ asset('assets/images/product/product-img2.png') }}"
-                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
-                                                <div class="grow">
-                                                    <h6 class="text-base mb-0 font-normal">Nike Air Shoe</h6>
-                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>$150.00</td>
-                                        <td>N/A</td>
-                                        <td>200</td>
-                                        <td class="text-center">
-                                            <span
-                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">70</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="odd:bg-neutral-100 dark:odd:bg-neutral-600">
-                                        <td>
-                                            <div class="flex items-center">
-                                                <img src="{{ asset('assets/images/product/product-img3.png') }}"
-                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
-                                                <div class="grow">
-                                                    <h6 class="text-base mb-0 font-normal">Woman Dresses</h6>
-                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>$300.00</td>
-                                        <td>$50.00</td>
-                                        <td>1400</td>
-                                        <td class="text-center">
-                                            <span
-                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">70</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="odd:bg-neutral-100 dark:odd:bg-neutral-600">
-                                        <td>
-                                            <div class="flex items-center">
-                                                <img src="{{ asset('assets/images/product/product-img4.png') }}"
-                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
-                                                <div class="grow">
-                                                    <h6 class="text-base mb-0 font-normal">Smart Watch</h6>
-                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>$400.00</td>
-                                        <td>$50.00</td>
-                                        <td>700</td>
-                                        <td class="text-center">
-                                            <span
-                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">70</span>
-                                        </td>
-                                    </tr>
-                                    <tr class="odd:bg-neutral-100 dark:odd:bg-neutral-600">
-                                        <td>
-                                            <div class="flex items-center">
-                                                <img src="{{ asset('assets/images/product/product-img5.png') }}"
-                                                    alt="" class="shrink-0 me-3 rounded-lg me-3">
-                                                <div class="grow">
-                                                    <h6 class="text-base mb-0 font-normal">Hoodie Rose</h6>
-                                                    <span class="text-sm text-secondary-light font-normal">Fashion</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>$300.00</td>
-                                        <td>25%</td>
-                                        <td>400</td>
-                                        <td class="text-center">
-                                            <span
-                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">70</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div><!-- card end -->
-            </div>
-        </div>
+
     </div>
     </div>
 @endsection
