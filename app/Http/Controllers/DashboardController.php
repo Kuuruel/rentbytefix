@@ -8,10 +8,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Hitung total tenants dari DB
-        $totalTenants = Tenants::count();
+        $totalTenants = \App\Models\Tenants::count();
+        $activeCount = \App\Models\Tenants::where('status', 'active')->count(); // Pastikan kolom 'status' ada
 
-        // Kirim data ke view
-        return view('super-admin.index', compact('totalTenants'));
+        return view('super-admin.index', compact('totalTenants', 'activeCount'));
     }
 }

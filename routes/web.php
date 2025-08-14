@@ -185,6 +185,7 @@ Route::prefix('users')->group(function () {
 });
 
 Route::resource('tenants', TenantController::class);
+
 // routes/web.php - tambahkan/update bagian tenant
 Route::prefix('tenants')->name('tenants.')->group(function () {
     Route::get('/', [TenantController::class, 'index'])->name('index');
