@@ -6861,6 +6861,10 @@ h6, .h6 {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
+:is(.dark .sidebar-menu li > a.active-page){
+  --tw-bg-opacity: 1;
+  background-color: rgb(75 85 99 / var(--tw-bg-opacity));
+}
 
 
 .sidebar-menu li a{

@@ -20,6 +20,7 @@
                     color: #ffffff !important;
                     font-weight: 600;
                 }
+   
             </style>
 
 

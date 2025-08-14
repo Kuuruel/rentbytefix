@@ -2,10 +2,10 @@ const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]
                         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl)); 
 
                         // Boxed Tooltip
-                        \$(document).ready(function() {
-                            \$('.tooltip-button').each(function () {
-                                var tooltipButton = \$(this);
-                                var tooltipContent = \$(this).siblings('.my-tooltip').html(); 
+                        $(document).ready(function() {
+                            $('.tooltip-button').each(function () {
+                                var tooltipButton = $(this);
+                                var tooltipContent = $(this).siblings('.my-tooltip').html(); 
                         
                                 // Initialize the tooltip
                                 tooltipButton.tooltip({
