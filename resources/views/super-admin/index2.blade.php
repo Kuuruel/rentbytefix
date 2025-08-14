@@ -94,7 +94,9 @@
 {{-- Modal Create/Edit --}}
 <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
-    <div class="bg-white dark:bg-neutral-700 rounded-xl w-full max-w-lg mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600">
+    <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
+     style="width: 42rem !important; max-width: 90vw !important;">
+
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 flex justify-between items-center">
             <h3 id="modalTitle" class="text-lg font-semibold text-neutral-900 dark:text-white">Add Tenant</h3>
             <button id="closeModalBtn" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>
@@ -167,7 +169,7 @@
 {{-- Modal Delete --}}
 <div id="deleteBackdrop" class="fixed inset-0 z-40 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
-    <div class="bg-white dark:bg-neutral-700 rounded-xl w-full max-w-md mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600">
+    <div class="bg-white dark:bg-neutral-700 rounded-xl w-96 max-w-[90vw] mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600">
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600">
             <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Confirm Delete</h3>
         </div>
