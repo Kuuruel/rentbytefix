@@ -216,7 +216,7 @@
       },
       chart: {
         type: 'donut',    
-        height: 270,
+        height: 250,
         sparkline: {
           enabled: true // Remove whitespace
         },

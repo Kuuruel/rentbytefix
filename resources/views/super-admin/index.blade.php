@@ -54,10 +54,10 @@
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        
+
                         <p class="font-medium text-neutral-900 dark:text-white mb-1">Active Tenants</p>
-                        <h6 class="mb-0 dark:text-white">{{ $activeCount }}</h6>
-                        
+                        <h6 class="mb-0 dark:text-white">2</h6>
+
                     </div>
                     <div class="w-[50px] h-[50px] bg-blue-600 rounded-full flex justify-center items-center">
                         <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
@@ -105,9 +105,11 @@
                 </div>
             </div>
         </div>
-        <div class="xl:col-span-6 2xl:col-span-3">
+        <div class="xl:col-span-4 2xl:col-span-2 max-w-md"> <!-- ~448px -->
+
+
             <div class="card h-full rounded-lg border-0 overflow-hidden">
-                <div class="card-body p-6">
+                <div class="card-body">
                     <div class="flex items-center flex-wrap gap-2 justify-between">
                         <h6 class="mb-2 font-bold text-lg">Owner Distribution</h6>
                         <div class="">
@@ -144,7 +146,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="xl:col-span-6 2xl:col-span-3">
             <div class="card h-full border-0">
                 <div class="card-body">
@@ -236,7 +238,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="xl:col-span-6 2xl:col-span-6">
             <div class="col-span-12 lg:col-span-6">
                 <div class="card border-0 overflow-hidden">

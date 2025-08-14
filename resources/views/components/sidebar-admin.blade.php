@@ -48,7 +48,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('usersGrid') }}">
+                        <a href="{{ route('super-admin.index4') }}">
                             <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon>
                             <span>Statistik Users</span>
                         </a>
@@ -61,6 +61,11 @@
                     <span>Settings Global</span>
                 </a>
             </li>
+
+
+
+
+            
             {{-- <li class="">
                 <a href="{{ route('super-admin.index4') }}"><i
                         class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
