@@ -1,4 +1,3 @@
-// public/assets/js/tenantList.js
 (function () {
     'use strict';
 
@@ -47,6 +46,19 @@
         closeModalBtn: document.getElementById('closeModalBtn'),
         passwordHint: document.getElementById('passwordHint'),
         errorMessages: document.getElementById('errorMessages'),
+
+        detailsBackdrop: document.getElementById('detailsBackdrop'),
+        detailAvatar: document.getElementById('detailAvatar'),
+        detailName: document.getElementById('detailName'),
+        detailEmail: document.getElementById('detailEmail'),
+        detailStatus: document.getElementById('detailStatus'),
+        detailJoinDate: document.getElementById('detailJoinDate'),
+        detailId: document.getElementById('detailId'),
+        detailCreator: document.getElementById('detailCreator'),
+        detailNotes: document.getElementById('detailNotes'),
+        detailNotesSection: document.getElementById('detailNotesSection'),
+        closeDetailsBtn: document.getElementById('closeDetailsBtn'),
+        closeDetailsFooterBtn: document.getElementById('closeDetailsFooterBtn'),
 
         deleteBackdrop: document.getElementById('deleteBackdrop'),
         deleteName: document.getElementById('deleteName'),
@@ -124,18 +136,40 @@
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
         
         const notification = document.createElement('div');
-        notification.className = `notification-toast fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white transition-all duration-300 ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        }`;
-        notification.textContent = message;
+        notification.className = `notification-toast fixed top-6 left-1/2 transform -translate-x-1/2 z-[60] px-6 py-4 rounded-xl shadow-2xl text-white transition-all duration-500 ease-out ${
+            type === 'success' 
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-2 border-green-300' 
+                : 'bg-gradient-to-r from-red-500 to-rose-500 border-2 border-red-300'
+        } backdrop-blur-sm translate-y-[-20px] opacity-0`;
+        
+        notification.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="flex-shrink-0">
+                    <iconify-icon icon="${type === 'success' ? 'ph:check-circle' : 'ph:warning-circle'}" 
+                                  class="text-2xl text-white"></iconify-icon>
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-white">${type === 'success' ? 'Success!' : 'Error!'}</p>
+                    <p class="text-sm text-white/90">${message}</p>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        class="flex-shrink-0 text-white/70 hover:text-white text-lg ml-2">
+                    &times;
+                </button>
+            </div>
+        `;
+        
         document.body.appendChild(notification);
 
-        setTimeout(() => notification.classList.add('opacity-100'), 10);
- 
-        const timeout = type === 'error' ? 5000 : 3000;
         setTimeout(() => {
-            notification.classList.add('opacity-0');
-            setTimeout(() => notification.remove(), 300);
+            notification.classList.remove('opacity-0', 'translate-y-[-20px]');
+            notification.classList.add('opacity-100', 'translate-y-0');
+        }, 10);
+
+        const timeout = type === 'error' ? 6000 : 4000;
+        setTimeout(() => {
+            notification.classList.add('opacity-0', 'translate-y-[-20px]');
+            setTimeout(() => notification.remove(), 500);
         }, timeout);
     }
 
@@ -215,10 +249,13 @@
         if (paginated.length === 0) {
             DOM.tableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-neutral-500 dark:text-neutral-400">
-                        <div class="flex flex-col items-center gap-3">
-                            <iconify-icon icon="tabler:users-off" class="text-4xl"></iconify-icon>
-                            <span>No tenants found</span>
+                    <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                        <div class="flex flex-col items-center gap-4">
+                            <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
+                            <div class="text-center">
+                                <p class="text-lg font-medium">No tenants found</p>
+                                <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
+                            </div>
                         </div>
                     </td>
                 </tr>`;
@@ -230,55 +267,55 @@
                 const checkboxId = `tenant-cb-${t.id}`;
                 
                 return `
-                <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
-                    <td>
+                <tr class="transition-all duration-200">
+                    <td class="px-4 py-4 align-middle">
                         <div class="flex items-center gap-3">
                             <div class="form-check style-check flex items-center">
                                 <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
                                        type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
                             </div>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">${start + idx + 1}</span>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
                         </div>
                     </td>
-                    <td class="text-sm text-neutral-600 dark:text-neutral-300">${formatDate(t.created_at)}</td>
-                    <td>
-                        <div class="flex items-center gap-3">
-                            <img src="${avatar}" alt="${escapeHtml(t.name)}" 
-                                 class="w-10 h-10 rounded-full shrink-0 object-cover border-2 border-neutral-200 dark:border-neutral-700"
-                                 onerror="this.src='/assets/images/user-list/user-list1.png'">
+                    <td class="px-4 py-4 align-middle">
+                        <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
+                    </td>
+                    <td class="px-4 py-4 align-middle">
+                        <div class="flex items-center gap-3 min-w-0">
+                            
                             <div class="min-w-0 flex-1">
-                                <p class="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
-                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">${escapeHtml(ownerText)}</p>` : ''}
+                                <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
+                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <span class="text-sm text-neutral-700 dark:text-neutral-300">${escapeHtml(t.email)}</span>
+                    <td class="px-4 py-4 align-middle">
+                        <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
                     </td>
-                    <td class="text-center">
+                    <td class="px-4 py-4 text-center align-middle">
                         <span class="${status === 'Active' ? 
-                            'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 border border-success-600' : 
-                            'bg-neutral-200 dark:bg-neutral-600 text-neutral-600 dark:text-neutral-400 border border-neutral-400'
-                        } px-3 py-1 rounded-full text-xs font-medium">
+                            'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                            'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                        } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
                             ${status}
                         </span>
                     </td>
-                    <td class="text-center">
-                        <div class="flex items-center gap-2 justify-center">
+                    <td class="px-4 py-4 text-center align-middle">
+                        <div class="flex items-center gap-1.5 justify-center">
                             <button type="button" title="View Details" 
-                                    class="bg-info-100 dark:bg-info-600/25 hover:bg-info-200 dark:hover:bg-info-600/40 text-info-600 dark:text-info-400 font-medium w-8 h-8 flex justify-center items-center rounded-full transition-colors" 
+                                    class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                     onclick="viewTenant(${t.id})">
-                                <iconify-icon icon="majesticons:eye-line" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
                             </button>
                             <button type="button" title="Edit Tenant" 
-                                    class="bg-success-100 dark:bg-success-600/25 hover:bg-success-200 dark:hover:bg-success-600/40 text-success-600 dark:text-success-400 font-medium w-8 h-8 flex justify-center items-center rounded-full transition-colors" 
+                                    class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                     onclick="editTenant(${t.id})">
-                                <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
                             </button>
                             <button type="button" title="Delete Tenant" 
-                                    class="bg-danger-100 dark:bg-danger-600/25 hover:bg-danger-200 dark:hover:bg-danger-600/40 text-danger-600 dark:text-danger-400 font-medium w-8 h-8 flex justify-center items-center rounded-full transition-colors" 
+                                    class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                     onclick="confirmDelete(${t.id})">
-                                <iconify-icon icon="fluent:delete-24-regular" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                             </button>
                         </div>
                     </td>
@@ -419,23 +456,39 @@
         const tenant = tenants.find(t => t.id === id);
         if (!tenant) return;
         
+        const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
+        const status = tenant.status || 'Active';
         const ownerInfo = tenant.user ? 
-            `Added by: ${tenant.user.name} (${tenant.user.email})` : 
-            'No creator info available';
+            `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
+            '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
+
+        if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
+        if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
+        if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
         
-        const details = [
-            `📋 Tenant Details`,
-            ``,
-            `👤 Name: ${tenant.name || '-'}`,
-            `📧 Email: ${tenant.email || '-'}`,
-            `📊 Status: ${tenant.status || '-'}`,
-            `📅 Join Date: ${formatDate(tenant.created_at)}`,
-            `👨‍💼 ${ownerInfo}`,
-            `📝 Notes: ${tenant.note || 'No additional notes'}`,
-            `🆔 ID: #${tenant.id}`
-        ].join('\n');
+        if (DOM.detailStatus) {
+            DOM.detailStatus.innerHTML = `
+                <span class="${status === 'Active' ? 
+                    'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                    'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                } px-2 py-1 rounded-full text-xs font-semibold">
+                    ${status}
+                </span>
+            `;
+        }
         
-        alert(details);
+        if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
+        if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
+        if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
+        
+        if (tenant.note && tenant.note.trim()) {
+            if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
+            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
+        } else {
+            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
+        }
+        
+        showDetailsModal(true);
     }
 
     function showModal(visible) {
@@ -453,9 +506,27 @@
         }
     }
 
+    function showDetailsModal(visible) {
+        if (!DOM.detailsBackdrop) return;
+        
+        if (visible) {
+            DOM.detailsBackdrop.classList.remove('hidden');
+            DOM.detailsBackdrop.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        } else {
+            DOM.detailsBackdrop.classList.add('hidden');
+            DOM.detailsBackdrop.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+    }
+
     function closeModal() {
         showModal(false);
         state.isEditing = false;
+    }
+
+    function closeDetailsModal() {
+        showDetailsModal(false);
     }
 
     function confirmDelete(id) {
@@ -651,6 +722,12 @@
             if (e.target === DOM.modalBackdrop) closeModal();
         });
 
+        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
+        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
+        DOM.detailsBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
+        });
+
         DOM.deleteConfirm?.addEventListener('click', deleteTenant);
         DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
         DOM.deleteBackdrop?.addEventListener('click', (e) => {
@@ -662,6 +739,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
+                closeDetailsModal();
                 closeDeleteModal();
             }
         });
