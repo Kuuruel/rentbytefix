@@ -805,53 +805,257 @@ async function handleFormSubmit(e) {
         render();
     }
 
-    function toggleSelectAll() {
-        const checkboxes = document.querySelectorAll('.tbody-checkbox');
-        const isChecked = DOM.selectAll?.checked || false;
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
-        });
+
+function toggleSelectAll() {
+    const checkboxes = document.querySelectorAll('.tbody-checkbox');
+    const isChecked = DOM.selectAll?.checked || false;
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+    });
+    updateSelectActions();
+}
+
+function updateSelectAll() {
+    const checkboxes = document.querySelectorAll('.tbody-checkbox');
+    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+    
+    if (DOM.selectAll) {
+        if (checkboxes.length === 0) {
+            DOM.selectAll.checked = false;
+            DOM.selectAll.indeterminate = false;
+        } else if (checkedBoxes.length === checkboxes.length) {
+            DOM.selectAll.checked = true;
+            DOM.selectAll.indeterminate = false;
+        } else if (checkedBoxes.length > 0) {
+            DOM.selectAll.checked = false;
+            DOM.selectAll.indeterminate = true;
+        } else {
+            DOM.selectAll.checked = false;
+            DOM.selectAll.indeterminate = false;
+        }
     }
+    updateSelectActions();
+}
 
-    function initEventListeners() {
-        DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
+function updateSelectActions() {
+    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+    const selectedCount = checkedBoxes.length;
+    
+    let bulkActionsContainer = document.getElementById('bulkActionsContainer');
+    
+    if (selectedCount > 0) {
+        if (!bulkActionsContainer) {
+            bulkActionsContainer = document.createElement('div');
+            bulkActionsContainer.id = 'bulkActionsContainer';
+            bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
+            bulkActionsContainer.innerHTML = `
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
+                        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            <span id="selectedCount">${selectedCount}</span> tenant(s) selected
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                            Delete Selected
+                        </button>
+                        <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:toggle-left" class="text-sm"></iconify-icon>
+                            Toggle Status
+                        </button>
+                        <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const tableContainer = document.querySelector('.table-responsive');
+            if (tableContainer) {
+                tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
+            }
+        } else {
+            document.getElementById('selectedCount').textContent = selectedCount;
+        }
+        
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const bulkStatusBtn = document.getElementById('bulkStatusBtn');
+        const clearSelectionBtn = document.getElementById('clearSelection');
+        
+        bulkDeleteBtn.onclick = bulkDeleteTenants;
+        bulkStatusBtn.onclick = bulkToggleStatus;
+        clearSelectionBtn.onclick = clearAllSelections;
+        
+    } else {
+        if (bulkActionsContainer) {
+            bulkActionsContainer.remove();
+        }
+    }
+}
 
-        DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
-        DOM.statusFilter?.addEventListener('change', updateFilters);
-        DOM.perPageSelect?.addEventListener('change', updatePerPage);
+function getSelectedTenantIds() {
+    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+    return Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.dataset.id));
+}
 
-        DOM.prevBtn?.addEventListener('click', prevPage);
-        DOM.nextBtn?.addEventListener('click', nextPage);
+function clearAllSelections() {
+    const checkboxes = document.querySelectorAll('.tbody-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+    if (DOM.selectAll) {
+        DOM.selectAll.checked = false;
+        DOM.selectAll.indeterminate = false;
+    }
+    updateSelectActions();
+}
 
-        DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
-        DOM.formCancel?.addEventListener('click', closeModal);
-        DOM.closeModalBtn?.addEventListener('click', closeModal);
-        DOM.modalBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.modalBackdrop) closeModal();
+async function bulkDeleteTenants() {
+    const selectedIds = getSelectedTenantIds();
+    if (selectedIds.length === 0) return;
+    
+    const confirmation = confirm(`Are you sure you want to delete ${selectedIds.length} tenant(s)? This action cannot be undone.`);
+    if (!confirmation) return;
+    
+    showLoading();
+    
+    try {
+        const deletePromises = selectedIds.map(id => 
+            apiRequest(API_ENDPOINTS.DELETE(id), { method: 'DELETE' })
+        );
+        
+        const results = await Promise.allSettled(deletePromises);
+        const successful = results.filter(r => r.status === 'fulfilled').length;
+        const failed = results.length - successful;
+        
+        selectedIds.forEach(id => {
+            const index = tenants.findIndex(t => t.id === id);
+            if (index > -1) tenants.splice(index, 1);
         });
+        
+        clearAllSelections();
+        
+        const filtered = getFiltered();
+        const totalPages = getTotalPages(filtered);
+        if (state.page > totalPages) state.page = totalPages;
+        
+        render();
+        
+        if (failed === 0) {
+            showNotification(`Successfully deleted ${successful} tenant(s)`, 'delete');
+        } else {
+            showNotification(`Deleted ${successful} tenant(s), ${failed} failed`, 'error');
+        }
+        
+    } catch (error) {
+        console.error('Bulk delete error:', error);
+        showNotification('Failed to delete selected tenants', 'error');
+    } finally {
+        hideLoading();
+    }
+}
 
-        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
-        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
-        DOM.detailsBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
-        });
-
-        DOM.deleteConfirm?.addEventListener('click', deleteTenant);
-        DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
-        DOM.deleteBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.deleteBackdrop) closeDeleteModal();
-        });
-
-        DOM.selectAll?.addEventListener('change', toggleSelectAll);
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeDetailsModal();
-                closeDeleteModal();
+async function bulkToggleStatus() {
+    const selectedIds = getSelectedTenantIds();
+    if (selectedIds.length === 0) return;
+    
+    const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
+    const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
+    const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
+    
+    const confirmation = confirm(`Set ${selectedIds.length} tenant(s) status to ${newStatus}?`);
+    if (!confirmation) return;
+    
+    showLoading();
+    
+    try {
+        const updatePromises = selectedIds.map(id => 
+            apiRequest(API_ENDPOINTS.UPDATE(id), {
+                method: 'PUT',
+                body: JSON.stringify({ status: newStatus })
+            })
+        );
+        
+        const results = await Promise.allSettled(updatePromises);
+        const successful = results.filter(r => r.status === 'fulfilled').length;
+        const failed = results.length - successful;
+        
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') {
+                const tenantIndex = tenants.findIndex(t => t.id === selectedIds[index]);
+                if (tenantIndex > -1) {
+                    tenants[tenantIndex].status = newStatus;
+                }
             }
         });
+        
+        clearAllSelections();
+        render();
+        
+        if (failed === 0) {
+            showNotification(`Successfully updated status for ${successful} tenant(s)`, 'success');
+        } else {
+            showNotification(`Updated ${successful} tenant(s), ${failed} failed`, 'error');
+        }
+        
+    } catch (error) {
+        console.error('Bulk status update error:', error);
+        showNotification('Failed to update selected tenants', 'error');
+    } finally {
+        hideLoading();
     }
+}
+
+function initSelectEventListeners() {
+    DOM.selectAll?.addEventListener('change', toggleSelectAll);
+    
+    document.addEventListener('change', (e) => {
+        if (e.target.classList.contains('tbody-checkbox')) {
+            updateSelectAll();
+        }
+    });
+}
+
+    function initEventListeners() {
+    DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
+
+    DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
+    DOM.statusFilter?.addEventListener('change', updateFilters);
+    DOM.perPageSelect?.addEventListener('change', updatePerPage);
+
+    DOM.prevBtn?.addEventListener('click', prevPage);
+    DOM.nextBtn?.addEventListener('click', nextPage);
+
+    DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
+    DOM.formCancel?.addEventListener('click', closeModal);
+    DOM.closeModalBtn?.addEventListener('click', closeModal);
+    DOM.modalBackdrop?.addEventListener('click', (e) => {
+        if (e.target === DOM.modalBackdrop) closeModal();
+    });
+
+    DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
+    DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
+    DOM.detailsBackdrop?.addEventListener('click', (e) => {
+        if (e.target === DOM.detailsBackdrop) closeDetailsModal();
+    });
+
+    DOM.deleteConfirm?.addEventListener('click', deleteTenant);
+    DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
+    DOM.deleteBackdrop?.addEventListener('click', (e) => {
+        if (e.target === DOM.deleteBackdrop) closeDeleteModal();
+    });
+
+    initSelectEventListeners();
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            closeDetailsModal();
+            closeDeleteModal();
+        }
+    });
+}
 
     function debounce(func, wait) {
         let timeout;
