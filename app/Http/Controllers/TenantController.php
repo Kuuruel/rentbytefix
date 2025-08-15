@@ -63,17 +63,14 @@ class TenantController extends Controller
 
             $data = $validator->validated();
             $data['password'] = Hash::make($data['password']);
-            
-            // Handle user_id assignment with fallback
+
             $userId = Auth::id();
             
             if (!$userId) {
-                // If no authenticated user, try to find the first user or create a default one
                 $firstUser = User::first();
                 if ($firstUser) {
                     $userId = $firstUser->id;
                 } else {
-                    // Create a default system user if no users exist
                     $systemUser = User::create([
                         'name' => 'System Admin',
                         'email' => 'system@' . request()->getHost(),
@@ -83,7 +80,6 @@ class TenantController extends Controller
                     $userId = $systemUser->id;
                 }
             } else {
-                // Verify the authenticated user still exists
                 $userExists = User::where('id', $userId)->exists();
                 if (!$userExists) {
                     $firstUser = User::first();
@@ -101,7 +97,6 @@ class TenantController extends Controller
             $data['user_id'] = $userId;
             $data['avatar'] = asset('assets/images/user-list/user-list1.png');
 
-            // Use database transaction for data integrity
             DB::beginTransaction();
             
             $tenant = Tenants::create($data);
@@ -118,8 +113,7 @@ class TenantController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
             Log::error('Database error creating tenant: ' . $e->getMessage());
-            
-            // Check for specific constraint violations
+
             if (strpos($e->getMessage(), 'user_id_foreign') !== false) {
                 return response()->json([
                     'success' => false,
@@ -191,8 +185,7 @@ class TenantController extends Controller
             }
 
             $data = $validator->validated();
-            
-            // Only update password if provided
+
             if (empty($data['password'])) {
                 unset($data['password']);
             } else {

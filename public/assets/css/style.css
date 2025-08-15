@@ -6856,15 +6856,16 @@ h6, .h6 {
 
 .sidebar-menu li > a.active-page{
   --tw-bg-opacity: 1;
-  background-color: rgb(72 127 255 / var(--tw-bg-opacity));
+  background-color: rgb(228 241 255 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+  color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.sidebar-menu li > a.active-page:hover{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+:is(.dark .sidebar-menu li > a.active-page){
+  --tw-bg-opacity: 1;
+  background-color: rgb(75 85 99 / var(--tw-bg-opacity));
 }
+
 
 .sidebar-menu li a{
   display: flex;
@@ -6925,8 +6926,8 @@ h6, .h6 {
 
 .sidebar-menu .sidebar-submenu{
   display: none;
-  padding-top: 0.75rem;
-  padding-inline-start: 1.5rem;
+  padding-top: 0.5rem;
+
   transition-property: none;
 }
 

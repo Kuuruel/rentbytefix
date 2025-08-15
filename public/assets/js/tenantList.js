@@ -1,4 +1,3 @@
-// public/assets/js/tenantList.js
 (function () {
     'use strict';
 
@@ -48,31 +47,39 @@
         passwordHint: document.getElementById('passwordHint'),
         errorMessages: document.getElementById('errorMessages'),
 
+        detailsBackdrop: document.getElementById('detailsBackdrop'),
+        detailAvatar: document.getElementById('detailAvatar'),
+        detailName: document.getElementById('detailName'),
+        detailEmail: document.getElementById('detailEmail'),
+        detailStatus: document.getElementById('detailStatus'),
+        detailJoinDate: document.getElementById('detailJoinDate'),
+        detailId: document.getElementById('detailId'),
+        detailCreator: document.getElementById('detailCreator'),
+        detailNotes: document.getElementById('detailNotes'),
+        detailNotesSection: document.getElementById('detailNotesSection'),
+        closeDetailsBtn: document.getElementById('closeDetailsBtn'),
+        closeDetailsFooterBtn: document.getElementById('closeDetailsFooterBtn'),
+
         deleteBackdrop: document.getElementById('deleteBackdrop'),
         deleteName: document.getElementById('deleteName'),
         deleteConfirm: document.getElementById('deleteConfirm'),
         deleteCancel: document.getElementById('deleteCancel')
     };
 
-    // Enhanced fetch function with better error handling
     async function apiRequest(url, options = {}) {
         try {
-            // Get CSRF token
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            
-            // Default headers
+
             const defaultHeaders = {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json', // This is crucial - tells Laravel we expect JSON
-                'X-Requested-With': 'XMLHttpRequest' // Identifies as AJAX request
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             };
 
-            // Add CSRF token if available
             if (csrfToken) {
                 defaultHeaders['X-CSRF-TOKEN'] = csrfToken;
             }
 
-            // Merge headers
             const headers = { ...defaultHeaders, ...options.headers };
 
             const response = await fetch(url, {
@@ -80,16 +87,13 @@
                 headers
             });
 
-            // Check if response is HTML (likely an error page or redirect)
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('text/html')) {
                 console.error('Received HTML response instead of JSON:', response.url);
-                
-                // Log the HTML content for debugging
+ 
                 const htmlText = await response.text();
                 console.error('HTML Response:', htmlText.substring(0, 500) + '...');
-                
-                // Check if it's a Laravel error page
+
                 if (htmlText.includes('<!DOCTYPE') || htmlText.includes('<html')) {
                     throw new Error('Server returned an error page instead of JSON. Please check the server logs.');
                 }
@@ -97,10 +101,8 @@
                 throw new Error('Unexpected response format. Expected JSON but received HTML.');
             }
 
-            // Parse JSON response
             const data = await response.json();
 
-            // Handle non-2xx status codes
             if (!response.ok) {
                 throw new Error(data.message || `HTTP Error: ${response.status} ${response.statusText}`);
             }
@@ -113,8 +115,7 @@
                 error: error.message,
                 stack: error.stack
             });
-            
-            // Re-throw with more context
+
             throw new Error(`API Request Failed: ${error.message}`);
         }
     }
@@ -131,25 +132,144 @@
         }
     }
 
-    function showNotification(message, type = 'success') {
-        // Remove existing notifications
+function showNotification(message, type = 'success') {
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
         
         const notification = document.createElement('div');
-        notification.className = `notification-toast fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white transition-all duration-300 ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        }`;
-        notification.textContent = message;
+        notification.className = 'notification-toast';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: auto;
+        `;
+        
+        const colors = {
+            success: {
+                bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                shadow: '0 10px 25px rgba(16, 185, 129, 0.3)',
+                icon: 'ph:check-circle-fill'
+            },
+            delete: {
+                bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                shadow: '0 10px 25px rgba(239, 68, 68, 0.3)',
+                icon: 'ph:trash-fill'
+            },
+            error: {
+                bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                shadow: '0 10px 25px rgba(245, 158, 11, 0.3)',
+                icon: 'ph:warning-circle-fill'
+            }
+        };
+        
+        const config = colors[type] || colors.success;
+        
+        notification.innerHTML = `
+            <div style="
+                background: ${config.bg};
+                border-radius: 12px;
+                box-shadow: ${config.shadow};
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            ">
+                <div style="padding: 16px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="
+                            width: 32px;
+                            height: 32px;
+                            background: rgba(255, 255, 255, 0.2);
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            margin-top: 2px;
+                        ">
+                            <iconify-icon icon="${config.icon}" style="
+                                font-size: 18px;
+                                color: white;
+                            "></iconify-icon>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="
+                                color: white;
+                                font-weight: 600;
+                                font-size: 14px;
+                                margin: 0 0 4px 0;
+                                line-height: 1.2;
+                            ">${type === 'success' ? 'Success!' : type === 'delete' ? 'Deleted!' : 'Error!'}</h4>
+                            <p style="
+                                color: rgba(255, 255, 255, 0.9);
+                                font-size: 13px;
+                                margin: 0;
+                                line-height: 1.4;
+                            ">${message}</p>
+                        </div>
+                        <button onclick="this.closest('.notification-toast').remove()" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            border: none;
+                            color: rgba(255, 255, 255, 0.7);
+                            width: 24px;
+                            height: 24px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: all 0.2s;
+                            flex-shrink: 0;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.color='white'" 
+                           onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.7)'">
+                            <iconify-icon icon="ph:x" style="font-size: 14px;"></iconify-icon>
+                        </button>
+                    </div>
+                </div>
+                <div style="
+                    height: 3px;
+                    background: rgba(255, 255, 255, 0.3);
+                ">
+                    <div class="notification-progress" style="
+                        height: 100%;
+                        background: rgba(255, 255, 255, 0.8);
+                        width: 100%;
+                        transition: width 4s linear;
+                    "></div>
+                </div>
+            </div>
+        `;
+        
         document.body.appendChild(notification);
-        
-        // Fade in
-        setTimeout(() => notification.classList.add('opacity-100'), 10);
-        
-        // Auto remove after 5 seconds for errors, 3 for success
-        const timeout = type === 'error' ? 5000 : 3000;
+        console.log('Notification added to DOM:', notification);
+
         setTimeout(() => {
-            notification.classList.add('opacity-0');
-            setTimeout(() => notification.remove(), 300);
+            notification.style.transform = 'translateX(0)';
+            notification.style.opacity = '1';
+        }, 10);
+
+        const progressBar = notification.querySelector('.notification-progress');
+        if (progressBar) {
+            setTimeout(() => {
+                progressBar.style.width = '0%';
+            }, 100);
+        }
+
+        const timeout = type === 'error' ? 6000 : 4500;
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.transform = 'translateX(100%)';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 400);
+            }
         }, timeout);
     }
 
@@ -229,10 +349,13 @@
         if (paginated.length === 0) {
             DOM.tableBody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-neutral-500 dark:text-neutral-400">
-                        <div class="flex flex-col items-center gap-3">
-                            <iconify-icon icon="tabler:users-off" class="text-4xl"></iconify-icon>
-                            <span>No tenants found</span>
+                    <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                        <div class="flex flex-col items-center gap-4">
+                            <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
+                            <div class="text-center">
+                                <p class="text-lg font-medium">No tenants found</p>
+                                <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
+                            </div>
                         </div>
                     </td>
                 </tr>`;
@@ -244,55 +367,55 @@
                 const checkboxId = `tenant-cb-${t.id}`;
                 
                 return `
-                <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
-                    <td>
+                <tr class="transition-all duration-200">
+                    <td class="px-4 py-4 align-middle">
                         <div class="flex items-center gap-3">
                             <div class="form-check style-check flex items-center">
                                 <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
                                        type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
                             </div>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">${start + idx + 1}</span>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
                         </div>
                     </td>
-                    <td class="text-sm text-neutral-600 dark:text-neutral-300">${formatDate(t.created_at)}</td>
-                    <td>
-                        <div class="flex items-center gap-3">
-                            <img src="${avatar}" alt="${escapeHtml(t.name)}" 
-                                 class="w-10 h-10 rounded-full shrink-0 object-cover border-2 border-neutral-200 dark:border-neutral-700"
-                                 onerror="this.src='/assets/images/user-list/user-list1.png'">
+                    <td class="px-4 py-4 align-middle">
+                        <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
+                    </td>
+                    <td class="px-4 py-4 align-middle">
+                        <div class="flex items-center gap-3 min-w-0">
+                            
                             <div class="min-w-0 flex-1">
-                                <p class="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
-                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">${escapeHtml(ownerText)}</p>` : ''}
+                                <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
+                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
                             </div>
                         </div>
                     </td>
-                    <td>
-                        <span class="text-sm text-neutral-700 dark:text-neutral-300">${escapeHtml(t.email)}</span>
+                    <td class="px-4 py-4 align-middle">
+                        <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
                     </td>
-                    <td class="text-center">
+                    <td class="px-4 py-4 text-center align-middle">
                         <span class="${status === 'Active' ? 
-                            'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 border border-success-600' : 
-                            'bg-neutral-200 dark:bg-neutral-600 text-neutral-600 dark:text-neutral-400 border border-neutral-400'
-                        } px-3 py-1 rounded-full text-xs font-medium">
+                            'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                            'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                        } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
                             ${status}
                         </span>
                     </td>
-                    <td class="text-center">
-                        <div class="flex items-center gap-2 justify-center">
+                    <td class="px-4 py-4 text-center align-middle">
+                        <div class="flex items-center gap-1.5 justify-center">
                             <button type="button" title="View Details" 
-                                    class="bg-info-100 dark:bg-info-600/25 hover:bg-info-200 dark:hover:bg-info-600/40 text-info-600 dark:text-info-400 font-medium w-8 h-8 flex justify-center items-center rounded-full transition-colors" 
+                                    class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                     onclick="viewTenant(${t.id})">
-                                <iconify-icon icon="majesticons:eye-line" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
                             </button>
                             <button type="button" title="Edit Tenant" 
-                                    class="bg-success-100 dark:bg-success-600/25 hover:bg-success-200 dark:hover:bg-success-600/40 text-success-600 dark:text-success-400 font-medium w-8 h-8 flex justify-center items-center rounded-full transition-colors" 
+                                    class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                     onclick="editTenant(${t.id})">
-                                <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
                             </button>
                             <button type="button" title="Delete Tenant" 
-                                    class="bg-danger-100 dark:bg-danger-600/25 hover:bg-danger-200 dark:hover:bg-danger-600/40 text-danger-600 dark:text-danger-400 font-medium w-8 h-8 flex justify-center items-center rounded-full transition-colors" 
+                                    class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                     onclick="confirmDelete(${t.id})">
-                                <iconify-icon icon="fluent:delete-24-regular" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                             </button>
                         </div>
                     </td>
@@ -300,7 +423,6 @@
             }).join('');
         }
 
-        // Update pagination info
         const total = filtered.length;
         const startCount = total === 0 ? 0 : start + 1;
         const endCount = Math.min(total, start + state.perPage);
@@ -308,7 +430,6 @@
             DOM.paginationInfo.textContent = `Showing ${startCount} to ${endCount} of ${total} entries`;
         }
 
-        // Update pagination buttons
         if (DOM.prevBtn) DOM.prevBtn.disabled = state.page === 1;
         if (DOM.nextBtn) DOM.nextBtn.disabled = state.page === totalPages;
 
@@ -322,13 +443,11 @@
         const maxVisiblePages = 5;
         let startPage = Math.max(1, state.page - Math.floor(maxVisiblePages / 2));
         let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-        
-        // Adjust if we don't have enough pages at the end
+
         if (endPage - startPage < maxVisiblePages - 1) {
             startPage = Math.max(1, endPage - maxVisiblePages + 1);
         }
-        
-        // First page and ellipsis
+
         if (startPage > 1) {
             pageHTML += `
                 <li class="page-item">
@@ -348,8 +467,7 @@
                     </li>`;
             }
         }
-        
-        // Page numbers
+
         for (let i = startPage; i <= endPage; i++) {
             pageHTML += `
                 <li class="page-item">
@@ -362,8 +480,7 @@
                     </button>
                 </li>`;
         }
-        
-        // Last page and ellipsis
+
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 pageHTML += `
@@ -390,23 +507,20 @@
     function openCreateModal() {
         state.isEditing = false;
         if (DOM.modalTitle) DOM.modalTitle.textContent = 'Add New Tenant';
-        
-        // Reset form
+
         if (DOM.tenantForm) DOM.tenantForm.reset();
         if (DOM.formId) DOM.formId.value = '';
         if (DOM.formMethod) DOM.formMethod.value = 'POST';
         if (DOM.formStatus) DOM.formStatus.value = 'Active';
         if (DOM.formPassword) DOM.formPassword.required = true;
         if (DOM.passwordHint) DOM.passwordHint.textContent = '*';
-        
-        // Update submit button text
+
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Create Tenant';
         
         hideErrors();
         showModal(true);
-        
-        // Focus first input
+
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
@@ -416,8 +530,7 @@
         
         state.isEditing = true;
         if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
-        
-        // Fill form with tenant data
+
         if (DOM.formId) DOM.formId.value = tenant.id;
         if (DOM.formMethod) DOM.formMethod.value = 'PUT';
         if (DOM.formName) DOM.formName.value = tenant.name || '';
@@ -429,15 +542,13 @@
         if (DOM.formStatus) DOM.formStatus.value = tenant.status || 'Active';
         if (DOM.formNote) DOM.formNote.value = tenant.note || '';
         if (DOM.passwordHint) DOM.passwordHint.textContent = '(leave blank to keep current password)';
-        
-        // Update submit button text
+
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Update Tenant';
         
         hideErrors();
         showModal(true);
         
-        // Focus first input
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
@@ -445,23 +556,39 @@
         const tenant = tenants.find(t => t.id === id);
         if (!tenant) return;
         
+        const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
+        const status = tenant.status || 'Active';
         const ownerInfo = tenant.user ? 
-            `Added by: ${tenant.user.name} (${tenant.user.email})` : 
-            'No creator info available';
+            `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
+            '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
+
+        if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
+        if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
+        if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
         
-        const details = [
-            `📋 Tenant Details`,
-            ``,
-            `👤 Name: ${tenant.name || '-'}`,
-            `📧 Email: ${tenant.email || '-'}`,
-            `📊 Status: ${tenant.status || '-'}`,
-            `📅 Join Date: ${formatDate(tenant.created_at)}`,
-            `👨‍💼 ${ownerInfo}`,
-            `📝 Notes: ${tenant.note || 'No additional notes'}`,
-            `🆔 ID: #${tenant.id}`
-        ].join('\n');
+        if (DOM.detailStatus) {
+            DOM.detailStatus.innerHTML = `
+                <span class="${status === 'Active' ? 
+                    'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                    'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                } px-2 py-1 rounded-full text-xs font-semibold">
+                    ${status}
+                </span>
+            `;
+        }
         
-        alert(details);
+        if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
+        if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
+        if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
+        
+        if (tenant.note && tenant.note.trim()) {
+            if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
+            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
+        } else {
+            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
+        }
+        
+        showDetailsModal(true);
     }
 
     function showModal(visible) {
@@ -479,9 +606,27 @@
         }
     }
 
+    function showDetailsModal(visible) {
+        if (!DOM.detailsBackdrop) return;
+        
+        if (visible) {
+            DOM.detailsBackdrop.classList.remove('hidden');
+            DOM.detailsBackdrop.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        } else {
+            DOM.detailsBackdrop.classList.add('hidden');
+            DOM.detailsBackdrop.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+    }
+
     function closeModal() {
         showModal(false);
         state.isEditing = false;
+    }
+
+    function closeDetailsModal() {
+        showDetailsModal(false);
     }
 
     function confirmDelete(id) {
@@ -504,7 +649,7 @@
         state.selectedToDelete = null;
     }
 
-    async function deleteTenant() {
+async function deleteTenant() {
         if (!state.selectedToDelete) return;
         
         const deleteBtn = DOM.deleteConfirm;
@@ -512,7 +657,6 @@
         const deleteLoading = deleteBtn?.querySelector('.delete-loading');
         
         try {
-            // Show loading state
             if (deleteText) deleteText.classList.add('hidden');
             if (deleteLoading) deleteLoading.classList.remove('hidden');
             if (deleteBtn) deleteBtn.disabled = true;
@@ -522,19 +666,18 @@
             });
 
             if (data.success) {
-                // Remove tenant from local array
+                const tenantName = state.selectedToDelete.name;
                 const index = tenants.findIndex(t => t.id === state.selectedToDelete.id);
                 if (index > -1) tenants.splice(index, 1);
                 
                 closeDeleteModal();
-                
-                // Adjust pagination if needed
+
                 const filtered = getFiltered();
                 const totalPages = getTotalPages(filtered);
                 if (state.page > totalPages) state.page = totalPages;
                 
                 render();
-                showNotification(data.message || 'Tenant deleted successfully');
+                showNotification(`${tenantName} has been permanently removed from the system`, 'delete');
             } else {
                 throw new Error(data.message || 'Failed to delete tenant');
             }
@@ -542,14 +685,13 @@
             console.error('Delete error:', error);
             showNotification(error.message || 'Failed to delete tenant', 'error');
         } finally {
-            // Reset loading state
             if (deleteText) deleteText.classList.remove('hidden');
             if (deleteLoading) deleteLoading.classList.add('hidden');
             if (deleteBtn) deleteBtn.disabled = false;
         }
     }
 
-    async function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
         e.preventDefault();
         hideErrors();
 
@@ -558,12 +700,10 @@
         const submitLoading = submitBtn?.querySelector('.submit-loading');
 
         try {
-            // Show loading state
             if (submitText) submitText.classList.add('hidden');
             if (submitLoading) submitLoading.classList.remove('hidden');
             if (submitBtn) submitBtn.disabled = true;
 
-            // Collect form data
             const formData = {
                 name: DOM.formName?.value.trim() || '',
                 email: DOM.formEmail?.value.trim() || '',
@@ -571,7 +711,6 @@
                 note: DOM.formNote?.value.trim() || ''
             };
 
-            // Add password only if provided
             if (DOM.formPassword?.value.trim()) {
                 formData.password = DOM.formPassword.value;
             }
@@ -586,28 +725,32 @@
             });
 
             if (data.success) {
+                const tenantName = formData.name;
+                
                 if (isEdit) {
-                    // Update existing tenant
                     const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
                     if (index > -1) {
                         tenants[index] = data.tenant;
                     }
                 } else {
-                    // Add new tenant to beginning of array
                     tenants.unshift(data.tenant);
-                    state.page = 1; // Go to first page to see new tenant
+                    state.page = 1;
                 }
 
                 closeModal();
                 render();
-                showNotification(data.message || `Tenant ${isEdit ? 'updated' : 'created'} successfully`);
+
+                if (isEdit) {
+                    showNotification(`${tenantName}'s profile has been successfully updated with the latest information`, 'success');
+                } else {
+                    showNotification(`Welcome ${tenantName}! New tenant account has been created and activated`, 'success');
+                }
             } else {
                 throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} tenant`);
             }
         } catch (error) {
             console.error('Form submit error:', error);
-            
-            // Try to parse Laravel validation errors
+
             try {
                 const errorData = JSON.parse(error.message);
                 if (errorData.errors) {
@@ -615,12 +758,10 @@
                     return;
                 }
             } catch (parseError) {
-                // Not a JSON error, continue with original error
             }
             
             showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
         } finally {
-            // Reset loading state
             if (submitText) submitText.classList.remove('hidden');
             if (submitLoading) submitLoading.classList.add('hidden');
             if (submitBtn) submitBtn.disabled = false;
@@ -654,13 +795,13 @@
     function updateFilters() {
         state.query = DOM.searchInput?.value || '';
         state.statusFilter = DOM.statusFilter?.value || '';
-        state.page = 1; // Reset to first page
+        state.page = 1;
         render();
     }
 
     function updatePerPage() {
         state.perPage = parseInt(DOM.perPageSelect?.value || '10');
-        state.page = 1; // Reset to first page
+        state.page = 1;
         render();
     }
 
@@ -672,21 +813,16 @@
         });
     }
 
-    // Event Listeners
     function initEventListeners() {
-        // Form submission
         DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
 
-        // Search and filters
         DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
         DOM.statusFilter?.addEventListener('change', updateFilters);
         DOM.perPageSelect?.addEventListener('change', updatePerPage);
 
-        // Pagination
         DOM.prevBtn?.addEventListener('click', prevPage);
         DOM.nextBtn?.addEventListener('click', nextPage);
 
-        // Modal controls
         DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
         DOM.formCancel?.addEventListener('click', closeModal);
         DOM.closeModalBtn?.addEventListener('click', closeModal);
@@ -694,26 +830,29 @@
             if (e.target === DOM.modalBackdrop) closeModal();
         });
 
-        // Delete modal
+        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
+        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
+        DOM.detailsBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
+        });
+
         DOM.deleteConfirm?.addEventListener('click', deleteTenant);
         DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
         DOM.deleteBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.deleteBackdrop) closeDeleteModal();
         });
 
-        // Select all checkbox
         DOM.selectAll?.addEventListener('change', toggleSelectAll);
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
+                closeDetailsModal();
                 closeDeleteModal();
             }
         });
     }
 
-    // Utility function for debouncing
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -726,13 +865,11 @@
         };
     }
 
-    // Global functions for onclick handlers
     window.viewTenant = viewTenant;
     window.editTenant = editTenant;
     window.confirmDelete = confirmDelete;
     window.goToPage = goToPage;
 
-    // Initialize application
     function init() {
         console.log('Initializing Tenant List...');
         console.log('Initial tenants data:', tenants);
@@ -744,7 +881,6 @@
         console.log('Tenant List initialized successfully');
     }
 
-    // Auto-initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

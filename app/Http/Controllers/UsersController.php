@@ -1,34 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+// namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+// use App\Models\User;
+// use Illuminate\Http\Request;
 
-class UsersController extends Controller
-{
-    public function codeGenerator()
-    {
-        return view('aiapplication/codeGenerator');
-    }
+// class UserController extends Controller
+// {
+//     public function index()
+//     {
+        
+//         $activeCount = User::where('status', 'active')->count();
 
-    public function addUser()
-    {
-        return view('users/addUser');
-    }
-    
-    public function usersGrid()
-    {
-        return view('users/usersGrid');
-    }
-    
-    public function usersList()
-    {
-        return view('users/usersList');
-    }
-    
-    public function viewProfile()
-    {
-        return view('users/viewProfile');
-    }
-    
-}
+      
+
+        
+//         return view('super-admin.index', compact('activeCount'));
+//     }
+// }
