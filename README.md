@@ -13,44 +13,45 @@
 
 ---
 
-## 🚀 Tentang Laravel
-Laravel adalah framework web aplikasi berbasis PHP yang menawarkan sintaks ekspresif dan elegan. Fitur utama meliputi:
+## 🚀 About Laravel
+Laravel is a PHP web application framework with expressive and elegant syntax.  
+It streamlines common development tasks, making it enjoyable and productive to build modern applications.  
+Key features include:
 
-- [Routing yang sederhana dan cepat](https://laravel.com/docs/routing)
-- [Dependency Injection Container yang kuat](https://laravel.com/docs/container)
-- Dukungan multi-backend untuk [Session](https://laravel.com/docs/session) & [Cache](https://laravel.com/docs/cache)
-- [Eloquent ORM](https://laravel.com/docs/eloquent) yang intuitif
-- [Migrations](https://laravel.com/docs/migrations) yang database-agnostic
-- [Queue](https://laravel.com/docs/queues) untuk job processing
-- [Broadcasting](https://laravel.com/docs/broadcasting) real-time
-
-Laravel dirancang untuk dapat diakses, powerful, dan siap membangun aplikasi berskala besar.
-
----
-
-## 📚 Belajar Laravel
-- [Dokumentasi Resmi](https://laravel.com/docs) — lengkap dan terstruktur.
-- [Laravel Bootcamp](https://bootcamp.laravel.com) — panduan membangun aplikasi dari nol.
-- [Laracasts](https://laracasts.com) — ribuan video tutorial tentang Laravel, PHP modern, testing, dan JavaScript.
+- [Simple, fast routing engine](https://laravel.com/docs/routing)
+- [Powerful dependency injection container](https://laravel.com/docs/container)
+- Multiple backends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage
+- [Eloquent ORM](https://laravel.com/docs/eloquent) with an intuitive API
+- Database-agnostic [schema migrations](https://laravel.com/docs/migrations)
+- [Queue system](https://laravel.com/docs/queues) for background jobs
+- [Real-time broadcasting](https://laravel.com/docs/broadcasting)
 
 ---
 
-## 🤝 Sponsor
-Terima kasih kepada para sponsor yang mendukung pengembangan Laravel.  
-[Lihat daftar partner lengkap](https://partners.laravel.com).
+## 📚 Learning Resources
+- [Official Documentation](https://laravel.com/docs) — extensive and well-structured.
+- [Laravel Bootcamp](https://bootcamp.laravel.com) — build an app from scratch step-by-step.
+- [Laracasts](https://laracasts.com) — thousands of video tutorials on Laravel, PHP, testing, and JavaScript.
 
 ---
 
-## 🛠 Kontribusi
-Panduan kontribusi tersedia di [Laravel Documentation](https://laravel.com/docs/contributions).  
-Harap ikuti [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🤝 Sponsors
+We thank our sponsors for supporting Laravel development.  
+[View all partners](https://partners.laravel.com).
 
 ---
 
-## 🔒 Keamanan
-Jika menemukan celah keamanan, laporkan ke **Taylor Otwell** melalui [email](mailto:taylor@laravel.com). Semua laporan akan ditangani segera.
+## 🛠 Contributing
+See the [Contribution Guide](https://laravel.com/docs/contributions) for details.  
+Please follow the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
 ---
 
-## 📄 Lisensi
-Laravel adalah perangkat lunak open-source berlisensi [MIT](https://opensource.org/licenses/MIT).
+## 🔒 Security
+If you discover a security vulnerability, please email **Taylor Otwell** at [taylor@laravel.com](mailto:taylor@laravel.com).  
+All reports will be promptly addressed.
+
+---
+
+## 📄 License
+Laravel is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
