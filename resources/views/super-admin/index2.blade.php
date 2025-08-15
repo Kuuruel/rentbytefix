@@ -227,7 +227,7 @@
                         <iconify-icon icon="ph:user-gear" class="text-indigo-600 dark:text-indigo-400"></iconify-icon>
                         <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Created By</span>
                     </div>
-                    <div id="detailCreator" class="text-sm text-neutral-700 dark:text-neutral-300"></div>
+                    <p id="detailCreator" class="text-sm text-neutral-700 dark:text-neutral-300"></p>
                 </div>
                 
                 <div id="detailNotesSection" class="hidden">

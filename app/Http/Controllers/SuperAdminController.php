@@ -9,7 +9,7 @@ class SuperAdminController extends Controller
 {
     public function index()
     {
-        $totalTenants = Tenants::count(); // atau sesuai kebutuhan
+        $totalTenants = Tenants::count();
         return view('super-admin.index', compact('totalTenants'));
     }
 

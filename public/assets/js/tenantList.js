@@ -132,44 +132,144 @@
         }
     }
 
-    function showNotification(message, type = 'success') {
+function showNotification(message, type = 'success') {
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
         
         const notification = document.createElement('div');
-        notification.className = `notification-toast fixed top-6 left-1/2 transform -translate-x-1/2 z-[60] px-6 py-4 rounded-xl shadow-2xl text-white transition-all duration-500 ease-out ${
-            type === 'success' 
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500 border-2 border-green-300' 
-                : 'bg-gradient-to-r from-red-500 to-rose-500 border-2 border-red-300'
-        } backdrop-blur-sm translate-y-[-20px] opacity-0`;
+        notification.className = 'notification-toast';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: auto;
+        `;
+        
+        const colors = {
+            success: {
+                bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                shadow: '0 10px 25px rgba(16, 185, 129, 0.3)',
+                icon: 'ph:check-circle-fill'
+            },
+            delete: {
+                bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                shadow: '0 10px 25px rgba(239, 68, 68, 0.3)',
+                icon: 'ph:trash-fill'
+            },
+            error: {
+                bg: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                shadow: '0 10px 25px rgba(245, 158, 11, 0.3)',
+                icon: 'ph:warning-circle-fill'
+            }
+        };
+        
+        const config = colors[type] || colors.success;
         
         notification.innerHTML = `
-            <div class="flex items-center gap-3">
-                <div class="flex-shrink-0">
-                    <iconify-icon icon="${type === 'success' ? 'ph:check-circle' : 'ph:warning-circle'}" 
-                                  class="text-2xl text-white"></iconify-icon>
+            <div style="
+                background: ${config.bg};
+                border-radius: 12px;
+                box-shadow: ${config.shadow};
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            ">
+                <div style="padding: 16px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="
+                            width: 32px;
+                            height: 32px;
+                            background: rgba(255, 255, 255, 0.2);
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            flex-shrink: 0;
+                            margin-top: 2px;
+                        ">
+                            <iconify-icon icon="${config.icon}" style="
+                                font-size: 18px;
+                                color: white;
+                            "></iconify-icon>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="
+                                color: white;
+                                font-weight: 600;
+                                font-size: 14px;
+                                margin: 0 0 4px 0;
+                                line-height: 1.2;
+                            ">${type === 'success' ? 'Success!' : type === 'delete' ? 'Deleted!' : 'Error!'}</h4>
+                            <p style="
+                                color: rgba(255, 255, 255, 0.9);
+                                font-size: 13px;
+                                margin: 0;
+                                line-height: 1.4;
+                            ">${message}</p>
+                        </div>
+                        <button onclick="this.closest('.notification-toast').remove()" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            border: none;
+                            color: rgba(255, 255, 255, 0.7);
+                            width: 24px;
+                            height: 24px;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: all 0.2s;
+                            flex-shrink: 0;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.color='white'" 
+                           onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.7)'">
+                            <iconify-icon icon="ph:x" style="font-size: 14px;"></iconify-icon>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex-1">
-                    <p class="font-semibold text-white">${type === 'success' ? 'Success!' : 'Error!'}</p>
-                    <p class="text-sm text-white/90">${message}</p>
+                <div style="
+                    height: 3px;
+                    background: rgba(255, 255, 255, 0.3);
+                ">
+                    <div class="notification-progress" style="
+                        height: 100%;
+                        background: rgba(255, 255, 255, 0.8);
+                        width: 100%;
+                        transition: width 4s linear;
+                    "></div>
                 </div>
-                <button onclick="this.parentElement.parentElement.remove()" 
-                        class="flex-shrink-0 text-white/70 hover:text-white text-lg ml-2">
-                    &times;
-                </button>
             </div>
         `;
         
         document.body.appendChild(notification);
+        console.log('Notification added to DOM:', notification);
 
         setTimeout(() => {
-            notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-            notification.classList.add('opacity-100', 'translate-y-0');
+            notification.style.transform = 'translateX(0)';
+            notification.style.opacity = '1';
         }, 10);
 
-        const timeout = type === 'error' ? 6000 : 4000;
+        const progressBar = notification.querySelector('.notification-progress');
+        if (progressBar) {
+            setTimeout(() => {
+                progressBar.style.width = '0%';
+            }, 100);
+        }
+
+        const timeout = type === 'error' ? 6000 : 4500;
         setTimeout(() => {
-            notification.classList.add('opacity-0', 'translate-y-[-20px]');
-            setTimeout(() => notification.remove(), 500);
+            if (notification.parentNode) {
+                notification.style.transform = 'translateX(100%)';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 400);
+            }
         }, timeout);
     }
 
@@ -549,7 +649,7 @@
         state.selectedToDelete = null;
     }
 
-    async function deleteTenant() {
+async function deleteTenant() {
         if (!state.selectedToDelete) return;
         
         const deleteBtn = DOM.deleteConfirm;
@@ -566,6 +666,7 @@
             });
 
             if (data.success) {
+                const tenantName = state.selectedToDelete.name;
                 const index = tenants.findIndex(t => t.id === state.selectedToDelete.id);
                 if (index > -1) tenants.splice(index, 1);
                 
@@ -576,7 +677,7 @@
                 if (state.page > totalPages) state.page = totalPages;
                 
                 render();
-                showNotification(data.message || 'Tenant deleted successfully');
+                showNotification(`${tenantName} has been permanently removed from the system`, 'delete');
             } else {
                 throw new Error(data.message || 'Failed to delete tenant');
             }
@@ -590,7 +691,7 @@
         }
     }
 
-    async function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
         e.preventDefault();
         hideErrors();
 
@@ -624,6 +725,8 @@
             });
 
             if (data.success) {
+                const tenantName = formData.name;
+                
                 if (isEdit) {
                     const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
                     if (index > -1) {
@@ -636,7 +739,12 @@
 
                 closeModal();
                 render();
-                showNotification(data.message || `Tenant ${isEdit ? 'updated' : 'created'} successfully`);
+
+                if (isEdit) {
+                    showNotification(`${tenantName}'s profile has been successfully updated with the latest information`, 'success');
+                } else {
+                    showNotification(`Welcome ${tenantName}! New tenant account has been created and activated`, 'success');
+                }
             } else {
                 throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} tenant`);
             }
