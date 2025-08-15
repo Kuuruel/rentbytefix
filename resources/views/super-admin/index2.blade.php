@@ -14,8 +14,8 @@
                 <div class="flex items-center flex-wrap gap-3">
                     <span class="text-base font-medium text-secondary-light mb-0">Show</span>
                     <select id="perPageSelect" class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
-                        <option value="5">5</option>
-                        <option value="10" selected>10</option>
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
                         <option value="15">15</option>
                         <option value="20">20</option>
                     </select>
@@ -23,8 +23,8 @@
                         <input id="searchInput" type="text" class="bg-white dark:bg-neutral-700 h-10 w-auto" name="search" placeholder="Search tenants...">
                         <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     </form>
-                    <select id="statusFilter" class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
-                        <option value="">All Status</option>
+                    <select id="statusFilter" class=" form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
+                        <option value="">Status</option>
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>
