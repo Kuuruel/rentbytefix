@@ -17,8 +17,8 @@ use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 
-// ✅ Route homepage yang benar - menggunakan SuperAdminController
-Route::get('/', [SuperAdminController::class, 'index'])->name('dashboard');
+
+Route::get('/', [SuperAdminController::class, 'index'])->name('super-admin.index');
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
@@ -195,4 +195,3 @@ Route::prefix('tenants')->name('tenants.')->group(function () {
     Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
     Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
 });
-Route::get('/super-admin/index4', [TenantController::class, 'statisticUsers'])->name('super-admin.index4');

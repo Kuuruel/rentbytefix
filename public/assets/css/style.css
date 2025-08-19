@@ -6926,8 +6926,8 @@ h6, .h6 {
 
 .sidebar-menu .sidebar-submenu{
   display: none;
-  padding-top: 0.75rem;
-  padding-inline-start: 1.5rem;
+  padding-top: 0.5rem;
+
   transition-property: none;
 }
 
