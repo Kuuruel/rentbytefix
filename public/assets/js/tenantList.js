@@ -18,55 +18,55 @@
         DELETE: (id) => `/tenants/${id}`
     };
 
-   const DOM = {
-    searchInput: document.getElementById('searchInput'),
-    statusFilter: document.getElementById('statusFilter'),
-    tableBody: document.getElementById('tableBody'),
-    paginationInfo: document.getElementById('paginationInfo'),
-    perPageSelect: document.getElementById('perPageSelect'),
-    prevBtn: document.getElementById('prevBtn'),
-    nextBtn: document.getElementById('nextBtn'),
-    pageNumbers: document.getElementById('pageNumbers'),
-    btnOpenCreate: document.getElementById('btnOpenCreate'),
-    selectAll: document.getElementById('selectAll'),
-    loadingSpinner: document.getElementById('loadingSpinner'),
+    const DOM = {
+        searchInput: document.getElementById('searchInput'),
+        statusFilter: document.getElementById('statusFilter'),
+        tableBody: document.getElementById('tableBody'),
+        paginationInfo: document.getElementById('paginationInfo'),
+        perPageSelect: document.getElementById('perPageSelect'),
+        prevBtn: document.getElementById('prevBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        pageNumbers: document.getElementById('pageNumbers'),
+        btnOpenCreate: document.getElementById('btnOpenCreate'),
+        selectAll: document.getElementById('selectAll'),
+        loadingSpinner: document.getElementById('loadingSpinner'),
 
-    modalBackdrop: document.getElementById('modalBackdrop'),
-    modalTitle: document.getElementById('modalTitle'),
-    tenantForm: document.getElementById('tenantForm'),
-    formId: document.getElementById('formId'),
-    formMethod: document.getElementById('formMethod'),
-    formName: document.getElementById('formName'),
-    formEmail: document.getElementById('formEmail'),
-    formPassword: document.getElementById('formPassword'),
-    formCountry: document.getElementById('formCountry'),
-    formStatus: document.getElementById('formStatus'),
-    formNote: document.getElementById('formNote'),
-    formSubmit: document.getElementById('formSubmit'),
-    formCancel: document.getElementById('formCancel'),
-    closeModalBtn: document.getElementById('closeModalBtn'),
-    passwordHint: document.getElementById('passwordHint'),
-    errorMessages: document.getElementById('errorMessages'),
+        modalBackdrop: document.getElementById('modalBackdrop'),
+        modalTitle: document.getElementById('modalTitle'),
+        tenantForm: document.getElementById('tenantForm'),
+        formId: document.getElementById('formId'),
+        formMethod: document.getElementById('formMethod'),
+        formName: document.getElementById('formName'),
+        formEmail: document.getElementById('formEmail'),
+        formPassword: document.getElementById('formPassword'),
+        formCountry: document.getElementById('formCountry'),
+        formStatus: document.getElementById('formStatus'),
+        formNote: document.getElementById('formNote'),
+        formSubmit: document.getElementById('formSubmit'),
+        formCancel: document.getElementById('formCancel'),
+        closeModalBtn: document.getElementById('closeModalBtn'),
+        passwordHint: document.getElementById('passwordHint'),
+        errorMessages: document.getElementById('errorMessages'),
 
-    detailsBackdrop: document.getElementById('detailsBackdrop'),
-    detailAvatar: document.getElementById('detailAvatar'),
-    detailName: document.getElementById('detailName'),
-    detailEmail: document.getElementById('detailEmail'),
-    detailStatus: document.getElementById('detailStatus'),
-    detailJoinDate: document.getElementById('detailJoinDate'),
-    detailId: document.getElementById('detailId'),
-    detailCountry: document.getElementById('detailCountry'),
-    detailCreator: document.getElementById('detailCreator'),
-    detailNotes: document.getElementById('detailNotes'),
-    detailNotesSection: document.getElementById('detailNotesSection'),
-    closeDetailsBtn: document.getElementById('closeDetailsBtn'),
-    closeDetailsFooterBtn: document.getElementById('closeDetailsFooterBtn'),
+        detailsBackdrop: document.getElementById('detailsBackdrop'),
+        detailAvatar: document.getElementById('detailAvatar'),
+        detailName: document.getElementById('detailName'),
+        detailEmail: document.getElementById('detailEmail'),
+        detailStatus: document.getElementById('detailStatus'),
+        detailJoinDate: document.getElementById('detailJoinDate'),
+        detailId: document.getElementById('detailId'),
+        detailCountry: document.getElementById('detailCountry'),
+        detailCreator: document.getElementById('detailCreator'),
+        detailNotes: document.getElementById('detailNotes'),
+        detailNotesSection: document.getElementById('detailNotesSection'),
+        closeDetailsBtn: document.getElementById('closeDetailsBtn'),
+        closeDetailsFooterBtn: document.getElementById('closeDetailsFooterBtn'),
 
-    deleteBackdrop: document.getElementById('deleteBackdrop'),
-    deleteName: document.getElementById('deleteName'),
-    deleteConfirm: document.getElementById('deleteConfirm'),
-    deleteCancel: document.getElementById('deleteCancel')
-};
+        deleteBackdrop: document.getElementById('deleteBackdrop'),
+        deleteName: document.getElementById('deleteName'),
+        deleteConfirm: document.getElementById('deleteConfirm'),
+        deleteCancel: document.getElementById('deleteCancel')
+    };
 
     async function apiRequest(url, options = {}) {
         try {
@@ -134,7 +134,7 @@
         }
     }
 
-function showNotification(message, type = 'success') {
+    function showNotification(message, type = 'success') {
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
         
         const notification = document.createElement('div');
@@ -339,93 +339,93 @@ function showNotification(message, type = 'success') {
         return Math.max(1, Math.ceil(filtered.length / state.perPage));
     }
 
-   function render() {
-    const filtered = getFiltered();
-    const totalPages = getTotalPages(filtered);
+    function render() {
+        const filtered = getFiltered();
+        const totalPages = getTotalPages(filtered);
 
-    if (state.page > totalPages) state.page = totalPages;
+        if (state.page > totalPages) state.page = totalPages;
 
-    const start = (state.page - 1) * state.perPage;
-    const paginated = filtered.slice(start, start + state.perPage);
+        const start = (state.page - 1) * state.perPage;
+        const paginated = filtered.slice(start, start + state.perPage);
 
-    if (paginated.length === 0) {
-        DOM.tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
-                    <div class="flex flex-col items-center gap-4">
-                        <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
-                        <div class="text-center">
-                            <p class="text-lg font-medium">No tenants found</p>
-                            <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
+        if (paginated.length === 0) {
+            DOM.tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                        <div class="flex flex-col items-center gap-4">
+                            <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
+                            <div class="text-center">
+                                <p class="text-lg font-medium">No tenants found</p>
+                                <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
+                            </div>
                         </div>
-                    </div>
-                </td>
-            </tr>`;
-    } else {
-        DOM.tableBody.innerHTML = paginated.map((t, idx) => {
-            const avatar = t.avatar || '/assets/images/user-list/user-list1.png';
-            const status = t.status || 'Active';
-            const country = t.country || '-';
-            const ownerText = t.user ? `Added by: ${t.user.name}` : '';
-            const checkboxId = `tenant-cb-${t.id}`;
-            
-            return `
-            <tr class="transition-all duration-200">
-                <td class="px-4 py-4 align-middle">
-                    <div class="flex items-center gap-3">
-                        <div class="form-check style-check flex items-center">
-                            <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
-                                   type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
+                    </td>
+                </tr>`;
+        } else {
+            DOM.tableBody.innerHTML = paginated.map((t, idx) => {
+                const avatar = t.avatar || '/assets/images/user-list/user-list1.png';
+                const status = t.status || 'Active';
+                const country = t.country || '-';
+                const ownerText = t.user ? `Added by: ${t.user.name}` : '';
+                const checkboxId = `tenant-cb-${t.id}`;
+                
+                return `
+                <tr class="transition-all duration-200">
+                    <td class="px-4 py-4 align-middle">
+                        <div class="flex items-center gap-3">
+                            <div class="form-check style-check flex items-center">
+                                <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
+                                    type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
+                            </div>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
                         </div>
-                        <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
-                    </div>
-                </td>
-                <td class="px-4 py-4 align-middle">
-                    <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
-                </td>
-                <td class="px-4 py-4 align-middle">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="min-w-0 flex-1">
-                            <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(country)}</p>
-                            ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
+                    </td>
+                    <td class="px-4 py-4 align-middle">
+                        <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
+                    </td>
+                    <td class="px-4 py-4 align-middle">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
+                                <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(country)}</p>
+                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
+                            </div>
                         </div>
-                    </div>
-                </td>
-                <td class="px-4 py-4 align-middle">
-                    <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
-                </td>
-                <td class="px-4 py-4 text-center align-middle">
-                    <span class="${status === 'Active' ? 
-                        'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
-                        'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
-                    } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
-                        ${status}
-                    </span>
-                </td>
-                <td class="px-4 py-4 text-center align-middle">
-                    <div class="flex items-center gap-1.5 justify-center">
-                        <button type="button" title="View Details" 
-                                class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
-                                onclick="viewTenant(${t.id})">
-                            <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
-                        </button>
-                        <button type="button" title="Edit Tenant" 
-                                class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
-                                onclick="editTenant(${t.id})">
-                            <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
-                        </button>
-                        <button type="button" title="Delete Tenant" 
-                                class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
-                                onclick="confirmDelete(${t.id})">
-                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
-                        </button>
-                    </div>
-                </td>
-            </tr>`; 
-        }).join('');
+                    </td>
+                    <td class="px-4 py-4 align-middle">
+                        <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
+                    </td>
+                    <td class="px-4 py-4 text-center align-middle">
+                        <span class="${status === 'Active' ? 
+                            'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                            'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                        } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
+                            ${status}
+                        </span>
+                    </td>
+                    <td class="px-4 py-4 text-center align-middle">
+                        <div class="flex items-center gap-1.5 justify-center">
+                            <button type="button" title="View Details" 
+                                    class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                    onclick="viewTenant(${t.id})">
+                                <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
+                            </button>
+                            <button type="button" title="Edit Tenant" 
+                                    class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                    onclick="editTenant(${t.id})">
+                                <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
+                            </button>
+                            <button type="button" title="Delete Tenant" 
+                                    class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                    onclick="confirmDelete(${t.id})">
+                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`; 
+            }).join('');
+        }
     }
-}
 
     function renderPageNumbers(totalPages) {
         if (!DOM.pageNumbers) return;
@@ -516,76 +516,75 @@ function showNotification(message, type = 'success') {
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
-  function editTenant(id) {
-    const tenant = tenants.find(t => t.id === id);
-    if (!tenant) return;
-    
-    state.isEditing = true;
-    if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
+    function editTenant(id) {
+        const tenant = tenants.find(t => t.id === id);
+        if (!tenant) return;
+        
+        state.isEditing = true;
+        if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
 
-    if (DOM.formId) DOM.formId.value = tenant.id;
-    if (DOM.formMethod) DOM.formMethod.value = 'PUT';
-    if (DOM.formName) DOM.formName.value = tenant.name || '';
-    if (DOM.formEmail) DOM.formEmail.value = tenant.email || '';
-    if (DOM.formPassword) {
-        DOM.formPassword.value = '';
-        DOM.formPassword.required = false;
+        if (DOM.formId) DOM.formId.value = tenant.id;
+        if (DOM.formMethod) DOM.formMethod.value = 'PUT';
+        if (DOM.formName) DOM.formName.value = tenant.name || '';
+        if (DOM.formEmail) DOM.formEmail.value = tenant.email || '';
+        if (DOM.formPassword) {
+            DOM.formPassword.value = '';
+            DOM.formPassword.required = false;
+        }
+        if (DOM.formCountry) DOM.formCountry.value = tenant.country || '';
+        if (DOM.formStatus) DOM.formStatus.value = tenant.status || 'Active';
+        if (DOM.formNote) DOM.formNote.value = tenant.note || '';
+        if (DOM.passwordHint) DOM.passwordHint.textContent = '(leave blank to keep current password)';
+
+        const submitText = DOM.formSubmit?.querySelector('.submit-text');
+        if (submitText) submitText.textContent = 'Update Tenant';
+        
+        hideErrors();
+        showModal(true);
+        
+        setTimeout(() => DOM.formName?.focus(), 100);
     }
-    if (DOM.formCountry) DOM.formCountry.value = tenant.country || '';
-    if (DOM.formStatus) DOM.formStatus.value = tenant.status || 'Active';
-    if (DOM.formNote) DOM.formNote.value = tenant.note || '';
-    if (DOM.passwordHint) DOM.passwordHint.textContent = '(leave blank to keep current password)';
 
-    const submitText = DOM.formSubmit?.querySelector('.submit-text');
-    if (submitText) submitText.textContent = 'Update Tenant';
-    
-    hideErrors();
-    showModal(true);
-    
-    setTimeout(() => DOM.formName?.focus(), 100);
-}
+    function viewTenant(id) {
+        const tenant = tenants.find(t => t.id === id);
+        if (!tenant) return;
+        
+        const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
+        const status = tenant.status || 'Active';
+        const country = tenant.country || '-';
+        const ownerInfo = tenant.user ? 
+            `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
+            '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
 
-// Updated viewTenant function
-function viewTenant(id) {
-    const tenant = tenants.find(t => t.id === id);
-    if (!tenant) return;
-    
-    const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
-    const status = tenant.status || 'Active';
-    const country = tenant.country || '-';
-    const ownerInfo = tenant.user ? 
-        `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
-        '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
-
-    if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
-    if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
-    if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
-    
-    if (DOM.detailStatus) {
-        DOM.detailStatus.innerHTML = `
-            <span class="${status === 'Active' ? 
-                'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
-                'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
-            } px-2 py-1 rounded-full text-xs font-semibold">
-                ${status}
-            </span>
-        `;
+        if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
+        if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
+        if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
+        
+        if (DOM.detailStatus) {
+            DOM.detailStatus.innerHTML = `
+                <span class="${status === 'Active' ? 
+                    'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                    'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                } px-2 py-1 rounded-full text-xs font-semibold">
+                    ${status}
+                </span>
+            `;
+        }
+        
+        if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
+        if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
+        if (DOM.detailCountry) DOM.detailCountry.textContent = country;
+        if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
+        
+        if (tenant.note && tenant.note.trim()) {
+            if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
+            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
+        } else {
+            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
+        }
+        
+        showDetailsModal(true);
     }
-    
-    if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
-    if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
-    if (DOM.detailCountry) DOM.detailCountry.textContent = country;
-    if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
-    
-    if (tenant.note && tenant.note.trim()) {
-        if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
-        if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
-    } else {
-        if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
-    }
-    
-    showDetailsModal(true);
-}
 
     function showModal(visible) {
         if (!DOM.modalBackdrop) return;
@@ -645,7 +644,7 @@ function viewTenant(id) {
         state.selectedToDelete = null;
     }
 
-async function deleteTenant() {
+    async function deleteTenant() {
         if (!state.selectedToDelete) return;
         
         const deleteBtn = DOM.deleteConfirm;
@@ -687,83 +686,83 @@ async function deleteTenant() {
         }
     }
 
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    hideErrors();
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        hideErrors();
 
-    const submitBtn = DOM.formSubmit;
-    const submitText = submitBtn?.querySelector('.submit-text');
-    const submitLoading = submitBtn?.querySelector('.submit-loading');
-
-    try {
-        if (submitText) submitText.classList.add('hidden');
-        if (submitLoading) submitLoading.classList.remove('hidden');
-        if (submitBtn) submitBtn.disabled = true;
-
-        const formData = {
-            name: DOM.formName?.value.trim() || '',
-            email: DOM.formEmail?.value.trim() || '',
-            country: DOM.formCountry?.value || '',
-            status: DOM.formStatus?.value || 'Active',
-            note: DOM.formNote?.value.trim() || ''
-        };
-
-        if (DOM.formPassword?.value.trim()) {
-            formData.password = DOM.formPassword.value;
-        }
-
-        const isEdit = state.isEditing;
-        const method = isEdit ? 'PUT' : 'POST';
-        const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
-
-        const { data } = await apiRequest(url, {
-            method: method,
-            body: JSON.stringify(formData)
-        });
-
-        if (data.success) {
-            const tenantName = formData.name;
-            
-            if (isEdit) {
-                const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
-                if (index > -1) {
-                    tenants[index] = data.tenant;
-                }
-            } else {
-                tenants.unshift(data.tenant);
-                state.page = 1;
-            }
-
-            closeModal();
-            render();
-
-            if (isEdit) {
-                showNotification(`${tenantName}'s profile has been successfully updated with the latest information`, 'success');
-            } else {
-                showNotification(`Welcome ${tenantName}! New tenant account has been created and activated`, 'success');
-            }
-        } else {
-            throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} tenant`);
-        }
-    } catch (error) {
-        console.error('Form submit error:', error);
+        const submitBtn = DOM.formSubmit;
+        const submitText = submitBtn?.querySelector('.submit-text');
+        const submitLoading = submitBtn?.querySelector('.submit-loading');
 
         try {
-            const errorData = JSON.parse(error.message);
-            if (errorData.errors) {
-                showErrors(errorData.errors);
-                return;
+            if (submitText) submitText.classList.add('hidden');
+            if (submitLoading) submitLoading.classList.remove('hidden');
+            if (submitBtn) submitBtn.disabled = true;
+
+            const formData = {
+                name: DOM.formName?.value.trim() || '',
+                email: DOM.formEmail?.value.trim() || '',
+                country: DOM.formCountry?.value || '',
+                status: DOM.formStatus?.value || 'Active',
+                note: DOM.formNote?.value.trim() || ''
+            };
+
+            if (DOM.formPassword?.value.trim()) {
+                formData.password = DOM.formPassword.value;
             }
-        } catch (parseError) {
+
+            const isEdit = state.isEditing;
+            const method = isEdit ? 'PUT' : 'POST';
+            const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
+
+            const { data } = await apiRequest(url, {
+                method: method,
+                body: JSON.stringify(formData)
+            });
+
+            if (data.success) {
+                const tenantName = formData.name;
+                
+                if (isEdit) {
+                    const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
+                    if (index > -1) {
+                        tenants[index] = data.tenant;
+                    }
+                } else {
+                    tenants.unshift(data.tenant);
+                    state.page = 1;
+                }
+
+                closeModal();
+                render();
+
+                if (isEdit) {
+                    showNotification(`${tenantName}'s profile has been successfully updated with the latest information`, 'success');
+                } else {
+                    showNotification(`Welcome ${tenantName}! New tenant account has been created and activated`, 'success');
+                }
+            } else {
+                throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} tenant`);
+            }
+        } catch (error) {
+            console.error('Form submit error:', error);
+
+            try {
+                const errorData = JSON.parse(error.message);
+                if (errorData.errors) {
+                    showErrors(errorData.errors);
+                    return;
+                }
+            } catch (parseError) {
+            }
+            
+            showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
+        } finally {
+            if (submitText) submitText.classList.remove('hidden');
+            if (submitLoading) submitLoading.classList.add('hidden');
+            if (submitBtn) submitBtn.disabled = false;
         }
-        
-        showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
-    } finally {
-        if (submitText) submitText.classList.remove('hidden');
-        if (submitLoading) submitLoading.classList.add('hidden');
-        if (submitBtn) submitBtn.disabled = false;
     }
-}
 
     function goToPage(page) {
         const filtered = getFiltered();
@@ -803,353 +802,351 @@ async function handleFormSubmit(e) {
     }
 
 
-function toggleSelectAll() {
-    const checkboxes = document.querySelectorAll('.tbody-checkbox');
-    const isChecked = DOM.selectAll?.checked || false;
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = isChecked;
-    });
-    updateSelectActions();
-}
-
-function updateSelectAll() {
-    const checkboxes = document.querySelectorAll('.tbody-checkbox');
-    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
-    
-    if (DOM.selectAll) {
-        if (checkboxes.length === 0) {
-            DOM.selectAll.checked = false;
-            DOM.selectAll.indeterminate = false;
-        } else if (checkedBoxes.length === checkboxes.length) {
-            DOM.selectAll.checked = true;
-            DOM.selectAll.indeterminate = false;
-        } else if (checkedBoxes.length > 0) {
-            DOM.selectAll.checked = false;
-            DOM.selectAll.indeterminate = true;
-        } else {
-            DOM.selectAll.checked = false;
-            DOM.selectAll.indeterminate = false;
-        }
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('.tbody-checkbox');
+        const isChecked = DOM.selectAll?.checked || false;
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+        updateSelectActions();
     }
-    updateSelectActions();
-}
 
-function updateSelectActions() {
-    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
-    const selectedCount = checkedBoxes.length;
-    
-    let bulkActionsContainer = document.getElementById('bulkActionsContainer');
-    
-    if (selectedCount > 0) {
-        if (!bulkActionsContainer) {
-            bulkActionsContainer = document.createElement('div');
-            bulkActionsContainer.id = 'bulkActionsContainer';
-            bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
-            bulkActionsContainer.innerHTML = `
-                <div class="flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
-                        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
-                            <span id="selectedCount">${selectedCount}</span> tenant(s) selected
-                        </span>
+    function updateSelectAll() {
+        const checkboxes = document.querySelectorAll('.tbody-checkbox');
+        const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+        
+        if (DOM.selectAll) {
+            if (checkboxes.length === 0) {
+                DOM.selectAll.checked = false;
+                DOM.selectAll.indeterminate = false;
+            } else if (checkedBoxes.length === checkboxes.length) {
+                DOM.selectAll.checked = true;
+                DOM.selectAll.indeterminate = false;
+            } else if (checkedBoxes.length > 0) {
+                DOM.selectAll.checked = false;
+                DOM.selectAll.indeterminate = true;
+            } else {
+                DOM.selectAll.checked = false;
+                DOM.selectAll.indeterminate = false;
+            }
+        }
+        updateSelectActions();
+    }
+
+    function updateSelectActions() {
+        const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+        const selectedCount = checkedBoxes.length;
+        
+        let bulkActionsContainer = document.getElementById('bulkActionsContainer');
+        
+        if (selectedCount > 0) {
+            if (!bulkActionsContainer) {
+                bulkActionsContainer = document.createElement('div');
+                bulkActionsContainer.id = 'bulkActionsContainer';
+                bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
+                bulkActionsContainer.innerHTML = `
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
+                            <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                                <span id="selectedCount">${selectedCount}</span> tenant(s) selected
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                                Delete Selected
+                            </button>
+                            <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                                <iconify-icon icon="ph:toggle-left" class="text-sm"></iconify-icon>
+                                Toggle Status
+                            </button>
+                            <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                                <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
+                                Clear
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
-                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
-                            Delete Selected
-                        </button>
-                        <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
-                            <iconify-icon icon="ph:toggle-left" class="text-sm"></iconify-icon>
-                            Toggle Status
-                        </button>
-                        <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
-                            <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
-                            Clear
-                        </button>
-                    </div>
-                </div>
-            `;
+                `;
+                
+                const tableContainer = document.querySelector('.table-responsive');
+                if (tableContainer) {
+                    tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
+                }
+            } else {
+                document.getElementById('selectedCount').textContent = selectedCount;
+            }
             
-            const tableContainer = document.querySelector('.table-responsive');
-            if (tableContainer) {
-                tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
-            }
+            const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+            const bulkStatusBtn = document.getElementById('bulkStatusBtn');
+            const clearSelectionBtn = document.getElementById('clearSelection');
+            
+            bulkDeleteBtn.onclick = showBulkDeleteModal;
+            bulkStatusBtn.onclick = showBulkStatusModal;
+            clearSelectionBtn.onclick = clearAllSelections;
+            
         } else {
-            document.getElementById('selectedCount').textContent = selectedCount;
-        }
-        
-        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
-        const bulkStatusBtn = document.getElementById('bulkStatusBtn');
-        const clearSelectionBtn = document.getElementById('clearSelection');
-        
-        bulkDeleteBtn.onclick = showBulkDeleteModal;
-        bulkStatusBtn.onclick = showBulkStatusModal;
-        clearSelectionBtn.onclick = clearAllSelections;
-        
-    } else {
-        if (bulkActionsContainer) {
-            bulkActionsContainer.remove();
+            if (bulkActionsContainer) {
+                bulkActionsContainer.remove();
+            }
         }
     }
-}
 
-function getSelectedTenantIds() {
-    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
-    return Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.dataset.id));
-}
-
-function clearAllSelections() {
-    const checkboxes = document.querySelectorAll('.tbody-checkbox');
-    checkboxes.forEach(checkbox => checkbox.checked = false);
-    if (DOM.selectAll) {
-        DOM.selectAll.checked = false;
-        DOM.selectAll.indeterminate = false;
+    function getSelectedTenantIds() {
+        const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+        return Array.from(checkedBoxes).map(checkbox => parseInt(checkbox.dataset.id));
     }
-    updateSelectActions();
-}
 
-function showBulkDeleteModal() {
-    const selectedIds = getSelectedTenantIds();
-    if (selectedIds.length === 0) return;
-    
-    document.getElementById('bulkDeleteCount').textContent = selectedIds.length;
-    document.getElementById('bulkDeleteModal').classList.remove('hidden');
-    document.getElementById('bulkDeleteModal').classList.add('flex');
-    document.body.style.overflow = 'hidden';
-}
+    function clearAllSelections() {
+        const checkboxes = document.querySelectorAll('.tbody-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        if (DOM.selectAll) {
+            DOM.selectAll.checked = false;
+            DOM.selectAll.indeterminate = false;
+        }
+        updateSelectActions();
+    }
 
-function hideBulkDeleteModal() {
-    document.getElementById('bulkDeleteModal').classList.add('hidden');
-    document.getElementById('bulkDeleteModal').classList.remove('flex');
-    document.body.style.overflow = '';
-}
+    function showBulkDeleteModal() {
+        const selectedIds = getSelectedTenantIds();
+        if (selectedIds.length === 0) return;
+        
+        document.getElementById('bulkDeleteCount').textContent = selectedIds.length;
+        document.getElementById('bulkDeleteModal').classList.remove('hidden');
+        document.getElementById('bulkDeleteModal').classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
 
-function showBulkStatusModal() {
-    const selectedIds = getSelectedTenantIds();
-    if (selectedIds.length === 0) return;
-    
-    const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
-    const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
-    const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
-    
-    document.getElementById('bulkStatusCount').textContent = selectedIds.length;
-    document.getElementById('bulkNewStatus').textContent = newStatus;
-    
-    const description = newStatus === 'Active' 
-        ? 'Selected tenants will be activated and gain access to the system.'
-        : 'Selected tenants will be deactivated and lose access to the system.';
-    document.getElementById('statusChangeDescription').textContent = description;
-    
-    document.getElementById('bulkStatusModal').classList.remove('hidden');
-    document.getElementById('bulkStatusModal').classList.add('flex');
-    document.body.style.overflow = 'hidden';
-}
+    function hideBulkDeleteModal() {
+        document.getElementById('bulkDeleteModal').classList.add('hidden');
+        document.getElementById('bulkDeleteModal').classList.remove('flex');
+        document.body.style.overflow = '';
+    }
 
-function hideBulkStatusModal() {
-    document.getElementById('bulkStatusModal').classList.add('hidden');
-    document.getElementById('bulkStatusModal').classList.remove('flex');
-    document.body.style.overflow = '';
-}
+    function showBulkStatusModal() {
+        const selectedIds = getSelectedTenantIds();
+        if (selectedIds.length === 0) return;
+        
+        const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
+        const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
+        const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
+        
+        document.getElementById('bulkStatusCount').textContent = selectedIds.length;
+        document.getElementById('bulkNewStatus').textContent = newStatus;
+        
+        const description = newStatus === 'Active' 
+            ? 'Selected tenants will be activated and gain access to the system.'
+            : 'Selected tenants will be deactivated and lose access to the system.';
+        document.getElementById('statusChangeDescription').textContent = description;
+        
+        document.getElementById('bulkStatusModal').classList.remove('hidden');
+        document.getElementById('bulkStatusModal').classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
 
-async function bulkDeleteTenants() {
-    const selectedIds = getSelectedTenantIds();
-    if (selectedIds.length === 0) return;
-    
-    const deleteBtn = document.getElementById('bulkDeleteConfirm');
-    const deleteText = deleteBtn?.querySelector('.bulk-delete-text');
-    const deleteLoading = deleteBtn?.querySelector('.bulk-delete-loading');
-    
-    try {
-        if (deleteText) deleteText.classList.add('hidden');
-        if (deleteLoading) deleteLoading.classList.remove('hidden');
-        if (deleteBtn) deleteBtn.disabled = true;
+    function hideBulkStatusModal() {
+        document.getElementById('bulkStatusModal').classList.add('hidden');
+        document.getElementById('bulkStatusModal').classList.remove('flex');
+        document.body.style.overflow = '';
+    }
 
-        const deletePromises = selectedIds.map(async (id) => {
-            try {
-                const { data } = await apiRequest(API_ENDPOINTS.DELETE(id), { method: 'DELETE' });
-                return { id, success: true, data };
-            } catch (error) {
-                console.error(`Failed to delete tenant ${id}:`, error);
-                return { id, success: false, error: error.message };
+    async function bulkDeleteTenants() {
+        const selectedIds = getSelectedTenantIds();
+        if (selectedIds.length === 0) return;
+        
+        const deleteBtn = document.getElementById('bulkDeleteConfirm');
+        const deleteText = deleteBtn?.querySelector('.bulk-delete-text');
+        const deleteLoading = deleteBtn?.querySelector('.bulk-delete-loading');
+        
+        try {
+            if (deleteText) deleteText.classList.add('hidden');
+            if (deleteLoading) deleteLoading.classList.remove('hidden');
+            if (deleteBtn) deleteBtn.disabled = true;
+
+            const deletePromises = selectedIds.map(async (id) => {
+                try {
+                    const { data } = await apiRequest(API_ENDPOINTS.DELETE(id), { method: 'DELETE' });
+                    return { id, success: true, data };
+                } catch (error) {
+                    console.error(`Failed to delete tenant ${id}:`, error);
+                    return { id, success: false, error: error.message };
+                }
+            });
+            
+            const results = await Promise.all(deletePromises);
+            const successful = results.filter(r => r.success);
+            const failed = results.filter(r => !r.success);
+            
+            successful.forEach(result => {
+                const index = tenants.findIndex(t => t.id === result.id);
+                if (index > -1) tenants.splice(index, 1);
+            });
+            
+            hideBulkDeleteModal();
+            clearAllSelections();
+            
+            const filtered = getFiltered();
+            const totalPages = getTotalPages(filtered);
+            if (state.page > totalPages) state.page = totalPages;
+            
+            render();
+            
+            if (failed.length === 0) {
+                showNotification(`Successfully deleted ${successful.length} tenant(s)`, 'delete');
+            } else {
+                showNotification(`Deleted ${successful.length} tenant(s), ${failed.length} failed`, 'error');
+            }
+            
+        } catch (error) {
+            console.error('Bulk delete error:', error);
+            showNotification('Failed to delete selected tenants', 'error');
+        } finally {
+            if (deleteText) deleteText.classList.remove('hidden');
+            if (deleteLoading) deleteLoading.classList.add('hidden');
+            if (deleteBtn) deleteBtn.disabled = false;
+        }
+    }
+
+    async function bulkToggleStatus() {
+        const selectedIds = getSelectedTenantIds();
+        if (selectedIds.length === 0) return;
+        
+        const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
+        const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
+        const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
+        
+        const statusBtn = document.getElementById('bulkStatusConfirm');
+        const statusText = statusBtn?.querySelector('.bulk-status-text');
+        const statusLoading = statusBtn?.querySelector('.bulk-status-loading');
+        
+        try {
+            if (statusText) statusText.classList.add('hidden');
+            if (statusLoading) statusLoading.classList.remove('hidden');
+            if (statusBtn) statusBtn.disabled = true;
+
+            const updatePromises = selectedIds.map(async (id) => {
+                try {
+                    const tenant = tenants.find(t => t.id === id);
+                    if (!tenant) return { id, success: false, error: 'Tenant not found' };
+
+                    const formData = {
+                        name: tenant.name,
+                        email: tenant.email,
+                        country: tenant.country || '',
+                        status: newStatus,
+                        note: tenant.note || ''
+                    };
+
+                    const { data } = await apiRequest(API_ENDPOINTS.UPDATE(id), {
+                        method: 'PUT',
+                        body: JSON.stringify(formData)
+                    });
+                    return { id, success: true, data };
+                } catch (error) {
+                    console.error(`Failed to update tenant ${id}:`, error);
+                    return { id, success: false, error: error.message };
+                }
+            });
+            
+            const results = await Promise.all(updatePromises);
+            const successful = results.filter(r => r.success);
+            const failed = results.filter(r => !r.success);
+            
+            successful.forEach(result => {
+                const tenantIndex = tenants.findIndex(t => t.id === result.id);
+                if (tenantIndex > -1) {
+                    tenants[tenantIndex].status = newStatus;
+                }
+            });
+            
+            hideBulkStatusModal();
+            clearAllSelections();
+            render();
+            
+            if (failed.length === 0) {
+                showNotification(`Successfully updated status for ${successful.length} tenant(s)`, 'success');
+            } else {
+                showNotification(`Updated ${successful.length} tenant(s), ${failed.length} failed`, 'error');
+            }
+            
+        } catch (error) {
+            console.error('Bulk status update error:', error);
+            showNotification('Failed to update selected tenants', 'error');
+        } finally {
+            if (statusText) statusText.classList.remove('hidden');
+            if (statusLoading) statusLoading.classList.add('hidden');
+            if (statusBtn) statusBtn.disabled = false;
+        }
+    }
+
+    function initSelectEventListeners() {
+        DOM.selectAll?.addEventListener('change', toggleSelectAll);
+        
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('tbody-checkbox')) {
+                updateSelectAll();
             }
         });
-        
-        const results = await Promise.all(deletePromises);
-        const successful = results.filter(r => r.success);
-        const failed = results.filter(r => !r.success);
-        
-        successful.forEach(result => {
-            const index = tenants.findIndex(t => t.id === result.id);
-            if (index > -1) tenants.splice(index, 1);
-        });
-        
-        hideBulkDeleteModal();
-        clearAllSelections();
-        
-        const filtered = getFiltered();
-        const totalPages = getTotalPages(filtered);
-        if (state.page > totalPages) state.page = totalPages;
-        
-        render();
-        
-        if (failed.length === 0) {
-            showNotification(`Successfully deleted ${successful.length} tenant(s)`, 'delete');
-        } else {
-            showNotification(`Deleted ${successful.length} tenant(s), ${failed.length} failed`, 'error');
-        }
-        
-    } catch (error) {
-        console.error('Bulk delete error:', error);
-        showNotification('Failed to delete selected tenants', 'error');
-    } finally {
-        if (deleteText) deleteText.classList.remove('hidden');
-        if (deleteLoading) deleteLoading.classList.add('hidden');
-        if (deleteBtn) deleteBtn.disabled = false;
     }
-}
-
-async function bulkToggleStatus() {
-    const selectedIds = getSelectedTenantIds();
-    if (selectedIds.length === 0) return;
-    
-    const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
-    const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
-    const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
-    
-    const statusBtn = document.getElementById('bulkStatusConfirm');
-    const statusText = statusBtn?.querySelector('.bulk-status-text');
-    const statusLoading = statusBtn?.querySelector('.bulk-status-loading');
-    
-    try {
-        if (statusText) statusText.classList.add('hidden');
-        if (statusLoading) statusLoading.classList.remove('hidden');
-        if (statusBtn) statusBtn.disabled = true;
-
-        const updatePromises = selectedIds.map(async (id) => {
-            try {
-                const tenant = tenants.find(t => t.id === id);
-                if (!tenant) return { id, success: false, error: 'Tenant not found' };
-
-                const formData = {
-                    name: tenant.name,
-                    email: tenant.email,
-                    country: tenant.country || '',
-                    status: newStatus,
-                    note: tenant.note || ''
-                };
-
-                const { data } = await apiRequest(API_ENDPOINTS.UPDATE(id), {
-                    method: 'PUT',
-                    body: JSON.stringify(formData)
-                });
-                return { id, success: true, data };
-            } catch (error) {
-                console.error(`Failed to update tenant ${id}:`, error);
-                return { id, success: false, error: error.message };
-            }
-        });
-        
-        const results = await Promise.all(updatePromises);
-        const successful = results.filter(r => r.success);
-        const failed = results.filter(r => !r.success);
-        
-        successful.forEach(result => {
-            const tenantIndex = tenants.findIndex(t => t.id === result.id);
-            if (tenantIndex > -1) {
-                tenants[tenantIndex].status = newStatus;
-            }
-        });
-        
-        hideBulkStatusModal();
-        clearAllSelections();
-        render();
-        
-        if (failed.length === 0) {
-            showNotification(`Successfully updated status for ${successful.length} tenant(s)`, 'success');
-        } else {
-            showNotification(`Updated ${successful.length} tenant(s), ${failed.length} failed`, 'error');
-        }
-        
-    } catch (error) {
-        console.error('Bulk status update error:', error);
-        showNotification('Failed to update selected tenants', 'error');
-    } finally {
-        if (statusText) statusText.classList.remove('hidden');
-        if (statusLoading) statusLoading.classList.add('hidden');
-        if (statusBtn) statusBtn.disabled = false;
-    }
-}
-
-function initSelectEventListeners() {
-    DOM.selectAll?.addEventListener('change', toggleSelectAll);
-    
-    document.addEventListener('change', (e) => {
-        if (e.target.classList.contains('tbody-checkbox')) {
-            updateSelectAll();
-        }
-    });
-}
 
     function initEventListeners() {
-    DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
+        DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
 
-    DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
-    DOM.statusFilter?.addEventListener('change', updateFilters);
-    DOM.perPageSelect?.addEventListener('change', updatePerPage);
+        DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
+        DOM.statusFilter?.addEventListener('change', updateFilters);
+        DOM.perPageSelect?.addEventListener('change', updatePerPage);
 
-    DOM.prevBtn?.addEventListener('click', prevPage);
-    DOM.nextBtn?.addEventListener('click', nextPage);
+        DOM.prevBtn?.addEventListener('click', prevPage);
+        DOM.nextBtn?.addEventListener('click', nextPage);
 
-    DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
-    DOM.formCancel?.addEventListener('click', closeModal);
-    DOM.closeModalBtn?.addEventListener('click', closeModal);
-    DOM.modalBackdrop?.addEventListener('click', (e) => {
-        if (e.target === DOM.modalBackdrop) closeModal();
-    });
+        DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
+        DOM.formCancel?.addEventListener('click', closeModal);
+        DOM.closeModalBtn?.addEventListener('click', closeModal);
+        DOM.modalBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.modalBackdrop) closeModal();
+        });
 
-    DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
-    DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
-    DOM.detailsBackdrop?.addEventListener('click', (e) => {
-        if (e.target === DOM.detailsBackdrop) closeDetailsModal();
-    });
+        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
+        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
+        DOM.detailsBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
+        });
 
-    DOM.deleteConfirm?.addEventListener('click', deleteTenant);
-    DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
-    DOM.deleteBackdrop?.addEventListener('click', (e) => {
-        if (e.target === DOM.deleteBackdrop) closeDeleteModal();
-    });
+        DOM.deleteConfirm?.addEventListener('click', deleteTenant);
+        DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
+        DOM.deleteBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.deleteBackdrop) closeDeleteModal();
+        });
 
-    initSelectEventListeners();
+        initSelectEventListeners();
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeModal();
-            closeDetailsModal();
-            closeDeleteModal();
-        }
-    });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDetailsModal();
+                closeDeleteModal();
+            }
+        });
 
-    document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
-    document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
-    document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
-    });
+        document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
+        document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
+        document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
+        });
 
-    document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
-    document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
-    document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
-    });
+        document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
+        document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
+        document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
+        });
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            hideBulkDeleteModal();
-            hideBulkStatusModal();
-        }
-    });
-}
-
-
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideBulkDeleteModal();
+                hideBulkStatusModal();
+            }
+        });
+    }
 
     function debounce(func, wait) {
         let timeout;
