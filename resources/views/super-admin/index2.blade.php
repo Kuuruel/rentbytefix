@@ -318,6 +318,117 @@
     </div>
 </div>
 
+<div id="bulkDeleteModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="bg-white dark:bg-neutral-700 rounded-xl w-[28rem] max-w-[90vw] mx-4 shadow-xl z-10 overflow-hidden border border-red-200 dark:border-red-800">
+        <div class="px-6 py-4 border-b border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-red-100 dark:bg-red-800/40 rounded-full flex items-center justify-center">
+                    <iconify-icon icon="ph:trash" class="text-red-600 dark:text-red-400 text-lg"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-red-900 dark:text-red-100">Delete Multiple Tenants</h3>
+            </div>
+        </div>
+
+        <div class="px-6 py-6">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="ph:warning-circle" class="text-red-600 dark:text-red-400 text-2xl"></iconify-icon>
+                </div>
+                <h4 class="text-lg font-semibold text-neutral-900 dark:text-white mb-2">Are you absolutely sure?</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-300">
+                    You are about to permanently delete <span id="bulkDeleteCount" class="font-semibold text-red-600 dark:text-red-400">0</span> tenant(s).
+                </p>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
+                    This action cannot be undone and will remove all associated data.
+                </p>
+            </div>
+
+            <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 mb-6">
+                <div class="flex items-start gap-3">
+                    <iconify-icon icon="ph:info" class="text-red-600 dark:text-red-400 text-lg mt-0.5"></iconify-icon>
+                    <div class="text-sm text-red-800 dark:text-red-200">
+                        <p class="font-medium mb-1">This will permanently delete:</p>
+                        <ul class="list-disc list-inside space-y-1 text-xs">
+                            <li>All tenant account information</li>
+                            <li>Associated user data and permissions</li>
+                            <li>Any related system configurations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button id="bulkDeleteCancel" class="px-4 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
+                    Cancel
+                </button>
+                <button id="bulkDeleteConfirm" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors">
+                    <span class="bulk-delete-text">Yes, Delete All</span>
+                    <span class="bulk-delete-loading hidden flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Deleting...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="bulkStatusModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="bg-white dark:bg-neutral-700 rounded-xl w-[26rem] max-w-[90vw] mx-4 shadow-xl z-10 overflow-hidden border border-blue-200 dark:border-blue-800">
+        <div class="px-6 py-4 border-b border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-100 dark:bg-blue-800/40 rounded-full flex items-center justify-center">
+                    <iconify-icon icon="ph:toggle-left" class="text-blue-600 dark:text-blue-400 text-lg"></iconify-icon>
+                </div>
+                <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">Change Status</h3>
+            </div>
+        </div>
+
+        <div class="px-6 py-6">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="ph:users-three" class="text-blue-600 dark:text-blue-400 text-2xl"></iconify-icon>
+                </div>
+                <h4 class="text-lg font-semibold text-neutral-900 dark:text-white mb-2">Update Tenant Status</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-300">
+                    Change status for <span id="bulkStatusCount" class="font-semibold text-blue-600 dark:text-blue-400">0</span> selected tenant(s) to 
+                    <span id="bulkNewStatus" class="font-semibold text-blue-600 dark:text-blue-400">Active</span>
+                </p>
+            </div>
+
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <iconify-icon icon="ph:info" class="text-blue-600 dark:text-blue-400 text-lg"></iconify-icon>
+                    <div class="text-sm text-blue-800 dark:text-blue-200">
+                        <p id="statusChangeDescription">This will update the status for all selected tenants.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button id="bulkStatusCancel" class="px-4 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
+                    Cancel
+                </button>
+                <button id="bulkStatusConfirm" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors">
+                    <span class="bulk-status-text">Update Status</span>
+                    <span class="bulk-status-loading hidden flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Updating...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     window.tenantsData = @json($tenants);
 </script>

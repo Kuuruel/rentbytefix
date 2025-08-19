@@ -882,8 +882,8 @@ function updateSelectActions() {
         const bulkStatusBtn = document.getElementById('bulkStatusBtn');
         const clearSelectionBtn = document.getElementById('clearSelection');
         
-        bulkDeleteBtn.onclick = bulkDeleteTenants;
-        bulkStatusBtn.onclick = bulkToggleStatus;
+        bulkDeleteBtn.onclick = showBulkDeleteModal;
+        bulkStatusBtn.onclick = showBulkStatusModal;
         clearSelectionBtn.onclick = clearAllSelections;
         
     } else {
@@ -908,29 +908,82 @@ function clearAllSelections() {
     updateSelectActions();
 }
 
+function showBulkDeleteModal() {
+    const selectedIds = getSelectedTenantIds();
+    if (selectedIds.length === 0) return;
+    
+    document.getElementById('bulkDeleteCount').textContent = selectedIds.length;
+    document.getElementById('bulkDeleteModal').classList.remove('hidden');
+    document.getElementById('bulkDeleteModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideBulkDeleteModal() {
+    document.getElementById('bulkDeleteModal').classList.add('hidden');
+    document.getElementById('bulkDeleteModal').classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
+function showBulkStatusModal() {
+    const selectedIds = getSelectedTenantIds();
+    if (selectedIds.length === 0) return;
+    
+    const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
+    const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
+    const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
+    
+    document.getElementById('bulkStatusCount').textContent = selectedIds.length;
+    document.getElementById('bulkNewStatus').textContent = newStatus;
+    
+    const description = newStatus === 'Active' 
+        ? 'Selected tenants will be activated and gain access to the system.'
+        : 'Selected tenants will be deactivated and lose access to the system.';
+    document.getElementById('statusChangeDescription').textContent = description;
+    
+    document.getElementById('bulkStatusModal').classList.remove('hidden');
+    document.getElementById('bulkStatusModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideBulkStatusModal() {
+    document.getElementById('bulkStatusModal').classList.add('hidden');
+    document.getElementById('bulkStatusModal').classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
 async function bulkDeleteTenants() {
     const selectedIds = getSelectedTenantIds();
     if (selectedIds.length === 0) return;
     
-    const confirmation = confirm(`Are you sure you want to delete ${selectedIds.length} tenant(s)? This action cannot be undone.`);
-    if (!confirmation) return;
-    
-    showLoading();
+    const deleteBtn = document.getElementById('bulkDeleteConfirm');
+    const deleteText = deleteBtn?.querySelector('.bulk-delete-text');
+    const deleteLoading = deleteBtn?.querySelector('.bulk-delete-loading');
     
     try {
-        const deletePromises = selectedIds.map(id => 
-            apiRequest(API_ENDPOINTS.DELETE(id), { method: 'DELETE' })
-        );
+        if (deleteText) deleteText.classList.add('hidden');
+        if (deleteLoading) deleteLoading.classList.remove('hidden');
+        if (deleteBtn) deleteBtn.disabled = true;
+
+        const deletePromises = selectedIds.map(async (id) => {
+            try {
+                const { data } = await apiRequest(API_ENDPOINTS.DELETE(id), { method: 'DELETE' });
+                return { id, success: true, data };
+            } catch (error) {
+                console.error(`Failed to delete tenant ${id}:`, error);
+                return { id, success: false, error: error.message };
+            }
+        });
         
-        const results = await Promise.allSettled(deletePromises);
-        const successful = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.length - successful;
+        const results = await Promise.all(deletePromises);
+        const successful = results.filter(r => r.success);
+        const failed = results.filter(r => !r.success);
         
-        selectedIds.forEach(id => {
-            const index = tenants.findIndex(t => t.id === id);
+        successful.forEach(result => {
+            const index = tenants.findIndex(t => t.id === result.id);
             if (index > -1) tenants.splice(index, 1);
         });
         
+        hideBulkDeleteModal();
         clearAllSelections();
         
         const filtered = getFiltered();
@@ -939,17 +992,19 @@ async function bulkDeleteTenants() {
         
         render();
         
-        if (failed === 0) {
-            showNotification(`Successfully deleted ${successful} tenant(s)`, 'delete');
+        if (failed.length === 0) {
+            showNotification(`Successfully deleted ${successful.length} tenant(s)`, 'delete');
         } else {
-            showNotification(`Deleted ${successful} tenant(s), ${failed} failed`, 'error');
+            showNotification(`Deleted ${successful.length} tenant(s), ${failed.length} failed`, 'error');
         }
         
     } catch (error) {
         console.error('Bulk delete error:', error);
         showNotification('Failed to delete selected tenants', 'error');
     } finally {
-        hideLoading();
+        if (deleteText) deleteText.classList.remove('hidden');
+        if (deleteLoading) deleteLoading.classList.add('hidden');
+        if (deleteBtn) deleteBtn.disabled = false;
     }
 }
 
@@ -961,46 +1016,67 @@ async function bulkToggleStatus() {
     const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
     const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
     
-    const confirmation = confirm(`Set ${selectedIds.length} tenant(s) status to ${newStatus}?`);
-    if (!confirmation) return;
-    
-    showLoading();
+    const statusBtn = document.getElementById('bulkStatusConfirm');
+    const statusText = statusBtn?.querySelector('.bulk-status-text');
+    const statusLoading = statusBtn?.querySelector('.bulk-status-loading');
     
     try {
-        const updatePromises = selectedIds.map(id => 
-            apiRequest(API_ENDPOINTS.UPDATE(id), {
-                method: 'PUT',
-                body: JSON.stringify({ status: newStatus })
-            })
-        );
-        
-        const results = await Promise.allSettled(updatePromises);
-        const successful = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.length - successful;
-        
-        results.forEach((result, index) => {
-            if (result.status === 'fulfilled') {
-                const tenantIndex = tenants.findIndex(t => t.id === selectedIds[index]);
-                if (tenantIndex > -1) {
-                    tenants[tenantIndex].status = newStatus;
-                }
+        if (statusText) statusText.classList.add('hidden');
+        if (statusLoading) statusLoading.classList.remove('hidden');
+        if (statusBtn) statusBtn.disabled = true;
+
+        const updatePromises = selectedIds.map(async (id) => {
+            try {
+                const tenant = tenants.find(t => t.id === id);
+                if (!tenant) return { id, success: false, error: 'Tenant not found' };
+
+                const formData = {
+                    name: tenant.name,
+                    email: tenant.email,
+                    country: tenant.country || '',
+                    status: newStatus,
+                    note: tenant.note || ''
+                };
+
+                const { data } = await apiRequest(API_ENDPOINTS.UPDATE(id), {
+                    method: 'PUT',
+                    body: JSON.stringify(formData)
+                });
+                return { id, success: true, data };
+            } catch (error) {
+                console.error(`Failed to update tenant ${id}:`, error);
+                return { id, success: false, error: error.message };
             }
         });
         
+        const results = await Promise.all(updatePromises);
+        const successful = results.filter(r => r.success);
+        const failed = results.filter(r => !r.success);
+        
+        successful.forEach(result => {
+            const tenantIndex = tenants.findIndex(t => t.id === result.id);
+            if (tenantIndex > -1) {
+                tenants[tenantIndex].status = newStatus;
+            }
+        });
+        
+        hideBulkStatusModal();
         clearAllSelections();
         render();
         
-        if (failed === 0) {
-            showNotification(`Successfully updated status for ${successful} tenant(s)`, 'success');
+        if (failed.length === 0) {
+            showNotification(`Successfully updated status for ${successful.length} tenant(s)`, 'success');
         } else {
-            showNotification(`Updated ${successful} tenant(s), ${failed} failed`, 'error');
+            showNotification(`Updated ${successful.length} tenant(s), ${failed.length} failed`, 'error');
         }
         
     } catch (error) {
         console.error('Bulk status update error:', error);
         showNotification('Failed to update selected tenants', 'error');
     } finally {
-        hideLoading();
+        if (statusText) statusText.classList.remove('hidden');
+        if (statusLoading) statusLoading.classList.add('hidden');
+        if (statusBtn) statusBtn.disabled = false;
     }
 }
 
@@ -1052,7 +1128,28 @@ function initSelectEventListeners() {
             closeDeleteModal();
         }
     });
+
+    document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
+    document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
+    document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
+    });
+
+    document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
+    document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
+    document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideBulkDeleteModal();
+            hideBulkStatusModal();
+        }
+    });
 }
+
+
 
     function debounce(func, wait) {
         let timeout;
