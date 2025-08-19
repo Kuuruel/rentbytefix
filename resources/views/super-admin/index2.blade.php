@@ -122,15 +122,15 @@
                 <div>
                     <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Tenant Name *</label>
                     <input id="formName" type="text" required 
-                           placeholder="Enter tenant name"
-                           class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        placeholder="Enter tenant name"
+                        class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
                 </div>
 
                 <div>
                     <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Email Address *</label>
                     <input id="formEmail" type="email" required 
-                           placeholder="Enter email address"
-                           class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        placeholder="Enter email address"
+                        class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
                 </div>
 
                 <div>
@@ -138,9 +138,47 @@
                         Password <span class="text-xs text-neutral-400" id="passwordHint">*</span>
                     </label>
                     <input id="formPassword" type="password" 
-                           placeholder="Enter password"
-                           class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500" 
-                           autocomplete="new-password">
+                        placeholder="Enter password"
+                        class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                        autocomplete="new-password">
+                </div>
+
+                <div>
+                    <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Country *</label>
+                    <select id="formCountry" required class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">Select Country</option>
+                        <option value="Afghanistan">Afghanistan</option>
+                        <option value="Albania">Albania</option>
+                        <option value="Algeria">Algeria</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Austria">Austria</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="Canada">Canada</option>
+                        <option value="China">China</option>
+                        <option value="Denmark">Denmark</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="Finland">Finland</option>
+                        <option value="France">France</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Norway">Norway</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Sweden">Sweden</option>
+                        <option value="Switzerland">Switzerland</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="United States">United States</option>
+                        <option value="Vietnam">Vietnam</option>
+                    </select>
                 </div>
 
                 <div>
@@ -154,23 +192,23 @@
                 <div>
                     <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Notes</label>
                     <textarea id="formNote" rows="3" 
-                              placeholder="Additional notes (optional)"
-                              class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                            placeholder="Additional notes (optional)"
+                            class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
                 </div>
-            </div>
 
-            <div class="flex justify-end gap-3 pt-4">
-                <button type="button" id="formCancel" class="px-4 py-2 rounded bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500">Cancel</button>
-                <button type="submit" id="formSubmit" class="btn btn-primary px-4 py-2 rounded text-sm">
-                    <span class="submit-text">Add Tenant</span>
-                    <span class="submit-loading hidden">
-                        <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Processing...
-                    </span>
-                </button>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" id="formCancel" class="px-4 py-2 rounded bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500">Cancel</button>
+                    <button type="submit" id="formSubmit" class="btn btn-primary px-4 py-2 rounded text-sm">
+                        <span class="submit-text">Add Tenant</span>
+                        <span class="submit-loading hidden">
+                            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                        </span>
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -219,6 +257,14 @@
                             <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Tenant ID</span>
                         </div>
                         <p id="detailId" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                     <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:globe" class="text-blue-600 dark:text-blue-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Country</span>
+                        </div>
+                        <p id="detailCountry" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
                     </div>
                 </div>
                 

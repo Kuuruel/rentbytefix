@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->string('avatar')->nullable();
+            $table->string('country', 100);
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->index(['status']);
             $table->index(['created_at']);
             $table->index(['name']);
+            $table->index(['country']);
         });
     }
 

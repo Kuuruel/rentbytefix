@@ -17,6 +17,7 @@ class Tenants extends Model
         'note',
         'status',
         'avatar',
+        'country', // Added missing country field
         'user_id'
     ];
 
@@ -26,6 +27,8 @@ class Tenants extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];

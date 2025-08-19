@@ -3,7 +3,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tenants;
+use App\Models\Tenants; // Using your plural model name
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +29,7 @@ class TenantController extends Controller
             return view('super-admin.index2', compact('tenants'));
         } catch (\Exception $e) {
             Log::error('Tenant index error: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             
             if (request()->ajax()) {
                 return response()->json([
@@ -50,7 +51,8 @@ class TenantController extends Controller
                 'email' => 'required|email|unique:tenants,email',
                 'password' => 'required|string|min:6',
                 'note' => 'nullable|string|max:1000',
-                'status' => 'required|in:Active,Inactive'
+                'status' => 'required|in:Active,Inactive',
+                'country' => 'required|string|max:100'
             ]);
 
             if ($validator->fails()) {
@@ -64,38 +66,24 @@ class TenantController extends Controller
             $data = $validator->validated();
             $data['password'] = Hash::make($data['password']);
 
+            // Simplified user handling
             $userId = Auth::id();
-            
             if (!$userId) {
                 $firstUser = User::first();
-                if ($firstUser) {
-                    $userId = $firstUser->id;
-                } else {
-                    $systemUser = User::create([
+                if (!$firstUser) {
+                    // Create a default user if none exists
+                    $firstUser = User::create([
                         'name' => 'System Admin',
-                        'email' => 'system@' . request()->getHost(),
+                        'email' => 'admin@localhost',
                         'password' => Hash::make('password'),
                         'email_verified_at' => now()
                     ]);
-                    $userId = $systemUser->id;
                 }
-            } else {
-                $userExists = User::where('id', $userId)->exists();
-                if (!$userExists) {
-                    $firstUser = User::first();
-                    $userId = $firstUser ? $firstUser->id : null;
-                    
-                    if (!$userId) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'No valid user found in system. Please contact administrator.'
-                        ], 500);
-                    }
-                }
+                $userId = $firstUser->id;
             }
 
             $data['user_id'] = $userId;
-            $data['avatar'] = asset('assets/images/user-list/user-list1.png');
+            $data['avatar'] = '/assets/images/user-list/user-list1.png';
 
             DB::beginTransaction();
             
@@ -113,15 +101,17 @@ class TenantController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
             Log::error('Database error creating tenant: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
 
-            if (strpos($e->getMessage(), 'user_id_foreign') !== false) {
+            if (strpos($e->getMessage(), 'user_id') !== false || strpos($e->getMessage(), 'foreign') !== false) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'User reference error. Please contact administrator.'
+                    'message' => 'User reference error. Please contact administrator.',
+                    'debug' => config('app.debug') ? $e->getMessage() : null
                 ], 500);
             }
             
-            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'UNIQUE') !== false) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Email address already exists'
@@ -137,6 +127,7 @@ class TenantController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error creating tenant: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
             
             return response()->json([
                 'success' => false,
@@ -146,10 +137,10 @@ class TenantController extends Controller
         }
     }
 
-    public function show(Tenants $tenant)
+    public function show($id)
     {
         try {
-            $tenant->load('user');
+            $tenant = Tenants::with('user')->findOrFail($id);
             return response()->json([
                 'success' => true,
                 'tenant' => $tenant
@@ -165,15 +156,18 @@ class TenantController extends Controller
         }
     }
 
-    public function update(Request $request, Tenants $tenant)
+    public function update(Request $request, $id)
     {
         try {
+            $tenant = Tenants::findOrFail($id);
+            
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:tenants,email,' . $tenant->id,
+                'email' => 'required|email|unique:tenants,email,' . $id,
                 'password' => 'nullable|string|min:6',
                 'note' => 'nullable|string|max:1000',
-                'status' => 'required|in:Active,Inactive'
+                'status' => 'required|in:Active,Inactive',
+                'country' => 'required|string|max:100'
             ]);
 
             if ($validator->fails()) {
@@ -234,9 +228,11 @@ class TenantController extends Controller
         }
     }
 
-    public function destroy(Tenants $tenant)
+    public function destroy($id)
     {
         try {
+            $tenant = Tenants::findOrFail($id);
+            
             DB::beginTransaction();
             
             $tenantName = $tenant->name;
@@ -259,24 +255,5 @@ class TenantController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
             ], 500);
         }
-    }
-    
-    /**
-     * Check and create default user if needed
-     */
-    private function ensureDefaultUser()
-    {
-        $userCount = User::count();
-        
-        if ($userCount === 0) {
-            return User::create([
-                'name' => 'System Admin',
-                'email' => 'admin@' . (request()->getHost() ?: 'localhost'),
-                'password' => Hash::make('password'),
-                'email_verified_at' => now()
-            ]);
-        }
-        
-        return User::first();
     }
 }

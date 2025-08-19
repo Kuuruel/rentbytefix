@@ -18,53 +18,55 @@
         DELETE: (id) => `/tenants/${id}`
     };
 
-    const DOM = {
-        searchInput: document.getElementById('searchInput'),
-        statusFilter: document.getElementById('statusFilter'),
-        tableBody: document.getElementById('tableBody'),
-        paginationInfo: document.getElementById('paginationInfo'),
-        perPageSelect: document.getElementById('perPageSelect'),
-        prevBtn: document.getElementById('prevBtn'),
-        nextBtn: document.getElementById('nextBtn'),
-        pageNumbers: document.getElementById('pageNumbers'),
-        btnOpenCreate: document.getElementById('btnOpenCreate'),
-        selectAll: document.getElementById('selectAll'),
-        loadingSpinner: document.getElementById('loadingSpinner'),
+   const DOM = {
+    searchInput: document.getElementById('searchInput'),
+    statusFilter: document.getElementById('statusFilter'),
+    tableBody: document.getElementById('tableBody'),
+    paginationInfo: document.getElementById('paginationInfo'),
+    perPageSelect: document.getElementById('perPageSelect'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    pageNumbers: document.getElementById('pageNumbers'),
+    btnOpenCreate: document.getElementById('btnOpenCreate'),
+    selectAll: document.getElementById('selectAll'),
+    loadingSpinner: document.getElementById('loadingSpinner'),
 
-        modalBackdrop: document.getElementById('modalBackdrop'),
-        modalTitle: document.getElementById('modalTitle'),
-        tenantForm: document.getElementById('tenantForm'),
-        formId: document.getElementById('formId'),
-        formMethod: document.getElementById('formMethod'),
-        formName: document.getElementById('formName'),
-        formEmail: document.getElementById('formEmail'),
-        formPassword: document.getElementById('formPassword'),
-        formStatus: document.getElementById('formStatus'),
-        formNote: document.getElementById('formNote'),
-        formSubmit: document.getElementById('formSubmit'),
-        formCancel: document.getElementById('formCancel'),
-        closeModalBtn: document.getElementById('closeModalBtn'),
-        passwordHint: document.getElementById('passwordHint'),
-        errorMessages: document.getElementById('errorMessages'),
+    modalBackdrop: document.getElementById('modalBackdrop'),
+    modalTitle: document.getElementById('modalTitle'),
+    tenantForm: document.getElementById('tenantForm'),
+    formId: document.getElementById('formId'),
+    formMethod: document.getElementById('formMethod'),
+    formName: document.getElementById('formName'),
+    formEmail: document.getElementById('formEmail'),
+    formPassword: document.getElementById('formPassword'),
+    formCountry: document.getElementById('formCountry'),
+    formStatus: document.getElementById('formStatus'),
+    formNote: document.getElementById('formNote'),
+    formSubmit: document.getElementById('formSubmit'),
+    formCancel: document.getElementById('formCancel'),
+    closeModalBtn: document.getElementById('closeModalBtn'),
+    passwordHint: document.getElementById('passwordHint'),
+    errorMessages: document.getElementById('errorMessages'),
 
-        detailsBackdrop: document.getElementById('detailsBackdrop'),
-        detailAvatar: document.getElementById('detailAvatar'),
-        detailName: document.getElementById('detailName'),
-        detailEmail: document.getElementById('detailEmail'),
-        detailStatus: document.getElementById('detailStatus'),
-        detailJoinDate: document.getElementById('detailJoinDate'),
-        detailId: document.getElementById('detailId'),
-        detailCreator: document.getElementById('detailCreator'),
-        detailNotes: document.getElementById('detailNotes'),
-        detailNotesSection: document.getElementById('detailNotesSection'),
-        closeDetailsBtn: document.getElementById('closeDetailsBtn'),
-        closeDetailsFooterBtn: document.getElementById('closeDetailsFooterBtn'),
+    detailsBackdrop: document.getElementById('detailsBackdrop'),
+    detailAvatar: document.getElementById('detailAvatar'),
+    detailName: document.getElementById('detailName'),
+    detailEmail: document.getElementById('detailEmail'),
+    detailStatus: document.getElementById('detailStatus'),
+    detailJoinDate: document.getElementById('detailJoinDate'),
+    detailId: document.getElementById('detailId'),
+    detailCountry: document.getElementById('detailCountry'),
+    detailCreator: document.getElementById('detailCreator'),
+    detailNotes: document.getElementById('detailNotes'),
+    detailNotesSection: document.getElementById('detailNotesSection'),
+    closeDetailsBtn: document.getElementById('closeDetailsBtn'),
+    closeDetailsFooterBtn: document.getElementById('closeDetailsFooterBtn'),
 
-        deleteBackdrop: document.getElementById('deleteBackdrop'),
-        deleteName: document.getElementById('deleteName'),
-        deleteConfirm: document.getElementById('deleteConfirm'),
-        deleteCancel: document.getElementById('deleteCancel')
-    };
+    deleteBackdrop: document.getElementById('deleteBackdrop'),
+    deleteName: document.getElementById('deleteName'),
+    deleteConfirm: document.getElementById('deleteConfirm'),
+    deleteCancel: document.getElementById('deleteCancel')
+};
 
     async function apiRequest(url, options = {}) {
         try {
@@ -337,104 +339,93 @@ function showNotification(message, type = 'success') {
         return Math.max(1, Math.ceil(filtered.length / state.perPage));
     }
 
-    function render() {
-        const filtered = getFiltered();
-        const totalPages = getTotalPages(filtered);
+   function render() {
+    const filtered = getFiltered();
+    const totalPages = getTotalPages(filtered);
 
-        if (state.page > totalPages) state.page = totalPages;
+    if (state.page > totalPages) state.page = totalPages;
 
-        const start = (state.page - 1) * state.perPage;
-        const paginated = filtered.slice(start, start + state.perPage);
+    const start = (state.page - 1) * state.perPage;
+    const paginated = filtered.slice(start, start + state.perPage);
 
-        if (paginated.length === 0) {
-            DOM.tableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
-                        <div class="flex flex-col items-center gap-4">
-                            <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
-                            <div class="text-center">
-                                <p class="text-lg font-medium">No tenants found</p>
-                                <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
-                            </div>
+    if (paginated.length === 0) {
+        DOM.tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                    <div class="flex flex-col items-center gap-4">
+                        <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
+                        <div class="text-center">
+                            <p class="text-lg font-medium">No tenants found</p>
+                            <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
                         </div>
-                    </td>
-                </tr>`;
-        } else {
-            DOM.tableBody.innerHTML = paginated.map((t, idx) => {
-                const avatar = t.avatar || '/assets/images/user-list/user-list1.png';
-                const status = t.status || 'Active';
-                const ownerText = t.user ? `Added by: ${t.user.name}` : '';
-                const checkboxId = `tenant-cb-${t.id}`;
-                
-                return `
-                <tr class="transition-all duration-200">
-                    <td class="px-4 py-4 align-middle">
-                        <div class="flex items-center gap-3">
-                            <div class="form-check style-check flex items-center">
-                                <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
-                                       type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
-                            </div>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
+                    </div>
+                </td>
+            </tr>`;
+    } else {
+        DOM.tableBody.innerHTML = paginated.map((t, idx) => {
+            const avatar = t.avatar || '/assets/images/user-list/user-list1.png';
+            const status = t.status || 'Active';
+            const country = t.country || '-';
+            const ownerText = t.user ? `Added by: ${t.user.name}` : '';
+            const checkboxId = `tenant-cb-${t.id}`;
+            
+            return `
+            <tr class="transition-all duration-200">
+                <td class="px-4 py-4 align-middle">
+                    <div class="flex items-center gap-3">
+                        <div class="form-check style-check flex items-center">
+                            <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
+                                   type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
                         </div>
-                    </td>
-                    <td class="px-4 py-4 align-middle">
-                        <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
-                    </td>
-                    <td class="px-4 py-4 align-middle">
-                        <div class="flex items-center gap-3 min-w-0">
-                            
-                            <div class="min-w-0 flex-1">
-                                <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
-                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
-                            </div>
+                        <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
+                    </div>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                    <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(country)}</p>
+                            ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
                         </div>
-                    </td>
-                    <td class="px-4 py-4 align-middle">
-                        <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
-                    </td>
-                    <td class="px-4 py-4 text-center align-middle">
-                        <span class="${status === 'Active' ? 
-                            'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
-                            'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
-                        } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
-                            ${status}
-                        </span>
-                    </td>
-                    <td class="px-4 py-4 text-center align-middle">
-                        <div class="flex items-center gap-1.5 justify-center">
-                            <button type="button" title="View Details" 
-                                    class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
-                                    onclick="viewTenant(${t.id})">
-                                <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
-                            </button>
-                            <button type="button" title="Edit Tenant" 
-                                    class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
-                                    onclick="editTenant(${t.id})">
-                                <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
-                            </button>
-                            <button type="button" title="Delete Tenant" 
-                                    class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
-                                    onclick="confirmDelete(${t.id})">
-                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
-                            </button>
-                        </div>
-                    </td>
-                </tr>`; 
-            }).join('');
-        }
-
-        const total = filtered.length;
-        const startCount = total === 0 ? 0 : start + 1;
-        const endCount = Math.min(total, start + state.perPage);
-        if (DOM.paginationInfo) {
-            DOM.paginationInfo.textContent = `Showing ${startCount} to ${endCount} of ${total} entries`;
-        }
-
-        if (DOM.prevBtn) DOM.prevBtn.disabled = state.page === 1;
-        if (DOM.nextBtn) DOM.nextBtn.disabled = state.page === totalPages;
-
-        renderPageNumbers(totalPages);
+                    </div>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                    <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
+                </td>
+                <td class="px-4 py-4 text-center align-middle">
+                    <span class="${status === 'Active' ? 
+                        'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                        'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                    } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
+                        ${status}
+                    </span>
+                </td>
+                <td class="px-4 py-4 text-center align-middle">
+                    <div class="flex items-center gap-1.5 justify-center">
+                        <button type="button" title="View Details" 
+                                class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                onclick="viewTenant(${t.id})">
+                            <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
+                        </button>
+                        <button type="button" title="Edit Tenant" 
+                                class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                onclick="editTenant(${t.id})">
+                            <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
+                        </button>
+                        <button type="button" title="Delete Tenant" 
+                                class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                onclick="confirmDelete(${t.id})">
+                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                        </button>
+                    </div>
+                </td>
+            </tr>`; 
+        }).join('');
     }
+}
 
     function renderPageNumbers(totalPages) {
         if (!DOM.pageNumbers) return;
@@ -512,6 +503,7 @@ function showNotification(message, type = 'success') {
         if (DOM.formId) DOM.formId.value = '';
         if (DOM.formMethod) DOM.formMethod.value = 'POST';
         if (DOM.formStatus) DOM.formStatus.value = 'Active';
+        if (DOM.formCountry) DOM.formCountry.value = '';
         if (DOM.formPassword) DOM.formPassword.required = true;
         if (DOM.passwordHint) DOM.passwordHint.textContent = '*';
 
@@ -524,72 +516,76 @@ function showNotification(message, type = 'success') {
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
-    function editTenant(id) {
-        const tenant = tenants.find(t => t.id === id);
-        if (!tenant) return;
-        
-        state.isEditing = true;
-        if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
+  function editTenant(id) {
+    const tenant = tenants.find(t => t.id === id);
+    if (!tenant) return;
+    
+    state.isEditing = true;
+    if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
 
-        if (DOM.formId) DOM.formId.value = tenant.id;
-        if (DOM.formMethod) DOM.formMethod.value = 'PUT';
-        if (DOM.formName) DOM.formName.value = tenant.name || '';
-        if (DOM.formEmail) DOM.formEmail.value = tenant.email || '';
-        if (DOM.formPassword) {
-            DOM.formPassword.value = '';
-            DOM.formPassword.required = false;
-        }
-        if (DOM.formStatus) DOM.formStatus.value = tenant.status || 'Active';
-        if (DOM.formNote) DOM.formNote.value = tenant.note || '';
-        if (DOM.passwordHint) DOM.passwordHint.textContent = '(leave blank to keep current password)';
-
-        const submitText = DOM.formSubmit?.querySelector('.submit-text');
-        if (submitText) submitText.textContent = 'Update Tenant';
-        
-        hideErrors();
-        showModal(true);
-        
-        setTimeout(() => DOM.formName?.focus(), 100);
+    if (DOM.formId) DOM.formId.value = tenant.id;
+    if (DOM.formMethod) DOM.formMethod.value = 'PUT';
+    if (DOM.formName) DOM.formName.value = tenant.name || '';
+    if (DOM.formEmail) DOM.formEmail.value = tenant.email || '';
+    if (DOM.formPassword) {
+        DOM.formPassword.value = '';
+        DOM.formPassword.required = false;
     }
+    if (DOM.formCountry) DOM.formCountry.value = tenant.country || '';
+    if (DOM.formStatus) DOM.formStatus.value = tenant.status || 'Active';
+    if (DOM.formNote) DOM.formNote.value = tenant.note || '';
+    if (DOM.passwordHint) DOM.passwordHint.textContent = '(leave blank to keep current password)';
 
-    function viewTenant(id) {
-        const tenant = tenants.find(t => t.id === id);
-        if (!tenant) return;
-        
-        const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
-        const status = tenant.status || 'Active';
-        const ownerInfo = tenant.user ? 
-            `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
-            '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
+    const submitText = DOM.formSubmit?.querySelector('.submit-text');
+    if (submitText) submitText.textContent = 'Update Tenant';
+    
+    hideErrors();
+    showModal(true);
+    
+    setTimeout(() => DOM.formName?.focus(), 100);
+}
 
-        if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
-        if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
-        if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
-        
-        if (DOM.detailStatus) {
-            DOM.detailStatus.innerHTML = `
-                <span class="${status === 'Active' ? 
-                    'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
-                    'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
-                } px-2 py-1 rounded-full text-xs font-semibold">
-                    ${status}
-                </span>
-            `;
-        }
-        
-        if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
-        if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
-        if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
-        
-        if (tenant.note && tenant.note.trim()) {
-            if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
-            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
-        } else {
-            if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
-        }
-        
-        showDetailsModal(true);
+// Updated viewTenant function
+function viewTenant(id) {
+    const tenant = tenants.find(t => t.id === id);
+    if (!tenant) return;
+    
+    const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
+    const status = tenant.status || 'Active';
+    const country = tenant.country || '-';
+    const ownerInfo = tenant.user ? 
+        `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
+        '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
+
+    if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
+    if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
+    if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
+    
+    if (DOM.detailStatus) {
+        DOM.detailStatus.innerHTML = `
+            <span class="${status === 'Active' ? 
+                'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+            } px-2 py-1 rounded-full text-xs font-semibold">
+                ${status}
+            </span>
+        `;
     }
+    
+    if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
+    if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
+    if (DOM.detailCountry) DOM.detailCountry.textContent = country;
+    if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
+    
+    if (tenant.note && tenant.note.trim()) {
+        if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
+        if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
+    } else {
+        if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
+    }
+    
+    showDetailsModal(true);
+}
 
     function showModal(visible) {
         if (!DOM.modalBackdrop) return;
@@ -692,81 +688,82 @@ async function deleteTenant() {
     }
 
 async function handleFormSubmit(e) {
-        e.preventDefault();
-        hideErrors();
+    e.preventDefault();
+    hideErrors();
 
-        const submitBtn = DOM.formSubmit;
-        const submitText = submitBtn?.querySelector('.submit-text');
-        const submitLoading = submitBtn?.querySelector('.submit-loading');
+    const submitBtn = DOM.formSubmit;
+    const submitText = submitBtn?.querySelector('.submit-text');
+    const submitLoading = submitBtn?.querySelector('.submit-loading');
 
-        try {
-            if (submitText) submitText.classList.add('hidden');
-            if (submitLoading) submitLoading.classList.remove('hidden');
-            if (submitBtn) submitBtn.disabled = true;
+    try {
+        if (submitText) submitText.classList.add('hidden');
+        if (submitLoading) submitLoading.classList.remove('hidden');
+        if (submitBtn) submitBtn.disabled = true;
 
-            const formData = {
-                name: DOM.formName?.value.trim() || '',
-                email: DOM.formEmail?.value.trim() || '',
-                status: DOM.formStatus?.value || 'Active',
-                note: DOM.formNote?.value.trim() || ''
-            };
+        const formData = {
+            name: DOM.formName?.value.trim() || '',
+            email: DOM.formEmail?.value.trim() || '',
+            country: DOM.formCountry?.value || '',
+            status: DOM.formStatus?.value || 'Active',
+            note: DOM.formNote?.value.trim() || ''
+        };
 
-            if (DOM.formPassword?.value.trim()) {
-                formData.password = DOM.formPassword.value;
-            }
+        if (DOM.formPassword?.value.trim()) {
+            formData.password = DOM.formPassword.value;
+        }
 
-            const isEdit = state.isEditing;
-            const method = isEdit ? 'PUT' : 'POST';
-            const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
+        const isEdit = state.isEditing;
+        const method = isEdit ? 'PUT' : 'POST';
+        const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
 
-            const { data } = await apiRequest(url, {
-                method: method,
-                body: JSON.stringify(formData)
-            });
+        const { data } = await apiRequest(url, {
+            method: method,
+            body: JSON.stringify(formData)
+        });
 
-            if (data.success) {
-                const tenantName = formData.name;
-                
-                if (isEdit) {
-                    const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
-                    if (index > -1) {
-                        tenants[index] = data.tenant;
-                    }
-                } else {
-                    tenants.unshift(data.tenant);
-                    state.page = 1;
-                }
-
-                closeModal();
-                render();
-
-                if (isEdit) {
-                    showNotification(`${tenantName}'s profile has been successfully updated with the latest information`, 'success');
-                } else {
-                    showNotification(`Welcome ${tenantName}! New tenant account has been created and activated`, 'success');
+        if (data.success) {
+            const tenantName = formData.name;
+            
+            if (isEdit) {
+                const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
+                if (index > -1) {
+                    tenants[index] = data.tenant;
                 }
             } else {
-                throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} tenant`);
+                tenants.unshift(data.tenant);
+                state.page = 1;
             }
-        } catch (error) {
-            console.error('Form submit error:', error);
 
-            try {
-                const errorData = JSON.parse(error.message);
-                if (errorData.errors) {
-                    showErrors(errorData.errors);
-                    return;
-                }
-            } catch (parseError) {
+            closeModal();
+            render();
+
+            if (isEdit) {
+                showNotification(`${tenantName}'s profile has been successfully updated with the latest information`, 'success');
+            } else {
+                showNotification(`Welcome ${tenantName}! New tenant account has been created and activated`, 'success');
             }
-            
-            showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
-        } finally {
-            if (submitText) submitText.classList.remove('hidden');
-            if (submitLoading) submitLoading.classList.add('hidden');
-            if (submitBtn) submitBtn.disabled = false;
+        } else {
+            throw new Error(data.message || `Failed to ${isEdit ? 'update' : 'create'} tenant`);
         }
+    } catch (error) {
+        console.error('Form submit error:', error);
+
+        try {
+            const errorData = JSON.parse(error.message);
+            if (errorData.errors) {
+                showErrors(errorData.errors);
+                return;
+            }
+        } catch (parseError) {
+        }
+        
+        showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
+    } finally {
+        if (submitText) submitText.classList.remove('hidden');
+        if (submitLoading) submitLoading.classList.add('hidden');
+        if (submitBtn) submitBtn.disabled = false;
     }
+}
 
     function goToPage(page) {
         const filtered = getFiltered();
