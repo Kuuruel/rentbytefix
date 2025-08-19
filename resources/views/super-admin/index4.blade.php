@@ -1,18 +1,197 @@
 @extends('layout.layout')
 @php
-    $title='Dashboard';
-    $subTitle = 'Cryptocracy';
+    $title = 'Statistic Users';
+    $subTitle = 'Statistic Users';
     $script = ' <script src="' . asset('assets/js/homeFourChart.js') . '"></script>';
+    
 @endphp
 
 @section('content')
-
     <!-- Crypto Home Widgets Start -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
-        <div class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-warning-600/10 to-bg-white">
+    {{-- <div class="grid grid-cols-12">
+        <div class="col-span-12">
+            <div class="card h-full p-0 rounded-xl border-0 overflow-hidden">
+                <div
+                    class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6 flex items-center flex-wrap gap-3 justify-between">
+                    <div class="flex items-center flex-wrap gap-3">
+
+
+                        <form class="navbar-search" onsubmit="return false;">
+                            <input id="searchInput" type="text" class="bg-white dark:bg-neutral-700 h-10 w-auto"
+                                name="search" placeholder="Search users...">
+                            <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+
+    <div class="card h-full p-0 rounded-xl border-0 overflow-hidden">
+        <div
+            class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6 flex items-center flex-wrap gap-3 justify-between">
+            <div class="flex items-center flex-wrap gap-3">
+                <span class="text-base font-medium text-secondary-light mb-0">Show</span>
+                <select
+                    class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                </select>
+                <form class="navbar-search">
+                    <input type="text" class="bg-white dark:bg-neutral-700 h-10 w-auto" name="search" placeholder="Search">
+                    <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                </form>
+            </div>
+            {{-- <a href="{{ route('viewProfile') }}"
+                class="btn btn-primary text-sm btn-sm px-3 py-3 rounded-lg flex items-center gap-2">
+                <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                Add New User
+            </a> --}}
+        </div>
+        <div class="card-body p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-6">
+                @if (isset($tenants) && count($tenants) > 0)
+                    @foreach ($tenants as $tenant)
+                        <div class="user-grid-card">
+                            <div
+                                class="relative border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden">
+                                {{-- Dropdown --}}
+                                <div class="dropdown absolute top-0 end-0 me-4 mt-4">
+                                    <button data-dropdown-toggle="dropdown{{ $tenant->id }}"
+                                        class="bg-gradient-to-r from-white/50 w-8 h-8 rounded-lg border flex justify-center items-center text-white"
+                                        type="button">
+                                        <i class="ri-more-2-fill text-gray-400 hover:text-gray-600"></i>
+                                    </button>
+                                    <div id="dropdown{{ $tenant->id }}"
+                                        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg border border-neutral-100 dark:border-neutral-600 w-44 dark:bg-gray-700">
+                                        <ul class="p-2 text-sm text-gray-700 dark:text-gray-200">
+                                            <li>
+                                                <button type="submit"
+                                                    class="w-full text-start px-4 py-2.5 hover:bg-gray-100 dark:hover:bg-gray-600 rounded dark:hover:text-white flex items-center gap-2">
+                                                    Edit
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button"
+                                                    class="w-full text-start px-4 py-2.5 hover:bg-danger-100 dark:hover:bg-danger-600/25 rounded hover:text-danger-500 dark:hover:text-danger-600 flex items-center gap-2">
+                                                    Delete
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {{-- Tenant info --}}
+                                <div class="pe-6 pb-4 ps-6 text-center mt--50 pt-5">
+                                    <img src="{{ asset('assets/images/user-grid/user-grid-img1.png') }}" alt=""
+                                        class="border br-white border-width-8-px w-[120px] h-[120px] ms-auto me-auto -mt-[0px] rounded-full object-fit-cover">
+
+                                    <h6 class="text-lg mb-1 mt-2">{{ $tenant->name }}</h6>
+                                    <div class="text-center w-full mb-4">
+                                        {{-- <h6 class="text-base mb-0">Status</h6> --}}
+                                        @if (strtolower($tenant->status) == 'active')
+                                            <span
+                                                class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">
+                                                Active
+                                            </span>
+                                        @else
+                                            <span
+                                                class="bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400 px-4 py-1 rounded-full font-medium text-sm">
+                                                Inactive
+                                            </span>
+                                        @endif
+
+
+                                    </div>
+
+
+                                    <div
+                                        class="center-border relative bg-gradient-to-r from-danger-500/10 to-danger-50/25 rounded-lg p-3 flex items-center gap-4">
+                                        <div class="text-center w-1/2">
+                                            <h6 class="text-base mb-0">Country</h6>
+                                            <span class="text-secondary-light text-sm mb-0">Indonesia</span>
+                                        </div>
+                                        <div class="text-center w-1/2">
+                                            <h6 class="text-base mb-0">Properties</h6>
+                                            <span class="text-secondary-light text-sm mb-0">24</span>
+                                        </div>
+
+                                    </div>
+
+                                    <a href="{{ route('super-admin.index8') }}"
+                                        class="bg-primary-50 hover:bg-primary-600 dark:hover:bg-primary-600 hover:text-white dark:hover:text-white dark:bg-primary-600/25 text-primary-600 dark:text-primary-400 bg-hover-primary-600 hover-text-white p-2.5 text-sm btn-sm px-3 py-3 rounded-lg flex items-center justify-center mt-4 font-medium gap-2 w-full">
+                                        View Statistic
+                                        <iconify-icon icon="solar:alt-arrow-right-linear"
+                                            class="icon text-xl line-height-1"></iconify-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <p class="text-center">Belum ada Landloard yang terdaftar</p>
+                @endif
+            </div>
+
+            {{-- Pagination --}}
+            <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
+                <span>Showing 1 to 10 of {{ count($tenants) }} entries</span>
+                <ul class="pagination flex flex-wrap items-center gap-2 justify-center">
+                    <li class="page-item">
+                        <a class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base"
+                            href="javascript:void(0)"><iconify-icon icon="ep:d-arrow-left"></iconify-icon></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base bg-primary-600 text-white"
+                            href="javascript:void(0)">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8"
+                            href="javascript:void(0)">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base"
+                            href="javascript:void(0)">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base"
+                            href="javascript:void(0)">4</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base"
+                            href="javascript:void(0)">5</a>
+                    </li>
+                    <li class="page-item">
+                        <a
+                            class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
+                            <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+    {{-- <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
+
+        <div
+            class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-warning-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center gap-3">
-                    <img src="{{ asset('assets/images/currency/crypto-img1.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0">
+                    <img src="{{ asset('assets/images/currency/crypto-img1.png') }}" alt=""
+                        class="w-10 h-10 rounded-full shrink-0">
                     <div class="grow">
                         <h6 class="text-xl mb-1">Bitcoin Andika Ebys</h6>
                         <p class="font-medium text-secondary-light mb-0">BTC</p>
@@ -27,10 +206,12 @@
                 </div>
             </div>
         </div>
-        <div class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-blue-600/10 to-bg-white">
+        <div
+            class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-blue-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center gap-3">
-                    <img src="{{ asset('assets/images/currency/crypto-img2.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0">
+                    <img src="{{ asset('assets/images/currency/crypto-img2.png') }}" alt=""
+                        class="w-10 h-10 rounded-full shrink-0">
                     <div class="grow">
                         <h6 class="text-xl mb-1">Ethereum </h6>
                         <p class="font-medium text-secondary-light mb-0">ETH</p>
@@ -45,10 +226,12 @@
                 </div>
             </div>
         </div>
-        <div class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-purple-600/10 to-bg-white">
+        <div
+            class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-purple-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center gap-3">
-                    <img src="{{ asset('assets/images/currency/crypto-img3.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0">
+                    <img src="{{ asset('assets/images/currency/crypto-img3.png') }}" alt=""
+                        class="w-10 h-10 rounded-full shrink-0">
                     <div class="grow">
                         <h6 class="text-xl mb-1">Solana</h6>
                         <p class="font-medium text-secondary-light mb-0">SOL</p>
@@ -63,10 +246,12 @@
                 </div>
             </div>
         </div>
-        <div class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-primary-600/10 to-bg-white">
+        <div
+            class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-primary-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center gap-3">
-                    <img src="{{ asset('assets/images/currency/crypto-img4.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0">
+                    <img src="{{ asset('assets/images/currency/crypto-img4.png') }}" alt=""
+                        class="w-10 h-10 rounded-full shrink-0">
                     <div class="grow">
                         <h6 class="text-xl mb-1">Litecoin</h6>
                         <p class="font-medium text-secondary-light mb-0">LTE</p>
@@ -81,10 +266,12 @@
                 </div>
             </div>
         </div>
-        <div class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-warning-600/10 to-bg-white">
+        <div
+            class="card shadow-none border-gray-200 dark:border-neutral-600 bg-gradient-to-l from-warning-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center gap-3">
-                    <img src="{{ asset('assets/images/currency/crypto-img5.png') }}" alt="" class="w-10 h-10 rounded-full shrink-0">
+                    <img src="{{ asset('assets/images/currency/crypto-img5.png') }}" alt=""
+                        class="w-10 h-10 rounded-full shrink-0">
                     <div class="grow">
                         <h6 class="text-xl mb-1">Dogecoin</h6>
                         <p class="font-medium text-secondary-light mb-0">DOGE</p>
@@ -115,24 +302,33 @@
 
                                 <div class="flex flex-wrap items-center gap-4">
                                     <div class="form-check flex items-center gap-2">
-                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto" id="BTC">
-                                        <label class="form-check-label line-height-1 font-medium text-secondary-light" for="BTC"> BTC </label>
+                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto"
+                                            id="BTC">
+                                        <label class="form-check-label line-height-1 font-medium text-secondary-light"
+                                            for="BTC"> BTC </label>
                                     </div>
                                     <div class="form-check flex items-center gap-2">
-                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto" id="ETH">
-                                        <label class="form-check-label line-height-1 font-medium text-secondary-light" for="ETH"> ETH </label>
+                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto"
+                                            id="ETH">
+                                        <label class="form-check-label line-height-1 font-medium text-secondary-light"
+                                            for="ETH"> ETH </label>
                                     </div>
                                     <div class="form-check flex items-center gap-2">
-                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto" id="SOL">
-                                        <label class="form-check-label line-height-1 font-medium text-secondary-light" for="SOL"> SOL </label>
+                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto"
+                                            id="SOL">
+                                        <label class="form-check-label line-height-1 font-medium text-secondary-light"
+                                            for="SOL"> SOL </label>
                                     </div>
                                     <div class="form-check flex items-center gap-2">
-                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto" id="LTE">
-                                        <label class="form-check-label line-height-1 font-medium text-secondary-light" for="LTE"> LTE </label>
+                                        <input class="form-check-input dark:bg-neutral-600" type="radio" name="crypto"
+                                            id="LTE">
+                                        <label class="form-check-label line-height-1 font-medium text-secondary-light"
+                                            for="LTE"> LTE </label>
                                     </div>
                                 </div>
 
-                                <select class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
+                                <select
+                                    class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
                                     <option>Yearly</option>
                                     <option>Monthly</option>
                                     <option>Weekly</option>
@@ -144,7 +340,8 @@
                                 <h6 class="font-semibold mb-0">$25,000</h6>
                                 <p class="text-sm mb-0 flex items-center gap-1">
                                     Bitcoin (BTC)
-                                    <span class="bg-success-100 dark:bg-success-600/25 border border-success-600/25 px-2 py-2 rounded-full font-semibold text-success-600 dark:text-success-500 text-sm inline-flex items-center gap-1">
+                                    <span
+                                        class="bg-success-100 dark:bg-success-600/25 border border-success-600/25 px-2 py-2 rounded-full font-semibold text-success-600 dark:text-success-500 text-sm inline-flex items-center gap-1">
                                         10%
                                         <iconify-icon icon="iconamoon:arrow-up-2-fill" class="icon"></iconify-icon>
                                     </span>
@@ -161,9 +358,11 @@
                         <div class="card-body p-6">
                             <div class="flex items-center flex-wrap gap-2 justify-between mb-5">
                                 <h6 class="mb-2 font-bold text-lg">Coin Analytics</h6>
-                                <div class="border border-neutral-200 dark:border-neutral-500 rounded px-4 py-2 pe-0 flex items-center gap-1 text-sm text-secondary-light">
+                                <div
+                                    class="border border-neutral-200 dark:border-neutral-500 rounded px-4 py-2 pe-0 flex items-center gap-1 text-sm text-secondary-light">
                                     Currency:
-                                    <select class="form-select form-select-sm text-neutral-700 dark:text-white w-auto bg-white dark:bg-neutral-700 border-0 font-semibold">
+                                    <select
+                                        class="form-select form-select-sm text-neutral-700 dark:text-white w-auto bg-white dark:bg-neutral-700 border-0 font-semibold">
                                         <option>USD</option>
                                         <option>BDT</option>
                                         <option>RUP</option>
@@ -171,9 +370,11 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <img src="{{ asset('assets/images/currency/crypto-img1.png') }}" alt="" class="w-9 h-9 rounded-full shrink-0">
+                                    <img src="{{ asset('assets/images/currency/crypto-img1.png') }}" alt=""
+                                        class="w-9 h-9 rounded-full shrink-0">
                                     <div class="grow">
                                         <h6 class="text-base mb-0">Bitcoin</h6>
                                     </div>
@@ -183,21 +384,26 @@
                                 <div id="markerBitcoinChart" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
 
-                            <div class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <img src="{{ asset('assets/images/currency/crypto-img2.png') }}" alt="" class="w-9 h-9 rounded-full shrink-0">
+                                    <img src="{{ asset('assets/images/currency/crypto-img2.png') }}" alt=""
+                                        class="w-9 h-9 rounded-full shrink-0">
                                     <div class="grow">
                                         <h6 class="text-base mb-0">Ethereum</h6>
                                     </div>
                                 </div>
                                 <h6 class="text-base font-medium mb-0">$55,000.00</h6>
                                 <span class="text-danger-600 text-base font-medium">-2.85%</span>
-                                <div id="markerEthereumChart" class="remove-tooltip-title rounded-tooltip-value"></div>
+                                <div id="markerEthereumChart" class="remove-tooltip-title rounded-tooltip-value">
+                                </div>
                             </div>
 
-                            <div class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <img src="{{ asset('assets/images/currency/crypto-img3.png') }}" alt="" class="w-9 h-9 rounded-full shrink-0">
+                                    <img src="{{ asset('assets/images/currency/crypto-img3.png') }}" alt=""
+                                        class="w-9 h-9 rounded-full shrink-0">
                                     <div class="grow">
                                         <h6 class="text-base mb-0">Solana</h6>
                                     </div>
@@ -207,33 +413,41 @@
                                 <div id="markerSolanaChart" class="remove-tooltip-title rounded-tooltip-value"></div>
                             </div>
 
-                            <div class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <img src="{{ asset('assets/images/currency/crypto-img4.png') }}" alt="" class="w-9 h-9 rounded-full shrink-0">
+                                    <img src="{{ asset('assets/images/currency/crypto-img4.png') }}" alt=""
+                                        class="w-9 h-9 rounded-full shrink-0">
                                     <div class="grow">
                                         <h6 class="text-base mb-0">Litecoin</h6>
                                     </div>
                                 </div>
                                 <h6 class="text-base font-medium mb-0">$55,000.00</h6>
                                 <span class="text-success-600 text-base font-medium">+3.85%</span>
-                                <div id="markerLitecoinChart" class="remove-tooltip-title rounded-tooltip-value"></div>
+                                <div id="markerLitecoinChart" class="remove-tooltip-title rounded-tooltip-value">
+                                </div>
                             </div>
 
-                            <div class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-2 rounded mb-4">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <img src="{{ asset('assets/images/currency/crypto-img5.png') }}" alt="" class="w-9 h-9 rounded-full shrink-0">
+                                    <img src="{{ asset('assets/images/currency/crypto-img5.png') }}" alt=""
+                                        class="w-9 h-9 rounded-full shrink-0">
                                     <div class="grow">
                                         <h6 class="text-base mb-0">Dogecoin</h6>
                                     </div>
                                 </div>
                                 <h6 class="text-base font-medium mb-0">$15,000.00</h6>
                                 <span class="text-danger-600 text-base font-medium">-2.85%</span>
-                                <div id="markerDogecoinChart" class="remove-tooltip-title rounded-tooltip-value"></div>
+                                <div id="markerDogecoinChart" class="remove-tooltip-title rounded-tooltip-value">
+                                </div>
                             </div>
 
-                            <div class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-1.5 rounded">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-2 bg-neutral-200 dark:bg-neutral-600 px-2 py-1.5 rounded">
                                 <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <img src="{{ asset('assets/images/currency/crypto-img1.png') }}" alt="" class="w-9 h-9 rounded-full shrink-0">
+                                    <img src="{{ asset('assets/images/currency/crypto-img1.png') }}" alt=""
+                                        class="w-9 h-9 rounded-full shrink-0">
                                     <div class="grow">
                                         <h6 class="text-base mb-0">Crypto</h6>
                                     </div>
@@ -253,7 +467,8 @@
                             <div class="flex items-center flex-wrap gap-2 justify-between mb-5">
                                 <h6 class="mb-2 font-bold text-lg">My Orders</h6>
                                 <div class="">
-                                    <select class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
+                                    <select
+                                        class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
                                         <option>Today</option>
                                         <option>Monthly</option>
                                         <option>Weekly</option>
@@ -279,7 +494,10 @@
                                             <td>29.4251512</td>
                                             <td>2.154</td>
                                             <td class="text-center line-height-1">
-                                                <button type="button" class="text-lg text-danger-600 remove-btn"><iconify-icon icon="radix-icons:cross-2" class="icon"></iconify-icon> </button>
+                                                <button type="button"
+                                                    class="text-lg text-danger-600 remove-btn"><iconify-icon
+                                                        icon="radix-icons:cross-2" class="icon"></iconify-icon>
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr>
@@ -287,7 +505,10 @@
                                             <td>29.4251512</td>
                                             <td>2.154</td>
                                             <td class="text-center line-height-1">
-                                                <button type="button" class="text-lg text-danger-600 remove-btn"><iconify-icon icon="radix-icons:cross-2" class="icon"></iconify-icon> </button>
+                                                <button type="button"
+                                                    class="text-lg text-danger-600 remove-btn"><iconify-icon
+                                                        icon="radix-icons:cross-2" class="icon"></iconify-icon>
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr>
@@ -295,7 +516,10 @@
                                             <td>29.4251512</td>
                                             <td>2.154</td>
                                             <td class="text-center line-height-1">
-                                                <button type="button" class="text-lg text-danger-600 remove-btn"><iconify-icon icon="radix-icons:cross-2" class="icon"></iconify-icon> </button>
+                                                <button type="button"
+                                                    class="text-lg text-danger-600 remove-btn"><iconify-icon
+                                                        icon="radix-icons:cross-2" class="icon"></iconify-icon>
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr>
@@ -303,7 +527,10 @@
                                             <td>29.4251512</td>
                                             <td>2.154</td>
                                             <td class="text-center line-height-1">
-                                                <button type="button" class="text-lg text-danger-600 remove-btn"><iconify-icon icon="radix-icons:cross-2" class="icon"></iconify-icon> </button>
+                                                <button type="button"
+                                                    class="text-lg text-danger-600 remove-btn"><iconify-icon
+                                                        icon="radix-icons:cross-2" class="icon"></iconify-icon>
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr>
@@ -311,7 +538,10 @@
                                             <td>29.4251512</td>
                                             <td>2.154</td>
                                             <td class="text-center line-height-1">
-                                                <button type="button" class="text-lg text-danger-600 remove-btn"><iconify-icon icon="radix-icons:cross-2" class="icon"></iconify-icon> </button>
+                                                <button type="button"
+                                                    class="text-lg text-danger-600 remove-btn"><iconify-icon
+                                                        icon="radix-icons:cross-2" class="icon"></iconify-icon>
+                                                </button>
                                             </td>
                                         </tr>
                                         <tr>
@@ -319,7 +549,10 @@
                                             <td>29.4251512</td>
                                             <td>2.154</td>
                                             <td class="text-center line-height-1">
-                                                <button type="button" class="text-lg text-danger-600 remove-btn"><iconify-icon icon="radix-icons:cross-2" class="icon"></iconify-icon> </button>
+                                                <button type="button"
+                                                    class="text-lg text-danger-600 remove-btn"><iconify-icon
+                                                        icon="radix-icons:cross-2" class="icon"></iconify-icon>
+                                                </button>
                                             </td>
                                         </tr>
 
@@ -335,7 +568,8 @@
                         <div class="card-body p-6">
                             <div class="flex items-center flex-wrap gap-2 justify-between mb-5">
                                 <h6 class="font-bold text-lg mb-0">Recent Transaction</h6>
-                                <a href="javascript:void(0)" class="text-primary-600 dark:text-primary-600 hover-text-primary flex items-center gap-1">
+                                <a href="javascript:void(0)"
+                                    class="text-primary-600 dark:text-primary-600 hover-text-primary flex items-center gap-1">
                                     View All
                                     <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
                                 </a>
@@ -356,115 +590,145 @@
                                         <tr>
                                             <td>
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
-                                                        <iconify-icon icon="tabler:arrow-up-right" class="icon"></iconify-icon>
+                                                    <span
+                                                        class="text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
+                                                        <iconify-icon icon="tabler:arrow-up-right"
+                                                            class="icon"></iconify-icon>
                                                     </span>
                                                     <span class="font-medium">Bitcoin</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34 AM</span>
+                                                <span
+                                                    class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34
+                                                    AM</span>
                                                 <span class="text-secondary-light text-sm">27 Mar 2025</span>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+ 0.431 BTC</span>
+                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+
+                                                    0.431 BTC</span>
                                                 <span class="text-secondary-light text-sm">$3,480.90</span>
                                             </td>
                                             <td>Abc.........np562</td>
                                             <td class="text-center">
-                                                <span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-4 py-1.5 rounded font-medium text-sm">Completed</span>
+                                                <span
+                                                    class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-4 py-1.5 rounded font-medium text-sm">Completed</span>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td>
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-danger-600 bg-danger-100 dark:bg-danger-600/25 dark:text-danger-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
-                                                        <iconify-icon icon="tabler:arrow-down-left" class="icon"></iconify-icon>
+                                                    <span
+                                                        class="text-danger-600 bg-danger-100 dark:bg-danger-600/25 dark:text-danger-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
+                                                        <iconify-icon icon="tabler:arrow-down-left"
+                                                            class="icon"></iconify-icon>
                                                     </span>
                                                     <span class="font-medium">Bitcoin</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34 AM</span>
+                                                <span
+                                                    class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34
+                                                    AM</span>
                                                 <span class="text-secondary-light text-sm">27 Mar 2025</span>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+ 0.431 BTC</span>
+                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+
+                                                    0.431 BTC</span>
                                                 <span class="text-secondary-light text-sm">$3,480.90</span>
                                             </td>
                                             <td>Abc.........np562</td>
                                             <td class="text-center">
-                                                <span class="bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-4 py-1.5 rounded font-medium text-sm">Terminated</span>
+                                                <span
+                                                    class="bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-4 py-1.5 rounded font-medium text-sm">Terminated</span>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td>
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
-                                                        <iconify-icon icon="tabler:arrow-up-right" class="icon"></iconify-icon>
+                                                    <span
+                                                        class="text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
+                                                        <iconify-icon icon="tabler:arrow-up-right"
+                                                            class="icon"></iconify-icon>
                                                     </span>
                                                     <span class="font-medium">Bitcoin</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34 AM</span>
+                                                <span
+                                                    class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34
+                                                    AM</span>
                                                 <span class="text-secondary-light text-sm">27 Mar 2025</span>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+ 0.431 BTC</span>
+                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+
+                                                    0.431 BTC</span>
                                                 <span class="text-secondary-light text-sm">$3,480.90</span>
                                             </td>
                                             <td>Abc.........np562</td>
                                             <td class="text-center">
-                                                <span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-4 py-1.5 rounded font-medium text-sm">Completed</span>
+                                                <span
+                                                    class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-4 py-1.5 rounded font-medium text-sm">Completed</span>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td>
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-danger-600 bg-danger-100 dark:bg-danger-600/25 dark:text-danger-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
-                                                        <iconify-icon icon="tabler:arrow-down-left" class="icon"></iconify-icon>
+                                                    <span
+                                                        class="text-danger-600 bg-danger-100 dark:bg-danger-600/25 dark:text-danger-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
+                                                        <iconify-icon icon="tabler:arrow-down-left"
+                                                            class="icon"></iconify-icon>
                                                     </span>
                                                     <span class="font-medium">Bitcoin</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34 AM</span>
+                                                <span
+                                                    class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34
+                                                    AM</span>
                                                 <span class="text-secondary-light text-sm">27 Mar 2025</span>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+ 0.431 BTC</span>
+                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+
+                                                    0.431 BTC</span>
                                                 <span class="text-secondary-light text-sm">$3,480.90</span>
                                             </td>
                                             <td>Abc.........np562</td>
                                             <td class="text-center">
-                                                <span class="bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-4 py-1.5 rounded font-medium text-sm">Terminated</span>
+                                                <span
+                                                    class="bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-4 py-1.5 rounded font-medium text-sm">Terminated</span>
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td>
                                                 <div class="flex items-center gap-2">
-                                                    <span class="text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
-                                                        <iconify-icon icon="tabler:arrow-up-right" class="icon"></iconify-icon>
+                                                    <span
+                                                        class="text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 w-8 h-8 flex items-center justify-center rounded-full text-xl">
+                                                        <iconify-icon icon="tabler:arrow-up-right"
+                                                            class="icon"></iconify-icon>
                                                     </span>
                                                     <span class="font-medium">Bitcoin</span>
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34 AM</span>
+                                                <span
+                                                    class="text-neutral-600 dark:text-neutral-200 block font-medium">10:34
+                                                    AM</span>
                                                 <span class="text-secondary-light text-sm">27 Mar 2025</span>
                                             </td>
                                             <td>
-                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+ 0.431 BTC</span>
+                                                <span class="text-neutral-600 dark:text-neutral-200 block font-medium">+
+                                                    0.431 BTC</span>
                                                 <span class="text-secondary-light text-sm">$3,480.90</span>
                                             </td>
                                             <td>Abc.........np562</td>
                                             <td class="text-center">
-                                                <span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-4 py-1.5 rounded font-medium text-sm">Completed</span>
+                                                <span
+                                                    class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-4 py-1.5 rounded font-medium text-sm">Completed</span>
                                             </td>
                                         </tr>
 
@@ -484,76 +748,96 @@
                     <div class="card-body">
                         <div class="flex items-center flex-wrap gap-2 justify-between mb-5">
                             <h6 class="mb-2 font-bold text-lg">My Cards</h6>
-                            <a href="#" class="border border-primary-600 text-primary-600 hover:text-white hover:bg-primary-600 inline-flex items-center gap-2 text-sm btn-sm px-2 py-1.5 rounded transition">
-                                <iconify-icon icon="ph:plus-circle" class="icon text-xl"></iconify-icon> Button
+                            <a href="#"
+                                class="border border-primary-600 text-primary-600 hover:text-white hover:bg-primary-600 inline-flex items-center gap-2 text-sm btn-sm px-2 py-1.5 rounded transition">
+                                <iconify-icon icon="ph:plus-circle" class="icon text-xl"></iconify-icon>
+                                Button
                             </a>
                         </div>
 
                         <div>
                             <div class="card-slider">
                                 <div class="p-5 h-[240px] rounded-lg overflow-hidden relative z-[1]">
-                                    <img src="{{ asset('assets/images/card/card-bg.png') }}" alt="" class="absolute start-0 top-0 w-full h-full object-fit-cover -z-[1]">
+                                    <img src="{{ asset('assets/images/card/card-bg.png') }}" alt=""
+                                        class="absolute start-0 top-0 w-full h-full object-fit-cover -z-[1]">
                                     <div class="flex flex-col justify-between h-full">
                                         <div class="flex items-center justify-between flex-wrap">
                                             <img src="{{ asset('assets/images/card/card-logo.png') }}" alt="">
                                         </div>
                                         <div>
-                                            <span class="text-white text-xs font-normal text-opacity-75">Credit Card Number</span>
-                                            <h6 class="text-white text-xl font-semibold mt-1 mb-0">2356 9854 3652 5612</h6>
+                                            <span class="text-white text-xs font-normal text-opacity-75">Credit
+                                                Card
+                                                Number</span>
+                                            <h6 class="text-white text-xl font-semibold mt-1 mb-0">2356 9854
+                                                3652 5612</h6>
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <span class="text-white text-xs font-normal text-opacity-75">Name</span>
-                                                <h6 class="text-white text-xl font-semibold mb-0">Arlene McCoy</h6>
+                                                <h6 class="text-white text-xl font-semibold mb-0">Arlene McCoy
+                                                </h6>
                                             </div>
                                             <div>
-                                                <span class="text-white text-xs font-normal text-opacity-75">Exp. Date</span>
+                                                <span class="text-white text-xs font-normal text-opacity-75">Exp.
+                                                    Date</span>
                                                 <h6 class="text-white text-xl font-semibold mb-0">05/26</h6>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-5 h-[240px] rounded-lg overflow-hidden relative z-[1]">
-                                    <img src="{{ asset('assets/images/card/card-bg.png') }}" alt="" class="absolute start-0 top-0 w-full h-full object-fit-cover -z-[1]">
+                                    <img src="{{ asset('assets/images/card/card-bg.png') }}" alt=""
+                                        class="absolute start-0 top-0 w-full h-full object-fit-cover -z-[1]">
                                     <div class="flex flex-col justify-between h-full">
                                         <div class="flex items-center justify-between flex-wrap">
                                             <h6 class="text-white mb-0">Master Card</h6>
                                             <img src="{{ asset('assets/images/card/card-logo.png') }}" alt="">
                                         </div>
                                         <div>
-                                            <span class="text-white text-xs font-normal text-opacity-75">Credit Card Number</span>
-                                            <h6 class="text-white text-xl font-semibold mt-1 mb-0">2356 9854 3652 5612</h6>
+                                            <span class="text-white text-xs font-normal text-opacity-75">Credit
+                                                Card
+                                                Number</span>
+                                            <h6 class="text-white text-xl font-semibold mt-1 mb-0">2356 9854
+                                                3652 5612</h6>
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <span class="text-white text-xs font-normal text-opacity-75">Name</span>
-                                                <h6 class="text-white text-xl font-semibold mb-0">Arlene McCoy</h6>
+                                                <h6 class="text-white text-xl font-semibold mb-0">Arlene McCoy
+                                                </h6>
                                             </div>
                                             <div>
-                                                <span class="text-white text-xs font-normal text-opacity-75">Exp. Date</span>
+                                                <span class="text-white text-xs font-normal text-opacity-75">Exp.
+                                                    Date</span>
                                                 <h6 class="text-white text-xl font-semibold mb-0">05/26</h6>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="p-5 h-[240px] rounded-lg overflow-hidden relative z-[1]">
-                                    <img src="{{ asset('assets/images/card/card-bg.png') }}" alt="" class="absolute start-0 top-0 w-full h-full object-fit-cover -z-[1]">
+                                    <img src="{{ asset('assets/images/card/card-bg.png') }}" alt=""
+                                        class="absolute start-0 top-0 w-full h-full object-fit-cover -z-[1]">
                                     <div class="flex flex-col justify-between h-full">
                                         <div class="flex items-center justify-between flex-wrap">
                                             <h6 class="text-white mb-0">Master Card</h6>
                                             <img src="{{ asset('assets/images/card/card-logo.png') }}" alt="">
                                         </div>
                                         <div>
-                                            <span class="text-white text-xs font-normal text-opacity-75">Credit Card Number</span>
-                                            <h6 class="text-white text-xl font-semibold mt-1 mb-0">2356 9854 3652 5612</h6>
+                                            <span class="text-white text-xs font-normal text-opacity-75">Credit
+                                                Card
+                                                Number</span>
+                                            <h6 class="text-white text-xl font-semibold mt-1 mb-0">2356 9854
+                                                3652 5612</h6>
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <span class="text-white text-xs font-normal text-opacity-75">Name</span>
-                                                <h6 class="text-white text-xl font-semibold mb-0">Arlene McCoy</h6>
+                                                <h6 class="text-white text-xl font-semibold mb-0">Arlene McCoy
+                                                </h6>
                                             </div>
                                             <div>
-                                                <span class="text-white text-xs font-normal text-opacity-75">Exp. Date</span>
+                                                <span class="text-white text-xs font-normal text-opacity-75">Exp.
+                                                    Date</span>
                                                 <h6 class="text-white text-xl font-semibold mb-0">05/26</h6>
                                             </div>
                                         </div>
@@ -568,26 +852,41 @@
                         <span class="mb-1.5 text-sm text-secondary-light">Total Balance</span>
                         <h6 class="mb-1.5">$320,320.00</h6>
 
-                        <div class="tab-style-button mb-6 mt-7 border border-neutral-200 dark:border-neutral-500 input-form-light p-1 rounded-lg bg-neutral-50 dark:bg-neutral-600">
-                            <ul class="grid grid-cols-2 -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+                        <div
+                            class="tab-style-button mb-6 mt-7 border border-neutral-200 dark:border-neutral-500 input-form-light p-1 rounded-lg bg-neutral-50 dark:bg-neutral-600">
+                            <ul class="grid grid-cols-2 -mb-px text-sm font-medium text-center" id="default-tab"
+                                data-tabs-toggle="#default-tab-content" role="tablist">
                                 <li role="presentation">
-                                    <button class="px-3 py-2.5 text-base w-full text-center rounded-lg" id="buy-tab" data-tabs-target="#buy" type="button" role="tab" aria-controls="buy" aria-selected="false">Buy</button>
+                                    <button class="px-3 py-2.5 text-base w-full text-center rounded-lg" id="buy-tab"
+                                        data-tabs-target="#buy" type="button" role="tab" aria-controls="buy"
+                                        aria-selected="false">Buy</button>
                                 </li>
                                 <li role="presentation">
-                                    <button class="px-3 py-2.5 text-base w-full text-center rounded-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="sell-tab" data-tabs-target="#sell" type="button" role="tab" aria-controls="sell" aria-selected="false">Sell</button>
+                                    <button
+                                        class="px-3 py-2.5 text-base w-full text-center rounded-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                                        id="sell-tab" data-tabs-target="#sell" type="button" role="tab"
+                                        aria-controls="sell" aria-selected="false">Sell</button>
                                 </li>
                             </ul>
                         </div>
 
                         <div id="default-tab-content">
-                            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="buy" role="tabpanel" aria-labelledby="buy-tab">
+                            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="buy" role="tabpanel"
+                                aria-labelledby="buy-tab">
                                 <div class="">
                                     <div class="mb-5">
-                                        <label for="estimatedValue" class="font-semibold mb-2 block text-neutral-600 dark:text-white">Estimated Purchase Value</label>
-                                        <div class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
-                                            <input type="text" class="grow w-full rounded-tr-none rounded-br-none form-control  border-0" id="estimatedValue" placeholder="Estimated Value">
-                                            <div class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1 flex justify-center items-center">
-                                                <select class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
+                                        <label for="estimatedValue"
+                                            class="font-semibold mb-2 block text-neutral-600 dark:text-white">Estimated
+                                            Purchase Value</label>
+                                        <div
+                                            class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
+                                            <input type="text"
+                                                class="grow w-full rounded-tr-none rounded-br-none form-control  border-0"
+                                                id="estimatedValue" placeholder="Estimated Value">
+                                            <div
+                                                class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1 flex justify-center items-center">
+                                                <select
+                                                    class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
                                                     <option class="bg-white dark:bg-neutral-700">BTC</option>
                                                     <option class="bg-white dark:bg-neutral-700">LTC</option>
                                                     <option class="bg-white dark:bg-neutral-700">ETC</option>
@@ -596,11 +895,18 @@
                                         </div>
                                     </div>
                                     <div class="mb-5">
-                                        <label for="tradeValue" class="font-semibold mb-2 block text-neutral-600 dark:text-white">Trade Value</label>
-                                        <div class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
-                                            <input type="text" class="grow w-full  rounded-tr-none rounded-br-none  form-control border-0" id="tradeValue" placeholder="Trade Value">
-                                            <div class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1 flex justify-center items-center">
-                                                <select class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
+                                        <label for="tradeValue"
+                                            class="font-semibold mb-2 block text-neutral-600 dark:text-white">Trade
+                                            Value</label>
+                                        <div
+                                            class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
+                                            <input type="text"
+                                                class="grow w-full  rounded-tr-none rounded-br-none  form-control border-0"
+                                                id="tradeValue" placeholder="Trade Value">
+                                            <div
+                                                class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1 flex justify-center items-center">
+                                                <select
+                                                    class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
                                                     <option class="bg-white dark:bg-neutral-700">USD</option>
                                                     <option class="bg-white dark:bg-neutral-700">BTC</option>
                                                     <option class="bg-white dark:bg-neutral-700">LTC</option>
@@ -610,24 +916,37 @@
                                         </div>
                                     </div>
                                     <div class="mb-5">
-                                        <label for="tradeValue" class="font-semibold mb-2 block text-neutral-600 dark:text-white">Trade Value</label>
+                                        <label for="tradeValue"
+                                            class="font-semibold mb-2 block text-neutral-600 dark:text-white">Trade
+                                            Value</label>
                                         <textarea class="form-control w-full border h-[80px] rounded-lg" placeholder="Enter Address"></textarea>
                                     </div>
                                     <div class="mb-6">
                                         <span class="mb-1.5 text-sm text-secondary-light">Total Balance</span>
-                                        <h6 class="mb-1.5 font-semibold text-xl text-warning-600 dark:text-warning-600">$320,320.00</h6>
+                                        <h6 class="mb-1.5 font-semibold text-xl text-warning-600 dark:text-warning-600">
+                                            $320,320.00</h6>
                                     </div>
-                                    <a href="#" class="btn bg-primary-600 hover:bg-primary-700 text-white text-sm px-2 py-3 w-full justify-center rounded-lg transition"> Transfer Now</a>
+                                    <a href="#"
+                                        class="btn bg-primary-600 hover:bg-primary-700 text-white text-sm px-2 py-3 w-full justify-center rounded-lg transition">
+                                        Transfer Now</a>
                                 </div>
                             </div>
-                            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="sell" role="tabpanel" aria-labelledby="sell-tab">
+                            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="sell" role="tabpanel"
+                                aria-labelledby="sell-tab">
                                 <div class="">
                                     <div class="mb-5">
-                                        <label for="estimatedValueTwo" class="font-semibold mb-2 block text-neutral-600 dark:text-white">Estimated Purchase Sell Value</label>
-                                        <div class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
-                                            <input type="text" class="grow w-full rounded-tl-lg rounded-bl-lg  form-control bg-white dark:bg-neutral-700 border-0" id="estimatedValueTwo" placeholder="Estimated Value">
-                                            <div class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1">
-                                                <select class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
+                                        <label for="estimatedValueTwo"
+                                            class="font-semibold mb-2 block text-neutral-600 dark:text-white">Estimated
+                                            Purchase Sell Value</label>
+                                        <div
+                                            class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
+                                            <input type="text"
+                                                class="grow w-full rounded-tl-lg rounded-bl-lg  form-control bg-white dark:bg-neutral-700 border-0"
+                                                id="estimatedValueTwo" placeholder="Estimated Value">
+                                            <div
+                                                class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1">
+                                                <select
+                                                    class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
                                                     <option class="bg-white dark:bg-neutral-700">BTC</option>
                                                     <option class="bg-white dark:bg-neutral-700">LTC</option>
                                                     <option class="bg-white dark:bg-neutral-700">ETC</option>
@@ -636,11 +955,18 @@
                                         </div>
                                     </div>
                                     <div class="mb-5">
-                                        <label for="tradeValueTwo" class="font-semibold mb-2 block text-neutral-600 dark:text-white">Trade Value</label>
-                                        <div class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
-                                            <input type="text" class="grow w-full rounded-tl-lg rounded-bl-lg  form-control bg-white dark:bg-neutral-700 border-0" id="tradeValueTwo" placeholder="Trade Value">
-                                            <div class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1">
-                                                <select class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
+                                        <label for="tradeValueTwo"
+                                            class="font-semibold mb-2 block text-neutral-600 dark:text-white">Trade
+                                            Value</label>
+                                        <div
+                                            class="flex justify-content-between border border-neutral-200 dark:border-neutral-500 rounded-lg">
+                                            <input type="text"
+                                                class="grow w-full rounded-tl-lg rounded-bl-lg  form-control bg-white dark:bg-neutral-700 border-0"
+                                                id="tradeValueTwo" placeholder="Trade Value">
+                                            <div
+                                                class="shrink-0 bg-neutral-50 dark:bg-neutral-600 rounded-tr-lg rounded-br-lg border-0 font-normal ps-1 pe-1">
+                                                <select
+                                                    class="form-select form-select-sm w-auto bg-transparent dark:text-white font-bolder border-0 text-secondary-light">
                                                     <option class="bg-white dark:bg-neutral-700">USD</option>
                                                     <option class="bg-white dark:bg-neutral-700">BTC</option>
                                                     <option class="bg-white dark:bg-neutral-700">LTC</option>
@@ -650,14 +976,20 @@
                                         </div>
                                     </div>
                                     <div class="mb-5">
-                                        <label class="font-semibold mb-2 block text-neutral-600 dark:text-white">Address</label>
-                                        <textarea class="form-control w-full bg-white border border-neutral-200 dark:border-neutral-500 dark:bg-neutral-700 h-[80px] rounded-lg" placeholder="Enter Address"></textarea>
+                                        <label
+                                            class="font-semibold mb-2 block text-neutral-600 dark:text-white">Address</label>
+                                        <textarea
+                                            class="form-control w-full bg-white border border-neutral-200 dark:border-neutral-500 dark:bg-neutral-700 h-[80px] rounded-lg"
+                                            placeholder="Enter Address"></textarea>
                                     </div>
                                     <div class="mb-6">
                                         <span class="mb-1.5 text-sm text-secondary-light">Total Balance</span>
-                                        <h6 class="mb-1.5 font-semibold text-xl text-warning-600 dark:text-warning-600">$320,320.00</h6>
+                                        <h6 class="mb-1.5 font-semibold text-xl text-warning-600 dark:text-warning-600">
+                                            $320,320.00</h6>
                                     </div>
-                                    <a href="#" class="btn bg-primary-600 hover:bg-primary-700 text-white text-sm px-2 py-3 w-full rounded-lg transition justify-center"> Transfer Now</a>
+                                    <a href="#"
+                                        class="btn bg-primary-600 hover:bg-primary-700 text-white text-sm px-2 py-3 w-full rounded-lg transition justify-center">
+                                        Transfer Now</a>
                                 </div>
                             </div>
                         </div>
@@ -669,7 +1001,8 @@
                         <div class="flex items-center flex-wrap gap-2 justify-between">
                             <h6 class="mb-2 font-bold text-lg">User Activates</h6>
                             <div class="">
-                                <select class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
+                                <select
+                                    class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
                                     <option>This Week</option>
                                     <option>This Month</option>
                                     <option>This Year</option>
@@ -678,9 +1011,12 @@
                         </div>
 
                         <div class="relative">
-                            <span class="w-[80px] h-[80px] bg-white dark:bg-neutral-700 shadow-xl text-neutral-600 dark:text-neutral-200 font-semibold text-xl flex justify-center items-center rounded-full absolute end-0 top-0 z-1">+30%</span>
-                            <div id="statisticsDonutChart" class="mt-9 grow apexcharts-tooltip-z-none title-style circle-none"></div>
-                            <span class="w-[80px] h-[80px] bg-white dark:bg-neutral-700 shadow-xl text-neutral-600 dark:text-neutral-200 font-semibold text-xl flex justify-center items-center rounded-full absolute start-0 bottom-0 z-1">+25%</span>
+                            <span
+                                class="w-[80px] h-[80px] bg-white dark:bg-neutral-700 shadow-xl text-neutral-600 dark:text-neutral-200 font-semibold text-xl flex justify-center items-center rounded-full absolute end-0 top-0 z-1">+30%</span>
+                            <div id="statisticsDonutChart"
+                                class="mt-9 grow apexcharts-tooltip-z-none title-style circle-none"></div>
+                            <span
+                                class="w-[80px] h-[80px] bg-white dark:bg-neutral-700 shadow-xl text-neutral-600 dark:text-neutral-200 font-semibold text-xl flex justify-center items-center rounded-full absolute start-0 bottom-0 z-1">+25%</span>
                         </div>
 
                         <ul class="flex flex-wrap items-center justify-between mt-4 gap-3">
@@ -704,6 +1040,5 @@
                 </div>
             </div>
         </div>
-    </div>
-
+    </div> --}}
 @endsection

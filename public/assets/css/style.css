@@ -32,7 +32,7 @@ html {
   -moz-tab-size: 4; /* 3 */
   -o-tab-size: 4;
      tab-size: 4; /* 3 */
-  font-family: Inter, sans-serif; /* 4 */
+  font-family: 'Poppins', sans-serif; /* 4 */
   font-feature-settings: normal; /* 5 */
   font-variation-settings: normal; /* 6 */
 }
@@ -6926,8 +6926,8 @@ h6, .h6 {
 
 .sidebar-menu .sidebar-submenu{
   display: none;
-  padding-top: 0.5rem;
-
+  padding-top: 0.75rem;
+  padding-inline-start: 1.5rem;
   transition-property: none;
 }
 

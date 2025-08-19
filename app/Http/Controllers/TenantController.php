@@ -24,12 +24,12 @@ class TenantController extends Controller
                     'tenants' => $tenants
                 ]);
             }
-            
+
             $tenants = Tenants::with('user')->orderBy('id', 'desc')->get();
             return view('super-admin.index2', compact('tenants'));
         } catch (\Exception $e) {
             Log::error('Tenant index error: ' . $e->getMessage());
-            
+
             if (request()->ajax()) {
                 return response()->json([
                     'success' => false,
@@ -37,7 +37,7 @@ class TenantController extends Controller
                     'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
                 ], 500);
             }
-            
+
             return redirect()->back()->with('error', 'Failed to load tenants');
         }
     }
@@ -63,10 +63,10 @@ class TenantController extends Controller
 
             $data = $validator->validated();
             $data['password'] = Hash::make($data['password']);
-            
+
             // Handle user_id assignment with fallback
             $userId = Auth::id();
-            
+
             if (!$userId) {
                 // If no authenticated user, try to find the first user or create a default one
                 $firstUser = User::first();
@@ -88,7 +88,7 @@ class TenantController extends Controller
                 if (!$userExists) {
                     $firstUser = User::first();
                     $userId = $firstUser ? $firstUser->id : null;
-                    
+
                     if (!$userId) {
                         return response()->json([
                             'success' => false,
@@ -103,10 +103,10 @@ class TenantController extends Controller
 
             // Use database transaction for data integrity
             DB::beginTransaction();
-            
+
             $tenant = Tenants::create($data);
             $tenant->load('user');
-            
+
             DB::commit();
 
             return response()->json([
@@ -114,11 +114,10 @@ class TenantController extends Controller
                 'message' => 'Tenant created successfully',
                 'tenant' => $tenant
             ], 201);
-            
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
             Log::error('Database error creating tenant: ' . $e->getMessage());
-            
+
             // Check for specific constraint violations
             if (strpos($e->getMessage(), 'user_id_foreign') !== false) {
                 return response()->json([
@@ -126,24 +125,23 @@ class TenantController extends Controller
                     'message' => 'User reference error. Please contact administrator.'
                 ], 500);
             }
-            
+
             if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Email address already exists'
                 ], 422);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Database error occurred',
                 'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
             ], 500);
-            
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error creating tenant: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create tenant',
@@ -162,7 +160,7 @@ class TenantController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error showing tenant: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to load tenant details',
@@ -191,7 +189,7 @@ class TenantController extends Controller
             }
 
             $data = $validator->validated();
-            
+
             // Only update password if provided
             if (empty($data['password'])) {
                 unset($data['password']);
@@ -200,10 +198,10 @@ class TenantController extends Controller
             }
 
             DB::beginTransaction();
-            
+
             $tenant->update($data);
             $tenant->load('user');
-            
+
             DB::commit();
 
             return response()->json([
@@ -211,28 +209,26 @@ class TenantController extends Controller
                 'message' => 'Tenant updated successfully',
                 'tenant' => $tenant
             ]);
-            
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
             Log::error('Database error updating tenant: ' . $e->getMessage());
-            
+
             if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Email address already exists'
                 ], 422);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Database error occurred',
                 'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
             ], 500);
-            
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error updating tenant: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update tenant',
@@ -245,21 +241,20 @@ class TenantController extends Controller
     {
         try {
             DB::beginTransaction();
-            
+
             $tenantName = $tenant->name;
             $tenant->delete();
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => "Tenant '{$tenantName}' deleted successfully"
             ]);
-            
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error deleting tenant: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete tenant',
@@ -267,14 +262,14 @@ class TenantController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Check and create default user if needed
      */
     private function ensureDefaultUser()
     {
         $userCount = User::count();
-        
+
         if ($userCount === 0) {
             return User::create([
                 'name' => 'System Admin',
@@ -283,7 +278,17 @@ class TenantController extends Controller
                 'email_verified_at' => now()
             ]);
         }
-        
+
         return User::first();
+    }
+    public function statisticUsers()
+    {
+        try {
+            $tenants = Tenants::with('user')->orderBy('id', 'desc')->get();
+            return view('super-admin.index4', compact('tenants'));
+        } catch (\Exception $e) {
+            Log::error('Tenant statistic error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to load tenant statistics');
+        }
     }
 }
