@@ -858,11 +858,11 @@ function updateSelectActions() {
                             <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                             Delete Selected
                         </button>
-                        <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                        <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-black dark:text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
                             <iconify-icon icon="ph:toggle-left" class="text-sm"></iconify-icon>
                             Toggle Status
                         </button>
-                        <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                        <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-black dark:text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
                             <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
                             Clear
                         </button>
