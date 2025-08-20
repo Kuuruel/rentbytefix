@@ -833,64 +833,64 @@
         updateSelectActions();
     }
 
-    function updateSelectActions() {
-        const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
-        const selectedCount = checkedBoxes.length;
-        
-        let bulkActionsContainer = document.getElementById('bulkActionsContainer');
-        
-        if (selectedCount > 0) {
-            if (!bulkActionsContainer) {
-                bulkActionsContainer = document.createElement('div');
-                bulkActionsContainer.id = 'bulkActionsContainer';
-                bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
-                bulkActionsContainer.innerHTML = `
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
-                            <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
-                                <span id="selectedCount">${selectedCount}</span> tenant(s) selected
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
-                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
-                                Delete Selected
-                            </button>
-                            <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
-                                <iconify-icon icon="ph:toggle-left" class="text-sm"></iconify-icon>
-                                Toggle Status
-                            </button>
-                            <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
-                                <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
-                                Clear
-                            </button>
-                        </div>
+function updateSelectActions() {
+    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+    const selectedCount = checkedBoxes.length;
+    
+    let bulkActionsContainer = document.getElementById('bulkActionsContainer');
+    
+    if (selectedCount > 0) {
+        if (!bulkActionsContainer) {
+            bulkActionsContainer = document.createElement('div');
+            bulkActionsContainer.id = 'bulkActionsContainer';
+            bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
+            bulkActionsContainer.innerHTML = `
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
+                        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            <span id="selectedCount">${selectedCount}</span> tenant(s) selected
+                        </span>
                     </div>
-                `;
-                
-                const tableContainer = document.querySelector('.table-responsive');
-                if (tableContainer) {
-                    tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
-                }
-            } else {
-                document.getElementById('selectedCount').textContent = selectedCount;
+                    <div class="flex items-center gap-2">
+                        <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                            Delete Selected
+                        </button>
+                        <button id="bulkStatusBtn" class="bg-green-600 hover:bg-green-700 text-black dark:text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:toggle-left" class="text-sm"></iconify-icon>
+                            Toggle Status
+                        </button>
+                        <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-black dark:text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const tableContainer = document.querySelector('.table-responsive');
+            if (tableContainer) {
+                tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
             }
-            
-            const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
-            const bulkStatusBtn = document.getElementById('bulkStatusBtn');
-            const clearSelectionBtn = document.getElementById('clearSelection');
-            
-            bulkDeleteBtn.onclick = showBulkDeleteModal;
-            bulkStatusBtn.onclick = showBulkStatusModal;
-            clearSelectionBtn.onclick = clearAllSelections;
-            
         } else {
-            if (bulkActionsContainer) {
-                bulkActionsContainer.remove();
-            }
+            document.getElementById('selectedCount').textContent = selectedCount;
+        }
+        
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const bulkStatusBtn = document.getElementById('bulkStatusBtn');
+        const clearSelectionBtn = document.getElementById('clearSelection');
+        
+        bulkDeleteBtn.onclick = showBulkDeleteModal;
+        bulkStatusBtn.onclick = showBulkStatusModal;
+        clearSelectionBtn.onclick = clearAllSelections;
+        
+    } else {
+        if (bulkActionsContainer) {
+            bulkActionsContainer.remove();
         }
     }
+}
 
     function getSelectedTenantIds() {
         const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');

@@ -6346,13 +6346,6 @@ svg.radial-progress text.percentage {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
-.\[a-zA-Z0-9\:_\\-\.\]{
-  a-z-a--z0-9: \-.;
-}
-
-.\[a-zA-Z\:_\]{
-  a-z-a--z: ;
-}
 span, a{
   display: inline-block;
 }
