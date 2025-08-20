@@ -343,10 +343,37 @@
         const filtered = getFiltered();
         const totalPages = getTotalPages(filtered);
 
-        if (state.page > totalPages) state.page = totalPages;
+        if (state.page > totalPages && totalPages > 0) {
+            state.page = totalPages;
+        }
+        if (state.page < 1) {
+            state.page = 1;
+        }
 
         const start = (state.page - 1) * state.perPage;
         const paginated = filtered.slice(start, start + state.perPage);
+
+        const endIndex = Math.min(start + state.perPage, filtered.length);
+        const showingStart = filtered.length === 0 ? 0 : start + 1;
+        const showingEnd = filtered.length === 0 ? 0 : endIndex;
+        
+        if (DOM.paginationInfo) {
+            DOM.paginationInfo.textContent = `Showing ${showingStart} to ${showingEnd} of ${filtered.length} entries`;
+        }
+
+        if (DOM.prevBtn) {
+            DOM.prevBtn.disabled = state.page <= 1;
+            DOM.prevBtn.classList.toggle('opacity-50', state.page <= 1);
+            DOM.prevBtn.classList.toggle('cursor-not-allowed', state.page <= 1);
+        }
+        
+        if (DOM.nextBtn) {
+            DOM.nextBtn.disabled = state.page >= totalPages;
+            DOM.nextBtn.classList.toggle('opacity-50', state.page >= totalPages);
+            DOM.nextBtn.classList.toggle('cursor-not-allowed', state.page >= totalPages);
+        }
+
+        renderPageNumbers(totalPages);
 
         if (paginated.length === 0) {
             DOM.tableBody.innerHTML = `
@@ -430,69 +457,238 @@
     function renderPageNumbers(totalPages) {
         if (!DOM.pageNumbers) return;
         
-        let pageHTML = '';
-        const maxVisiblePages = 5;
-        let startPage = Math.max(1, state.page - Math.floor(maxVisiblePages / 2));
-        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-        if (endPage - startPage < maxVisiblePages - 1) {
-            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        if (totalPages <= 1) {
+            DOM.pageNumbers.innerHTML = '';
+            return;
         }
 
-        if (startPage > 1) {
-            pageHTML += `
-                <li class="page-item">
-                    <button class="page-link ${1 === state.page ? 
-                        'bg-primary-600 text-white border-primary-600' : 
-                        'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                    } font-medium rounded border flex items-center justify-center h-8 w-8 text-sm transition-colors" 
-                    onclick="goToPage(1)">
-                        1
-                    </button>
-                </li>`;
-            
-            if (startPage > 2) {
+        const delta = 2;
+        const rangeStart = Math.max(1, state.page - delta);
+        const rangeEnd = Math.min(totalPages, state.page + delta);
+        
+        let pageHTML = '';
+
+        pageHTML += `
+            <li class="page-item">
+                <button class="page-link ${state.page <= 1 ? 
+                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
+                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                ${state.page <= 1 ? 'disabled' : ''} title="First page">
+                    &laquo;&laquo;
+                </button>
+            </li>
+        `;
+
+        pageHTML += `
+            <li class="page-item">
+                <button class="page-link ${state.page <= 1 ? 
+                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
+                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                ${state.page <= 1 ? 'disabled' : ''} title="Previous page">
+                    &laquo;
+                </button>
+            </li>
+        `;
+
+        if (rangeStart > 1) {
+            if (rangeStart > 2) {
                 pageHTML += `
                     <li class="page-item">
-                        <span class="flex items-center justify-center h-8 w-8 text-neutral-400">...</span>
-                    </li>`;
+                        <button class="page-link bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600 font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors">
+                            1
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <span class="page-link bg-transparent text-neutral-500 dark:text-neutral-400 flex items-center justify-center h-8 w-8 text-sm">
+                            ...
+                        </span>
+                    </li>
+                `;
+            } else {
+                pageHTML += `
+                    <li class="page-item">
+                        <button class="page-link bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600 font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors">
+                            1
+                        </button>
+                    </li>
+                `;
             }
         }
 
-        for (let i = startPage; i <= endPage; i++) {
+        for (let i = rangeStart; i <= rangeEnd; i++) {
+            const isActive = i === state.page;
             pageHTML += `
                 <li class="page-item">
-                    <button class="page-link ${i === state.page ? 
-                        'bg-primary-600 text-white border-primary-600' : 
-                        'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                    } font-medium rounded border flex items-center justify-center h-8 w-8 text-sm transition-colors" 
-                    onclick="goToPage(${i})">
+                    <button class="page-link ${isActive ? 
+                        'bg-primary-600 text-white border border-primary-600' : 
+                        'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+                    } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                    ${isActive ? 'disabled' : ''} data-page="${i}">
                         ${i}
                     </button>
-                </li>`;
+                </li>
+            `;
         }
 
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
+        if (rangeEnd < totalPages) {
+            if (rangeEnd < totalPages - 1) {
                 pageHTML += `
                     <li class="page-item">
-                        <span class="flex items-center justify-center h-8 w-8 text-neutral-400">...</span>
-                    </li>`;
+                        <span class="page-link bg-transparent text-neutral-500 dark:text-neutral-400 flex items-center justify-center h-8 w-8 text-sm">
+                            ...
+                        </span>
+                    </li>
+                    <li class="page-item">
+                        <button class="page-link bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600 font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                        data-page="${totalPages}">
+                            ${totalPages}
+                        </button>
+                    </li>
+                `;
+            } else {
+                pageHTML += `
+                    <li class="page-item">
+                        <button class="page-link bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600 font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                        data-page="${totalPages}">
+                            ${totalPages}
+                        </button>
+                    </li>
+                `;
             }
-            
-            pageHTML += `
-                <li class="page-item">
-                    <button class="page-link ${totalPages === state.page ? 
-                        'bg-primary-600 text-white border-primary-600' : 
-                        'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                    } font-medium rounded border flex items-center justify-center h-8 w-8 text-sm transition-colors" 
-                    onclick="goToPage(${totalPages})">
-                        ${totalPages}
-                    </button>
-                </li>`;
         }
+
+        pageHTML += `
+            <li class="page-item">
+                <button class="page-link ${state.page >= totalPages ? 
+                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
+                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                ${state.page >= totalPages ? 'disabled' : ''} title="Next page" id="nextPageBtn">
+                    &raquo;
+                </button>
+            </li>
+        `;
+
+        pageHTML += `
+            <li class="page-item">
+                <button class="page-link ${state.page >= totalPages ? 
+                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
+                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                ${state.page >= totalPages ? 'disabled' : ''} title="Last page" id="lastPageBtn">
+                    &raquo;&raquo;
+                </button>
+            </li>
+        `;
         
         DOM.pageNumbers.innerHTML = pageHTML;
+        
+        addPaginationEventListeners(totalPages);
+
+    }
+
+    function addPaginationEventListeners(totalPages) {
+        const firstPageBtn = DOM.pageNumbers.querySelector('button[title="First page"]');
+        if (firstPageBtn && !firstPageBtn.disabled) {
+            firstPageBtn.addEventListener('click', () => goToPage(1));
+        }
+
+        const prevPageBtn = DOM.pageNumbers.querySelector('button[title="Previous page"]');
+        if (prevPageBtn && !prevPageBtn.disabled) {
+            prevPageBtn.addEventListener('click', () => prevPage());
+        }
+
+        const pageNumberBtns = DOM.pageNumbers.querySelectorAll('button[data-page]');
+        pageNumberBtns.forEach(btn => {
+            if (!btn.disabled) {
+                const pageNum = parseInt(btn.dataset.page);
+                btn.addEventListener('click', () => goToPage(pageNum));
+            }
+        });
+
+        const nextPageBtn = DOM.pageNumbers.querySelector('#nextPageBtn');
+        if (nextPageBtn && !nextPageBtn.disabled) {
+            nextPageBtn.addEventListener('click', () => nextPage());
+        }
+
+        const lastPageBtn = DOM.pageNumbers.querySelector('#lastPageBtn');
+        if (lastPageBtn && !lastPageBtn.disabled) {
+            lastPageBtn.addEventListener('click', () => goToPage(totalPages));
+        }
+    }
+
+    function initEventListeners() {
+        DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
+
+        DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
+        DOM.statusFilter?.addEventListener('change', updateFilters);
+        DOM.perPageSelect?.addEventListener('change', updatePerPage);
+
+        DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
+        DOM.formCancel?.addEventListener('click', closeModal);
+        DOM.closeModalBtn?.addEventListener('click', closeModal);
+        DOM.modalBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.modalBackdrop) closeModal();
+        });
+
+        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
+        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
+        DOM.detailsBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
+        });
+
+        DOM.deleteConfirm?.addEventListener('click', deleteTenant);
+        DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
+        DOM.deleteBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.deleteBackdrop) closeDeleteModal();
+        });
+
+        initSelectEventListeners();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDetailsModal();
+                closeDeleteModal();
+            }
+        });
+
+        document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
+        document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
+        document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
+        });
+
+        document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
+        document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
+        document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideBulkDeleteModal();
+                hideBulkStatusModal();
+            }
+        });
+    }
+
+    function goToPage(page) {
+        const filtered = getFiltered();
+        const totalPages = getTotalPages(filtered);
+        
+        if (isNaN(page) || page < 1 || page > totalPages) {
+            const input = document.querySelector('#pageNumbers input[type="number"]');
+            if (input) input.value = state.page;
+            return;
+        }
+        
+        if (page >= 1 && page <= totalPages) {
+            state.page = page;
+            render();
+        }
     }
 
     function openCreateModal() {

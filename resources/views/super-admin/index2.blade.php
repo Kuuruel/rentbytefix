@@ -82,18 +82,8 @@
 
                 <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
                     <span id="paginationInfo" class="text-sm text-neutral-600 dark:text-neutral-400">Showing 0 to 0 of 0 entries</span>
-                    <ul class="pagination flex flex-wrap items-center gap-2 justify-center">
-                        <li class="page-item">
-                            <button id="prevBtn" class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
-                                <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
-                            </button>
-                        </li>
+                    <ul id="pageNumbers" class="pagination flex flex-wrap items-center gap-2 justify-center">
                         <div id="pageNumbers" class="flex gap-1"></div>
-                        <li class="page-item">
-                            <button id="nextBtn" class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
-                                <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
-                            </button>
-                        </li>
                     </ul>
                 </div>
             </div>
