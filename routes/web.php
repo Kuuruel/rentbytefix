@@ -17,9 +17,7 @@ use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 
-
 Route::get('/', [DashboardController::class, 'index'])->name('super-admin.index');
-
 
 Route::controller(HomeController::class)->group(function () {
     Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
@@ -39,7 +37,6 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('widgets', 'widgets')->name('widgets');
 });
 
-// aiApplication
 Route::prefix('aiapplication')->group(function () {
     Route::controller(AiapplicationController::class)->group(function () {
         Route::get('/code-generator', 'codeGenerator')->name('codeGenerator');
@@ -52,7 +49,6 @@ Route::prefix('aiapplication')->group(function () {
     });
 });
 
-// Authentication
 Route::prefix('authentication')->group(function () {
     Route::controller(AuthenticationController::class)->group(function () {
         Route::get('/forgot-password', 'forgotPassword')->name('forgotPassword');
@@ -62,7 +58,6 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
-// chart
 Route::prefix('chart')->group(function () {
     Route::controller(ChartController::class)->group(function () {
         Route::get('/column-chart', 'columnChart')->name('columnChart');
@@ -71,7 +66,6 @@ Route::prefix('chart')->group(function () {
     });
 });
 
-// Componentpage
 Route::prefix('componentspage')->group(function () {
     Route::controller(ComponentspageController::class)->group(function () {
         Route::get('/alert', 'alert')->name('alert');
@@ -98,7 +92,6 @@ Route::prefix('componentspage')->group(function () {
     });
 });
 
-// Dashboard
 Route::prefix('cryptocurrency')->group(function () {
     Route::controller(CryptocurrencyController::class)->group(function () {
         Route::get('/wallet', 'wallet')->name('wallet');
@@ -133,7 +126,6 @@ Route::prefix('landlord')->group(function () {
     });
 });
 
-// Forms
 Route::prefix('forms')->group(function () {
     Route::controller(FormsController::class)->group(function () {
         Route::get('/form', 'form')->name('form');
@@ -143,7 +135,6 @@ Route::prefix('forms')->group(function () {
     });
 });
 
-// invoice/invoiceList
 Route::prefix('invoice')->group(function () {
     Route::controller(InvoiceController::class)->group(function () {
         Route::get('/invoice-add', 'invoiceAdd')->name('invoiceAdd');
@@ -153,7 +144,6 @@ Route::prefix('invoice')->group(function () {
     });
 });
 
-// Settings
 Route::prefix('settings')->group(function () {
     Route::controller(SettingsController::class)->group(function () {
         Route::get('/company', 'company')->name('company');
@@ -166,7 +156,6 @@ Route::prefix('settings')->group(function () {
     });
 });
 
-// Table
 Route::prefix('table')->group(function () {
     Route::controller(TableController::class)->group(function () {
         Route::get('/table-basic', 'tableBasic')->name('tableBasic');
@@ -174,19 +163,21 @@ Route::prefix('table')->group(function () {
     });
 });
 
-// Users
 Route::prefix('users')->group(function () {
     Route::controller(UsersController::class)->group(function () {
         Route::get('/add-user', 'addUser')->name('addUser');
+        Route::post('/add-user', 'store')->name('users.store');
         Route::get('/users-grid', 'usersGrid')->name('usersGrid');
         Route::get('/users-list', 'usersList')->name('usersList');
-        Route::get('/view-profile', 'viewProfile')->name('viewProfile');
+        Route::get('/view-profile/{id?}', 'viewProfile')->name('viewProfile');
+        Route::post('/update-profile/{id}', 'update')->name('users.update');
+        Route::post('/update-password/{id}', 'updatePassword')->name('users.updatePassword');
+        Route::delete('/delete/{id}', 'destroy')->name('users.destroy');
     });
 });
 
 Route::resource('tenants', TenantController::class);
 
-// routes/web.php - tambahkan/update bagian tenant
 Route::prefix('tenants')->name('tenants.')->group(function () {
     Route::get('/', [TenantController::class, 'index'])->name('index');
     Route::post('/', [TenantController::class, 'store'])->name('store');
@@ -194,4 +185,3 @@ Route::prefix('tenants')->name('tenants.')->group(function () {
     Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
     Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
 });
-

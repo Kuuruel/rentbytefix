@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'rentbyte@gmail.com',
             'password' => bcrypt('rentbyte123'),
             'role' => 'admin',
+            'img' => 'assets/images/super-admin/admin1.png',
         ]);
-
     }
 }
