@@ -170,7 +170,7 @@ Route::prefix('users')->group(function () {
         Route::get('/users-grid', 'usersGrid')->name('usersGrid');
         Route::get('/users-list', 'usersList')->name('usersList');
         Route::get('/view-profile/{id?}', 'viewProfile')->name('viewProfile');
-        Route::post('/update-profile/{id}', 'update')->name('users.update');
+        Route::put('/update-profile/{id}', 'update')->name('users.update');
         Route::post('/update-password/{id}', 'updatePassword')->name('users.updatePassword');
         Route::delete('/delete/{id}', 'destroy')->name('users.destroy');
     });

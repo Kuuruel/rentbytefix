@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
@@ -26,21 +29,13 @@ class UsersController extends Controller
 
         $imgPath = null;
         if ($request->hasFile('img')) {
-            $file = $request->file('img');
-            $filename = time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
-
-            $destination = public_path('assets/images/super-admin');
-            if (!file_exists($destination)) {
-                mkdir($destination, 0755, true);
-            }
-            $file->move($destination, $filename);
-            $imgPath = $filename;
+            $imgPath = $this->handleImageUpload($request->file('img'));
         }
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
             'role' => $request->role,
             'img' => $imgPath,
         ]);
@@ -54,37 +49,32 @@ class UsersController extends Controller
         
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id)
+            ],
             'role' => 'required|in:admin',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $imgPath = $user->img;
-        if ($request->hasFile('img')) {
-            $file = $request->file('img');
-            $filename = time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
-
-            $destination = public_path('assets/images/super-admin');
-            if (!file_exists($destination)) {
-                mkdir($destination, 0755, true);
-            }
-
-            if ($user->img && file_exists($destination . '/' . $user->img)) {
-                @unlink($destination . '/' . $user->img);
-            }
-
-            $file->move($destination, $filename);
-            $imgPath = $filename;
-        }
-
-        $user->update([
+        $updateData = [
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
-            'img' => $imgPath,
-        ]);
+        ];
 
-        return back()->with('success', 'Profile updated successfully');
+        if ($request->hasFile('img')) {
+            // Delete old image if exists
+            if ($user->img) {
+                $this->deleteImage($user->img);
+            }
+            $updateData['img'] = $this->handleImageUpload($request->file('img'));
+        }
+
+        $user->update($updateData);
+
+        return redirect()->back()->with('success', 'Profile updated successfully');
     }
 
     public function updatePassword(Request $request, $id)
@@ -96,24 +86,28 @@ class UsersController extends Controller
         ]);
 
         $user->update([
-            'password' => bcrypt($request->password),
+            'password' => Hash::make($request->password),
         ]);
 
-        return back()->with('success', 'Password updated successfully');
+        return redirect()->back()->with('success', 'Password updated successfully');
     }
 
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        $destination = public_path('assets/images/super-admin');
 
-        if ($user->img && file_exists($destination . '/' . $user->img)) {
-            @unlink($destination . '/' . $user->img);
+        // Prevent deleting the current authenticated user
+        if (auth()->check() && auth()->id() == $user->id) {
+            return redirect()->back()->with('error', 'You cannot delete your own account');
+        }
+
+        if ($user->img) {
+            $this->deleteImage($user->img);
         }
 
         $user->delete();
 
-        return back()->with('success', 'User deleted successfully');
+        return redirect()->back()->with('success', 'User deleted successfully');
     }
 
     public function addUser()
@@ -123,19 +117,78 @@ class UsersController extends Controller
 
     public function usersGrid()
     {
-        $users = User::all();
+        $users = User::latest()->get();
         return view('users.users-grid', compact('users'));
     }
 
     public function usersList()
     {
-        $users = User::all();
+        $users = User::latest()->get();
         return view('users.users-list', compact('users'));
     }
 
     public function viewProfile($id = null)
     {
-        $user = $id ? User::findOrFail($id) : (auth()->user() ?? User::first());
+        // If no ID provided, show current user's profile
+        if ($id === null) {
+            $user = auth()->user();
+            if (!$user) {
+                // If no authenticated user, redirect to login or show first user
+                $user = User::first();
+                if (!$user) {
+                    abort(404, 'No users found');
+                }
+            }
+        } else {
+            $user = User::findOrFail($id);
+        }
+        
         return view('users.viewProfile', compact('user'));
+    }
+
+    private function handleImageUpload($file)
+    {
+        try {
+            // Generate unique filename
+            $filename = time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
+            
+            // Set destination path
+            $destination = public_path('assets/images/super-admin');
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($destination)) {
+                mkdir($destination, 0755, true);
+            }
+            
+            // Move file to destination
+            if ($file->move($destination, $filename)) {
+                return $filename;
+            }
+            
+            throw new \Exception('Failed to move uploaded file');
+            
+        } catch (\Exception $e) {
+            \Log::error('Image upload failed: ' . $e->getMessage());
+            throw new \Exception('Failed to upload image. Please try again.');
+        }
+    }
+
+    private function deleteImage($filename)
+    {
+        try {
+            $destination = public_path('assets/images/super-admin');
+            $filePath = $destination . '/' . $filename;
+            
+            if (file_exists($filePath)) {
+                @unlink($filePath);
+                return true;
+            }
+            
+            return false;
+            
+        } catch (\Exception $e) {
+            \Log::error('Image deletion failed: ' . $e->getMessage());
+            return false;
+        }
     }
 }

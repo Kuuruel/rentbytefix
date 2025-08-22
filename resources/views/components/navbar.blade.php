@@ -27,10 +27,6 @@
                     </span>
                 </button>
 
-                <!-- Language Dropdown Start  -->
-           
-                <!-- Language Dropdown End  -->
-                <!-- Message Dropdown Start  -->
                 <button data-dropdown-toggle="dropdownMessage" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center" type="button">
                     <iconify-icon icon="mage:email" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
                 </button>
@@ -128,8 +124,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Message Dropdown End  -->
-                <!-- Notification Start  -->
                 <button data-dropdown-toggle="dropdownNotification" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center" type="button">
                     <iconify-icon icon="iconoir:bell" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
                 </button>
@@ -217,8 +211,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Notification End  -->
-
 
                 <button data-dropdown-toggle="dropdownProfile" class="flex justify-center items-center rounded-full" type="button">
                     <img src="{{ asset('assets/images/user.png') }}" alt="image" class="w-10 h-10 object-fit-cover rounded-full">
