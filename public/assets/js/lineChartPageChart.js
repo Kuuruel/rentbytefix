@@ -236,7 +236,7 @@
     var options = {
           series: [{
             name: "Desktops",
-            data: [5, 25, 35, 15, 21, 15, 35, 35, 51]
+            data: [5, 25, 35, 15, 21, 15, 35, 35, 51,10,25,0]
         }],
         chart: {
             height: 264,

@@ -4,10 +4,14 @@
     $title = 'Dashboard';
     $subTitle = 'Admin';
     $script = '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>' . '<script src="' . asset('assets/js/lineChartPageChart.js') . '"></script>';
+    $script .= '<script src="' . asset('assets/js/widgets.js') . '"></script>';
+
 @endphp
 
 @section('content')
+
     <div class="grid grid-cols-12 gap-6">
+
 
         <!-- Card Total Tenants -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -17,7 +21,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Users</p>
-                            <h6 class="mb-0 dark:text-white">{{ $totalTenants }}</h6>
+                            <h6 class="mb-0 dark:text-white mt-2">{{ $totalTenants }}</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl"></iconify-icon>
@@ -33,7 +37,30 @@
                 </div>
             </div>
         </div>
+        <!-- Card Active Tenants -->
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div
+                class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white w-full">
+                <div class="card-body p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Active Users</p>
+                            <h6 class="mb-0 dark:text-white mt-2">{{ $activeTenants }}</h6>
+                        </div>
+                        <div class="w-[50px] h-[50px] bg-blue-600 rounded-full flex justify-center items-center">
+                            <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl"></iconify-icon>
+                        </div>
+                    </div>
 
+                    <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
+                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                            <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -{{ $inactiveTenants }}
+                        </span>
+                        Inactive Users
+                    </p>
+                </div>
+            </div>
+        </div>
         <!-- Card Total Properties -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
@@ -41,8 +68,8 @@
                 <div class="card-body p-5">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Properties</p>
-                            <h6 class="mb-0 dark:text-white">400</h6>
+                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Monthly Billings</p>
+                            <h6 class="mb-0 dark:text-white mt-2">400</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="fa-solid:award" class="text-white text-2xl"></iconify-icon>
@@ -58,29 +85,7 @@
             </div>
         </div>
 
-        <!-- Card Active Tenants -->
-        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
-            <div
-                class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white w-full">
-                <div class="card-body p-5">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Active Users</p>
-                            <h6 class="mb-0 dark:text-white">{{ $activeTenants }}</h6>
-                        </div>
-                        <div class="w-[50px] h-[50px] bg-blue-600 rounded-full flex justify-center items-center">
-                            <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl"></iconify-icon>
-                        </div>
-                    </div>
-                    <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
-                            <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -{{ $inactiveTenants }}
-                        </span>
-                        Inactive Users
-                    </p>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Card Monthly Billings -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
@@ -89,8 +94,8 @@
                 <div class="card-body p-5">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Monthly Billings</p>
-                            <h6 class="mb-0 dark:text-white">$42,000</h6>
+                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Platform Revenue</p>
+                            <h6 class="mb-0 dark:text-white mt-2">$42,000</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl"></iconify-icon>
@@ -108,167 +113,316 @@
 
         <!-- Billing vs Payment Chart -->
         <div class="col-span-12 lg:col-span-8">
-            <div class="card h-full p-0 border-0 overflow-hidden">
+            {{-- <div class="card h-full p-0 border-0 overflow-hidden">
                 <div
                     class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
-                    <h6 class="text-lg font-semibold mb-0">Billings vs. Payment</h6>
+                    <h6 class="text-lg font-semibold mb-0">Growth Comparison</h6>
                 </div>
                 <div class="card-body p-6">
                     <div id="doubleLineChart" class="w-full h-[300px] sm:h-[350px] md:h-[400px]"></div>
                 </div>
+            </div> --}}
+            <div class="card h-full p-0 border-0 overflow-hidden">
+                <div
+                    class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
+                    <h6 class="text-lg font-semibold mb-0">Growth Comparison</h6>
+                </div>
+                <div class="card-body p-6">
+                    <div id="lineDataLabel"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Owner Distribution -->
+
+        <!-- Owner Distribution - Fully Responsive -->
         <div class="col-span-12 lg:col-span-4">
-            <div class="card h-full rounded-lg border-0 overflow-hidden">
-                <div class="card-body">
+            <div class="card h-full rounded-xl border-0 overflow-hidden shadow-sm">
+                <div class="card-body p-4 sm:p-6">
+                    <!-- Header -->
                     <div class="flex items-center justify-between mb-4">
-                        <h6 class="font-bold text-lg">Owner Distribution</h6>
+                        <h6 class="font-bold text-base sm:text-lg text-neutral-900 dark:text-white">Owner Distribution</h6>
                     </div>
-                    <div id="userOverviewDonutChart" class="apexcharts-tooltip-z-none"></div>
-                    <ul class="flex flex-wrap items-center justify-between mt-4 gap-3">
-                        <li class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-sm bg-primary-600"></span>
-                            <span class="text-secondary-light text-sm font-normal">Myanmar</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-sm bg-warning-600"></span>
-                            <span class="text-secondary-light text-sm font-normal">Spans</span>
-                        </li>
-                    </ul>
+
+                    <!-- Chart Container -->
+                    <div class="flex justify-center mb-6">
+                        <div id="userOverviewDonutChart" class="apexcharts-tooltip-z-none"
+                            style="min-height: 200px; height: clamp(200px, 30vw, 280px); width: 280px; margin: 0 auto ;">
+                        </div>
+                    </div>
+
+                    <!-- Legend Section -->
+                    <div class="legend-wrapper">
+                        @if (isset($ownerDistribution) && $ownerDistribution->count() > 0)
+                            <div
+                                class="legend-container grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-1 {{ $ownerDistribution->count() > 8 ? 'max-h-40 overflow-y-auto pr-2' : '' }}">
+                                @foreach ($ownerDistribution as $index => $country)
+                                    <div class="flex items-center gap-2 min-w-0 py-1 px-2">
+                                        <span
+                                            class="w-3 h-3 rounded-sm flex-shrink-0 border border-gray-200 dark:border-gray-600"
+                                            id="legend-color-{{ $index }}">
+                                        </span>
+                                        <span
+                                            class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 truncate min-w-0">
+                                            <span class="truncate">{{ $country->country }}</span>
+                                            <span
+                                                class="text-neutral-400 dark:text-neutral-500 ml-1">({{ number_format($country->count) }})</span>
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="flex items-center justify-center w-full py-8">
+                                <div class="text-center">
+                                    <svg class="w-12 h-12 mx-auto text-neutral-300 dark:text-neutral-600 mb-2"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                        </path>
+                                    </svg>
+                                    <span class="text-neutral-400 dark:text-neutral-500 text-sm">No data available</span>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Users Activity -->
-        <div class="col-span-12 lg:col-span-6">
-            <div class="card border-0 overflow-hidden">
-                <div class="card-header">
-                    <h5 class="card-title text-lg mb-0">Landloards Activity</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table striped-table mb-0">
-                            <thead>
-                                <tr>
-                                    <th
-                                        class="!bg-neutral-100 dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
-                                        Tenants
-                                    </th>
-                                    <th
-                                        class="!bg-neutral-100 dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600">
-                                        Join Date
-                                    </th>
-                                    <th
-                                        class="!bg-neutral-100 dark:!bg-neutral-700 border-b border-neutral-200 dark:border-neutral-600 text-center">
-                                        Status
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($tenants as $tenant)
-                                    <tr class="odd:bg-white dark:odd:bg-neutral-600">
-                                        <td>
-                                            <div class="flex items-center">
-                                                <img src="{{ $tenant->avatar }}" alt="{{ $tenant->name }}"
-                                                    class="shrink-0 me-3 rounded-lg w-10 h-10 object-cover">
-                                                <div class="grow">
-                                                    <h6 class="text-base mb-0 font-normal">{{ $tenant->name }}</h6>
-                                                    <span class="text-sm text-secondary-light font-normal">Indonesia</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>{{ $tenant->created_at->format('d M Y') }}</td>
-                                        <td class="text-center">
-                                            <span
-                                                class="px-8 py-1.5 rounded-full font-medium text-sm
-                                        @if ($tenant->status == 'Active') bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400
-                                        @else
-                                            bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 @endif">
-                                                {{ $tenant->status }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="3" class="text-center py-4 text-secondary-light">
-                                            No Landlords found
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+        <style>
+            /* Chart Container */
+            .chart-container {
+                width: 100% !important;
+                max-width: 280px !important;
+                height: 250px !important;
+                margin: 0 auto !important;
+            }
+
+            /* Legend Grid */
+            .legend-grid {
+                display: grid !important;
+                gap: 4px !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            /* Responsive Legend */
+            @media (min-width: 640px) {
+                .legend-grid {
+                    grid-template-columns: repeat(2, 1fr) !important;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .legend-grid {
+                    grid-template-columns: repeat(1, 1fr) !important;
+                }
+            }
+
+            @media (min-width: 1280px) {
+                .legend-grid {
+                    grid-template-columns: repeat(2, 1fr) !important;
+                }
+            }
+
+            /* Legend Item */
+            .legend-item {
+                display: flex !important;
+                align-items: center !important;
+                gap: 8px !important;
+                min-width: 0 !important;
+                padding: 4px 8px !important;
+            }
+
+            /* Legend Color */
+            .legend-color {
+                width: 12px !important;
+                height: 12px !important;
+                border-radius: 2px !important;
+                flex-shrink: 0 !important;
+                border: 1px solid #e5e7eb !important;
+            }
+
+            /* Legend Text */
+            .legend-text {
+                font-size: 12px !important;
+                color: #6b7280 !important;
+                truncate: true !important;
+                min-width: 0 !important;
+            }
+
+            @media (min-width: 640px) {
+                .legend-text {
+                    font-size: 14px !important;
+                }
+            }
+
+            /* Country Name */
+            .country-name {
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+            }
+
+            /* Country Count */
+            .country-count {
+                color: #9ca3af !important;
+                margin-left: 4px !important;
+            }
+
+            /* Scrollable Legend */
+            .legend-scrollable {
+                max-height: 160px !important;
+                overflow-y: auto !important;
+                padding-right: 8px !important;
+            }
+
+            /* Custom Scrollbar */
+            .legend-scrollable::-webkit-scrollbar {
+                width: 4px !important;
+            }
+
+            .legend-scrollable::-webkit-scrollbar-track {
+                background: transparent !important;
+            }
+
+            .legend-scrollable::-webkit-scrollbar-thumb {
+                background: rgba(156, 163, 175, 0.3) !important;
+                border-radius: 2px !important;
+            }
+
+            .legend-scrollable::-webkit-scrollbar-thumb:hover {
+                background: rgba(156, 163, 175, 0.5) !important;
+            }
+
+            /* Dark Mode */
+            .dark .legend-color {
+                border-color: #6b7280 !important;
+            }
+
+            .dark .legend-text {
+                color: #d1d5db !important;
+            }
+
+            .dark .country-count {
+                color: #6b7280 !important;
+            }
+
+            /* Mobile Specific */
+            @media (max-width: 639px) {
+                .chart-container {
+                    max-width: 280px !important;
+                    height: 280px !important;
+                }
+
+                .legend-grid {
+                    gap: 2px !important;
+                }
+
+                .legend-item {
+                    padding: 3px 6px !important;
+                }
+            }
+        </style>
+        <!-- JavaScript for Enhanced Responsiveness -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Auto-adjust chart height based on container
+                function adjustChartHeight() {
+                    const chartContainer = document.getElementById('userOverviewDonutChart');
+                    const cardBody = chartContainer?.closest('.card-body');
+
+                    if (chartContainer && cardBody) {
+                        const containerWidth = cardBody.offsetWidth;
+                        const optimalHeight = Math.min(Math.max(containerWidth * 0.6, 200), 300);
+                        chartContainer.style.height = `${optimalHeight}px`;
+                    }
+                }
+
+                // Handle window resize
+                let resizeTimer;
+                window.addEventListener('resize', function() {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(adjustChartHeight, 250);
+                });
+
+                // Initial adjustment
+                adjustChartHeight();
+
+                // Auto-scroll legend if too many items
+                const legendContainer = document.querySelector('.legend-container');
+                if (legendContainer && legendContainer.children.length > 8) {
+                    legendContainer.classList.add('legend-scrollable');
+                }
+
+                // Handle legend item clicks (if chart interaction needed)
+                document.querySelectorAll('.legend-container > div').forEach((item, index) => {
+                    item.addEventListener('click', function() {
+                        // Toggle chart series visibility
+                        if (typeof ApexCharts !== 'undefined' && window.userOverviewChart) {
+                            window.userOverviewChart.toggleSeries(`series-${index}`);
+                        }
+                    });
+                });
+
+                // Intersection Observer for lazy loading optimization
+                if ('IntersectionObserver' in window) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.remove('loading');
+                            }
+                        });
+                    });
+
+                    const chartElement = document.getElementById('userOverviewDonutChart');
+                    if (chartElement) {
+                        observer.observe(chartElement);
+                    }
+                }
+            });
+        </script>
+
+
+        <!-- Statistics Start -->
+        <div class="col-span-12 lg:col-span-6 2xl:col-span-5">
+            <div class="card h-full rounded-lg border-0">
+                <div class="card-body p-6">
+                    <h6 class="mb-2 font-bold text-lg">Usage Snapshot</h6>
+
+                    <div class="mt-6">
+                        <div class="flex items-center gap-1 justify-between mb-11">
+                            <div>
+                                <span class="text-secondary-light font-normal mb-3 text-xl">Total Transactions This
+                                    Week</span>
+                                <h5 class="font-semibold mb-0">%60</h5>
+                            </div>
+                            <div class="relative h-[70px]">
+                                <div id="semiCircleGauge"></div>
+
+                                <span
+                                    class="w-9 h-9 rounded-full bg-neutral-100 flex justify-center items-center absolute left-1/2 -translate-x-1/2 translate-y-[16px] top-1/2">
+                                    <iconify-icon icon="mdi:emoji" class="text-primary-600 text-base mb-0"></iconify-icon>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1 justify-between mb-11">
+                            <div>
+                                <span class="text-secondary-light font-normal mb-3 text-xl">Payment Success Rate</span>
+                                <h5 class="font-semibold mb-0">20k</h5>
+                            </div>
+                            <div id="areaChart"></div>
+                        </div>
+
+                        <div class="flex items-center gap-1 justify-between">
+                            <div>
+                                <span class="text-secondary-light font-normal mb-3 text-xl">Average Transaction per
+                                    Tenant</span>
+                                <h5 class="font-semibold mb-0">$5.5k</h5>
+                            </div>
+                            <div id="dailyIconBarChart"></div>
+                        </div>
                     </div>
 
-                    <!-- Custom Pagination -->
-                    @if ($tenants->hasPages())
-                        <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
-                            <span id="paginationInfo">
-                                Showing {{ $tenants->firstItem() ?? 0 }} to {{ $tenants->lastItem() ?? 0 }} of
-                                {{ $tenants->total() }} entries
-                            </span>
-                            <ul class="pagination flex flex-wrap items-center gap-2 justify-center">
-                                <!-- Previous Button -->
-                                <li class="page-item">
-                                    @if ($tenants->onFirstPage())
-                                        <button disabled
-                                            class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base opacity-50 cursor-not-allowed">
-                                            <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
-                                        </button>
-                                    @else
-                                        <a href="{{ $tenants->previousPageUrl() }}"
-                                            class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                            <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
-                                        </a>
-                                    @endif
-                                </li>
-
-                                <!-- Page Numbers -->
-                                <div class="flex gap-1">
-                                    @foreach ($tenants->getUrlRange(1, $tenants->lastPage()) as $page => $url)
-                                        @if ($page == $tenants->currentPage())
-                                            <li class="page-item">
-                                                <span
-                                                    class="page-link bg-primary-600 text-white rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
-                                                    {{ $page }}
-                                                </span>
-                                            </li>
-                                        @else
-                                            <li class="page-item">
-                                                <a href="{{ $url }}"
-                                                    class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                                    {{ $page }}
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </div>
-
-                                <!-- Next Button -->
-                                <li class="page-item">
-                                    @if ($tenants->hasMorePages())
-                                        <a href="{{ $tenants->nextPageUrl() }}"
-                                            class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                            <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
-                                        </a>
-                                    @else
-                                        <button disabled
-                                            class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base opacity-50 cursor-not-allowed">
-                                            <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
-                                        </button>
-                                    @endif
-                                </li>
-                            </ul>
-                        </div>
-                    @else
-                        <!-- Show info even when no pagination -->
-                        <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
-                            <span id="paginationInfo">
-                                Showing {{ $tenants->count() }} of {{ $tenants->count() }} entries
-                            </span>
-                        </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -330,96 +484,168 @@
         </div>
 
     </div>
+
+    <!-- ApexCharts Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ================================ Users Overview Donut chart Start ================================ 
+            try {
+                console.log('Initializing donut chart...');
+
+                // Get data from PHP
+                var ownerData = @json($ownerDistribution ?? []);
+                console.log('Owner Data:', ownerData);
+
+                // Check if element exists
+                var chartElement = document.querySelector("#userOverviewDonutChart");
+                if (!chartElement) {
+                    console.error('Chart element not found');
+                    return;
+                }
+
+                // Check if data exists and is valid
+                if (!ownerData || !Array.isArray(ownerData) || ownerData.length === 0) {
+                    console.log('No owner distribution data available');
+                    chartElement.innerHTML =
+                        '<div class="flex items-center justify-center h-64"><div class="text-center text-gray-500">No data available</div></div>';
+                    return;
+                }
+
+                // Process data
+                var series = ownerData.map(function(item) {
+                    return parseInt(item.count) || 0;
+                });
+
+                var labels = ownerData.map(function(item) {
+                    return item.country || 'Unknown';
+                });
+
+                console.log('Processed Series:', series);
+                console.log('Processed Labels:', labels);
+
+                // Validate processed data
+                if (series.length === 0 || labels.length === 0) {
+                    console.log('No valid data to display');
+                    chartElement.innerHTML =
+                        '<div class="flex items-center justify-center h-64"><div class="text-center text-gray-500">No valid data to display</div></div>';
+                    return;
+                }
+
+                // ✅ UPDATED: Dynamic color generation for unlimited countries
+                function generateColors(count) {
+                    const baseColors = [
+                        // Baris 1
+                        '#487FFF', '#FF9F29', '#E4F1FF', '#FFD580', '#28A745',
+
+                        // Baris 2 (variasi tone sedikit lebih tua/soft)
+                        '#335FCC', '#CC6F1F', '#CFE4FF', '#FFC966', '#218838',
+
+                        // Baris 3 (variasi lagi biar beda tapi tetap tone sama)
+                        '#1E3A8A', '#B45309', '#BFDBFE', '#FACC15', '#15803D'
+
+
+
+                    ];
+
+                    const colors = [];
+                    for (let i = 0; i < count; i++) {
+                        if (i < baseColors.length) {
+                            colors.push(baseColors[i]);
+                        } else {
+                            // Generate HSL colors with good contrast for additional countries
+                            const hue = (i * 137.508) % 360; // Golden angle approximation
+                            const saturation = 60 + (i % 3) * 15; // Vary saturation: 60%, 75%, 90%
+                            const lightness = 45 + (i % 4) * 10; // Vary lightness: 45%, 55%, 65%, 75%
+                            colors.push(`hsl(${Math.round(hue)}, ${saturation}%, ${lightness}%)`);
+                        }
+                    }
+                    return colors;
+                }
+
+                const dynamicColors = generateColors(ownerData.length);
+                console.log(`Generated ${dynamicColors.length} colors for ${ownerData.length} countries`);
+
+                // Chart configuration
+                var options = {
+                    series: series,
+                    colors: dynamicColors,
+                    labels: labels,
+                    legend: {
+                        show: false
+                    },
+                    chart: {
+                        type: 'donut',
+                        height: 250,
+                        sparkline: {
+                            enabled: true
+                        },
+                        animations: {
+                            enabled: true,
+                            easing: 'easeinout',
+                            speed: 800
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '60%'
+                            }
+                        }
+                    },
+                    stroke: {
+                        width: 0,
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        y: {
+                            formatter: function(val, opts) {
+                                return val + ' users';
+                            }
+                        }
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200,
+                                height: 200
+                            }
+                        }
+                    }]
+                };
+
+                // Create and render chart
+                console.log('Creating ApexChart with options:', options);
+                var chart = new ApexCharts(chartElement, options);
+
+                chart.render().then(function() {
+                    console.log('Chart rendered successfully');
+
+                    // ✅ UPDATED: Update legend colors for all countries
+                    dynamicColors.forEach(function(color, index) {
+                        const legendElement = document.getElementById('legend-color-' + index);
+                        if (legendElement) {
+                            legendElement.style.backgroundColor = color;
+                            console.log(`Set legend color ${index}: ${color}`);
+                        }
+                    });
+                }).catch(function(error) {
+                    console.error('Error rendering chart:', error);
+                });
+
+            } catch (error) {
+                console.error('Donut chart error:', error);
+                var chartElement = document.querySelector("#userOverviewDonutChart");
+                if (chartElement) {
+                    chartElement.innerHTML =
+                        '<div class="flex items-center justify-center h-64"><div class="text-center text-red-500">Error loading chart</div></div>';
+                }
+            }
+            // ================================ Users Overview Donut chart End ================================
+        });
+    </script>
+
 @endsection
-{{-- 
-<div class="xl:col-span-12 2xl:col-span-6 ">
-    <div class="card h-full border-0">
-        <div class="card-body">
-            <div class="flex items-center flex-wrap gap-2 justify-between">
-                <h6 class="font-bold text-lg mb-0">Top Performer</h6>
-                <a href="javascript:void(0)"
-                    class="text-primary-600 dark:text-primary-600 hover-text-primary flex items-center gap-1">
-                    View All
-                    <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                </a>
-            </div>
-
-            <div class="mt-8">
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user1.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Dianne Russell</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$20</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user2.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Wade Warren</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$20</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user3.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Albert Flores</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$30</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user4.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Bessie Cooper</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$40</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user5.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$10</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user1.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$10</span>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-</div> --}}

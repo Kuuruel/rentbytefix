@@ -6892,6 +6892,7 @@ h6, .h6 {
   }
 }
 
+
 .sidebar-menu li a:hover{
   --tw-text-opacity: 1;
   color: rgb(72 127 255 / var(--tw-text-opacity));
@@ -6926,14 +6927,14 @@ h6, .h6 {
 
 .sidebar-menu .sidebar-submenu{
   display: none;
-  padding-top: 0.5rem;
-
+  padding-top: 0.75rem;
+  padding-inline-start: 1.5rem;
   transition-property: none;
 }
 
 @media (min-width: 1650px){
   .sidebar-menu .sidebar-submenu{
-    padding-inline-start: 2.75rem;
+    padding-inline-start: 2rem;
   }
 }
 

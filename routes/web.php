@@ -17,9 +17,30 @@ use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 
+// Dashboard home
+Route::get('/', [DashboardController::class, 'index'])->name('super-admin.index');
 
-Route::get('/', [SuperAdminController::class, 'index'])->name('super-admin.index');
+// Specific route dengan parameter - TARUH DI ATAS prefix group
+Route::get('/super-admin/index8/{tenant_id}', [SuperAdminController::class, 'index8'])->name('super-admin.index8');
 
+// Super Admin Routes
+Route::prefix('super-admin')->group(function () {
+    Route::controller(SuperAdminController::class)->group(function () {
+        Route::get('/', 'index')->name('super-admin.dashboard');
+        Route::get('/index2', 'index2')->name('super-admin.index2');
+        Route::get('/index3', 'index3')->name('super-admin.index3');
+        Route::get('/index4', 'index4')->name('super-admin.index4');
+        Route::get('/index5', 'index5')->name('super-admin.index5');
+        Route::get('/index6', 'index6')->name('super-admin.index6');
+        Route::get('/index7', 'index7')->name('super-admin.index7');
+        Route::get('/index9', 'index9')->name('super-admin.index9');
+    });
+});
+
+// Tenant Routes
+Route::resource('tenants', TenantController::class);
+
+// Home Controller
 Route::controller(HomeController::class)->group(function () {
     Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
     Route::get('chatempty', 'chatempty')->name('chatempty');
@@ -38,7 +59,7 @@ Route::controller(HomeController::class)->group(function () {
     Route::get('widgets', 'widgets')->name('widgets');
 });
 
-// aiApplication
+// AI Application
 Route::prefix('aiapplication')->group(function () {
     Route::controller(AiapplicationController::class)->group(function () {
         Route::get('/code-generator', 'codeGenerator')->name('codeGenerator');
@@ -61,7 +82,7 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
-// chart
+// Chart
 Route::prefix('chart')->group(function () {
     Route::controller(ChartController::class)->group(function () {
         Route::get('/column-chart', 'columnChart')->name('columnChart');
@@ -70,7 +91,7 @@ Route::prefix('chart')->group(function () {
     });
 });
 
-// Componentpage
+// Components
 Route::prefix('componentspage')->group(function () {
     Route::controller(ComponentspageController::class)->group(function () {
         Route::get('/alert', 'alert')->name('alert');
@@ -97,29 +118,14 @@ Route::prefix('componentspage')->group(function () {
     });
 });
 
-// Dashboard
+// Cryptocurrency
 Route::prefix('cryptocurrency')->group(function () {
     Route::controller(CryptocurrencyController::class)->group(function () {
         Route::get('/wallet', 'wallet')->name('wallet');
     });
 });
 
-Route::prefix('super-admin')->group(function () {
-    Route::controller(SuperAdminController::class)->group(function () {
-        Route::get('/', 'index')->name('super-admin.index');
-        Route::get('/index2', 'index2')->name('super-admin.index2');
-        Route::get('/index3', 'index3')->name('super-admin.index3');
-        Route::get('/index4', 'index4')->name('super-admin.index4');
-        Route::get('/index5', 'index5')->name('super-admin.index5');
-        Route::get('/index6', 'index6')->name('super-admin.index6');
-        Route::get('/index7', 'index7')->name('super-admin.index7');
-        Route::get('/index8', 'index8')->name('super-admin.index8');
-        Route::get('/index9', 'index9')->name('super-admin.index9');
-        // ✅ Tambahkan route untuk activities (opsional)
-        Route::get('/activities', 'activities')->name('super-admin.activities');
-    });
-});
-
+// Landlord
 Route::prefix('landlord')->group(function () {
     Route::controller(LandlordController::class)->group(function () {
         Route::get('/', 'index')->name('landlord.index');
@@ -144,7 +150,7 @@ Route::prefix('forms')->group(function () {
     });
 });
 
-// invoice/invoiceList
+// Invoice
 Route::prefix('invoice')->group(function () {
     Route::controller(InvoiceController::class)->group(function () {
         Route::get('/invoice-add', 'invoiceAdd')->name('invoiceAdd');
@@ -183,15 +189,4 @@ Route::prefix('users')->group(function () {
         Route::get('/users-list', 'usersList')->name('usersList');
         Route::get('/view-profile', 'viewProfile')->name('viewProfile');
     });
-});
-
-Route::resource('tenants', TenantController::class);
-
-// routes/web.php - tambahkan/update bagian tenant
-Route::prefix('tenants')->name('tenants.')->group(function () {
-    Route::get('/', [TenantController::class, 'index'])->name('index');
-    Route::post('/', [TenantController::class, 'store'])->name('store');
-    Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
-    Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
-    Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
 });
