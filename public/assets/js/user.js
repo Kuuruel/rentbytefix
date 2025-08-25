@@ -1,3 +1,5 @@
+//user.js
+
 (function () {
   'use strict';
 
@@ -174,8 +176,16 @@
 
   function createInitialMarkup(initial) {
     const safeInitial = escapeHtml(initial || 'U');
-    return '<div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center rounded-full"><span class="text-lg font-bold text-white">' + safeInitial + '</span></div>';
+    return '<div class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center rounded-xl"><span class="text-3xl font-bold text-white">' + safeInitial + '</span></div>';
   }
+
+  function createInitialMarkupSmall(initial) {
+    const safeInitial = escapeHtml(initial || 'U');
+    return '<div class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center rounded-full"><span class="text-2xl font-bold text-white">' + safeInitial + '</span></div>';
+  }
+
+  let isEditMode = false;
+  let pendingImageData = null;
 
   document.addEventListener('DOMContentLoaded', function () {
     try {
@@ -194,6 +204,7 @@
 
       const imgInput = safe('img');
       const imagePreview = safe('imagePreview');
+      const profileCardAvatar = safe('profileCardAvatar');
       const editProfileForm = safe('edit-profile-form');
       const passwordForm = safe('password-form');
 
@@ -201,23 +212,30 @@
 
       const userName = profile.name || '';
       const userEmail = profile.email || '';
-      const userRole = profile.role || '';
       const userImg = profile.img || '';
       const userInitial = profile.initial || (userName && userName[0] ? userName[0].toUpperCase() : 'U');
 
       function setPreviewToInitial() {
-        if (!imagePreview) return;
-        imagePreview.style.backgroundImage = '';
-        imagePreview.innerHTML = createInitialMarkup(userInitial);
+        if (imagePreview) {
+          imagePreview.style.backgroundImage = '';
+          imagePreview.innerHTML = createInitialMarkup(userInitial);
+        }
+        if (profileCardAvatar) {
+          profileCardAvatar.innerHTML = createInitialMarkupSmall(userInitial);
+        }
       }
 
-      function setPreviewToImageUrl(imageUrl) {
-        if (!imagePreview) return;
-        imagePreview.style.backgroundImage = "url('" + imageUrl + "')";
-        imagePreview.style.backgroundSize = 'cover';
-        imagePreview.style.backgroundPosition = 'center';
-        imagePreview.style.backgroundRepeat = 'no-repeat';
-        imagePreview.innerHTML = '';
+      function setPreviewToImageUrl(imageUrl, updateCard = true) {
+        if (imagePreview) {
+          imagePreview.style.backgroundImage = "url('" + imageUrl + "')";
+          imagePreview.style.backgroundSize = 'cover';
+          imagePreview.style.backgroundPosition = 'center';
+          imagePreview.style.backgroundRepeat = 'no-repeat';
+          imagePreview.innerHTML = '';
+        }
+        if (updateCard && profileCardAvatar) {
+          profileCardAvatar.innerHTML = `<img src="${imageUrl}" alt="${userName}" class="w-full h-full object-cover rounded-full">`;
+        }
       }
 
       function trySetRemoteImage(url) {
@@ -229,7 +247,10 @@
         });
       }
 
-      function resetProfileForm() {
+function resetProfileForm() {
+        isEditMode = false;
+        pendingImageData = null;
+        
         const profileInputs = document.querySelectorAll('#edit-profile-form input:not([type="file"]), #edit-profile-form select');
         profileInputs.forEach(input => {
           try {
@@ -249,14 +270,21 @@
 
         const nameEl = safe('name');
         const emailEl = safe('email');
-        const roleEl = safe('role');
 
         if (nameEl) nameEl.value = userName;
         if (emailEl) emailEl.value = userEmail;
-        if (roleEl) roleEl.value = userRole;
 
         if (imgInput) {
-          try { imgInput.value = ''; } catch (e) { }
+          try { 
+            imgInput.value = ''; 
+            imgInput.disabled = true;
+          } catch (e) { }
+        }
+
+        const uploadLabel = document.querySelector('label[for="img"]');
+        if (uploadLabel) {
+          uploadLabel.classList.add('opacity-50', 'cursor-not-allowed');
+          uploadLabel.classList.remove('cursor-pointer', 'hover:shadow-md');
         }
       }
 
@@ -266,6 +294,14 @@
           input.disabled = true;
           input.value = '';
           input.setAttribute('type', 'password');
+        });
+
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        toggleButtons.forEach(button => {
+          const icon = button.querySelector('iconify-icon');
+          if (icon) {
+            icon.setAttribute('icon', 'ph:eye');
+          }
         });
 
         if (passwordButtons) passwordButtons.classList.add('hidden');
@@ -313,6 +349,7 @@
 
       if (enableEditBtn) {
         enableEditBtn.addEventListener('click', function () {
+          isEditMode = true;
           const inputs = document.querySelectorAll('#edit-profile-form input:not([type="file"]), #edit-profile-form select');
           inputs.forEach(input => {
             try {
@@ -320,6 +357,17 @@
               input.disabled = false;
             } catch (e) { }
           });
+          
+          if (imgInput) {
+            imgInput.disabled = false;
+          }
+          
+          const uploadLabel = document.querySelector('label[for="img"]');
+          if (uploadLabel) {
+            uploadLabel.classList.remove('opacity-50', 'cursor-not-allowed');
+            uploadLabel.classList.add('cursor-pointer', 'hover:shadow-md');
+          }
+          
           if (formButtons) formButtons.classList.remove('hidden');
           if (editButtonContainer) editButtonContainer.classList.add('hidden');
         });
@@ -348,6 +396,12 @@
 
       if (imgInput && imagePreview) {
         imgInput.addEventListener('change', function () {
+          if (!isEditMode) {
+            showNotification('Please click "Edit Profile" button first to enable editing.', 'error');
+            try { this.value = ''; } catch (e) {}
+            return;
+          }
+
           if (this.files && this.files[0]) {
             const file = this.files[0];
 
@@ -367,7 +421,11 @@
             }
 
             preloadFileAndSetPreview(file, function (dataUrl) {
-              setPreviewToImageUrl(dataUrl);
+              pendingImageData = dataUrl;
+              setPreviewToImageUrl(dataUrl, false);
+              if (profileCardAvatar) {
+                profileCardAvatar.innerHTML = `<img src="${dataUrl}" alt="Preview" class="w-full h-full object-cover rounded-full">`;
+              }
             }, function () {
               showNotification('Failed to read image file.', 'error');
             });
@@ -385,14 +443,14 @@
           const newType = targetInput.getAttribute('type') === 'password' ? 'text' : 'password';
           targetInput.setAttribute('type', newType);
 
-          const icon = this.querySelector('svg');
+          const icon = this.querySelector('iconify-icon');
           if (!icon) return;
 
           if (newType === 'text') {
-            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L12 12m-3.172-3.172a4 4 0 015.656 0L12 12m-8.485-9.485l15.556 15.556"></path>';
+            icon.setAttribute('icon', 'ph:eye-slash');
             this.setAttribute('aria-pressed', 'true');
           } else {
-            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>';
+            icon.setAttribute('icon', 'ph:eye');
             this.setAttribute('aria-pressed', 'false');
           }
         });
@@ -482,6 +540,18 @@
             submitBtn.disabled = true;
           }
         });
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('success')) {
+        const message = urlParams.get('success');
+        if (message === 'profile') {
+          showNotification('Profile updated successfully!', 'success');
+        } else if (message === 'password') {
+          showNotification('Password changed successfully!', 'success');
+        }
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
       }
 
       log('user.js initialized successfully');

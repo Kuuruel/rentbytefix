@@ -43,7 +43,7 @@ class UsersController extends Controller
         return redirect()->route('usersList')->with('success', 'User created successfully');
     }
 
-    public function update(Request $request, $id)
+public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
         
@@ -54,14 +54,14 @@ class UsersController extends Controller
                 'email',
                 Rule::unique('users')->ignore($user->id)
             ],
-            'role' => 'required|in:admin',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $updateData = [
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $request->role,
+            // Role tidak diupdate, tetap menggunakan role yang sudah ada
+            'role' => $user->role,
         ];
 
         if ($request->hasFile('img')) {

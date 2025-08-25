@@ -1,315 +1,353 @@
+<!-- resources/views/users/viewProfile.blade.php -->
+
 @extends('layout.layout')
 
+@php
+    $subTitle = 'My Profile';
+@endphp
+
+
 @section('content')
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <div class="col-span-12 lg:col-span-4">
-        <div class="relative border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden bg-white dark:bg-neutral-800 h-full transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-neutral-200/25 dark:hover:shadow-neutral-900/25">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30"></div>
-            <div class="relative pb-6 px-6 pt-20">
-                <div class="text-center border-b border-neutral-200 dark:border-neutral-600 pb-6">
-                    <div class="relative inline-block mb-4">
-                        @if($user->img)
-                            <div class="relative w-20 h-20 mx-auto rounded-full overflow-hidden border-4 border-white dark:border-neutral-700 shadow-xl bg-white">
-                                <img src="{{ asset('assets/images/super-admin/' . $user->img) }}"
-                                    alt="{{ $user->name }}"
-                                    class="w-full h-full object-cover"
-                                    data-fallback-img
-                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="hidden w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 items-center justify-center text-white font-bold text-2xl">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                </div>
-                            </div>
-                        @else
-                            <div class="w-20 h-20 rounded-full mx-auto border-4 border-white dark:border-neutral-700 shadow-xl bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
-                                <span class="text-2xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                            </div>
-                        @endif
-                    </div>
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-950">
+    <div class="container mx-8 px-2 max-w-7xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 ">
 
-                    <h6 class="text-xl font-bold mb-2 text-neutral-800 dark:text-neutral-100 tracking-tight">{{ $user->name }}</h6>
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4 break-words max-w-xs mx-auto leading-relaxed">{{ $user->email }}</p>
+            <div class="col-span-12 lg:col-span-4">
+                <div class="relative group h-full">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                    <div class="relative h-full bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all duration-500 hover:scale-105">
 
-                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform transition-all duration-200 hover:scale-105">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-                            <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"></path>
-                        </svg>
-                        {{ ucfirst($user->role) }}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/20 dark:via-purple-950/20 dark:to-pink-950/20"></div>
+                        <div class="absolute inset-0 opacity-30 dark:opacity-10" style="background-image: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);"></div>
 
-    <div class="col-span-12 lg:col-span-8">
-        <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-600 overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-1">
-                <div class="bg-white dark:bg-neutral-800 rounded-xl">
-                    <div class="p-6">
-                        @if(session('success'))
-                            <div class="mb-4 p-4 bg-green-100 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 rounded-xl">
-                                {{ session('success') }}
-                            </div>
-                        @endif
+                        <div class="relative p-8 pt-8">
+                            <div class="text-center">
 
-                        @if($errors->any())
-                            <div class="mb-4 p-4 bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-xl">
-                                <ul class="list-disc list-inside">
-                                    @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <ul class="flex border-b border-neutral-200 dark:border-neutral-600 mb-6" id="profile-tabs" role="tablist">
-                            <li role="presentation" class="flex-1">
-                                <button class="tab-button w-full px-6 py-4 text-sm font-semibold border-b-3 border-transparent text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 rounded-t-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/50" data-tab="edit-profile" role="tab" aria-controls="edit-profile" aria-selected="true">
-                                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                    Edit Profile
-                                </button>
-                            </li>
-                            <li role="presentation" class="flex-1">
-                                <button class="tab-button w-full px-6 py-4 text-sm font-semibold border-b-3 border-transparent text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-200 rounded-t-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/50" data-tab="change-password" role="tab" aria-controls="change-password" aria-selected="false">
-                                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                    </svg>
-                                    Change Password
-                                </button>
-                            </li>
-                        </ul>
-
-                        <div id="edit-profile" class="tab-content">
-                            <div class="mb-8">
-                                <h6 class="text-lg font-bold text-neutral-800 dark:text-neutral-200 mb-6 flex items-center">
-                                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                    </svg>
-                                    Profile Image
-                                </h6>
-<div class="flex flex-row items-center space-x-8">
-    <div class="relative group">
-        <div id="imagePreview" 
-             class="w-28 h-28 rounded-xl border-4 border-white dark:border-neutral-700 shadow-xl bg-center bg-cover overflow-hidden transition-all duration-300 bg-no-repeat group-hover:scale-105 transform" 
-             style="background-image: url('{{ $user->img ? asset('assets/images/super-admin/' . $user->img) : '' }}'); background-size: cover; background-position: center;">
-            @if(!$user->img)
-                <div class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center rounded-lg">
-                    <span class="text-2xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    <div class="flex-1">
-        <label for="img" 
-            class="block cursor-pointer bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 p-4 rounded-xl border border-blue-200 dark:border-blue-800/30 hover:shadow-md transition">
-            <p class="text-sm font-semibold text-neutral-800 dark:text-neutral-200 mb-1">Upload new avatar</p>
-            <p class="text-xs text-neutral-600 dark:text-neutral-400 mb-1">JPG, PNG or GIF format</p>
-            <p class="text-xs text-neutral-500 dark:text-neutral-500">Maximum size: 2MB • Recommended: 400x400px</p>
-        </label>
-    </div>
-</div>
-
-                            </div>
-
-                            <form id="edit-profile-form" action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT')
-                                <input type="file" id="img" name="img" accept=".png,.jpg,.jpeg,.gif" class="hidden">
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="space-y-3">
-                                        <label for="name" class="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                            </svg>
-                                            Full Name <span class="text-red-500 ml-1">*</span>
-                                        </label>
-                                        <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" 
-                                               class="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-700 dark:text-white transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed" 
-                                               placeholder="Enter your full name" required readonly disabled>
-                                    </div>
-
-                                    <div class="space-y-3">
-                                        <label for="email" class="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                            </svg>
-                                            Email Address <span class="text-red-500 ml-1">*</span>
-                                        </label>
-                                        <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" 
-                                               class="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-700 dark:text-white transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed" 
-                                               placeholder="Enter your email address" required readonly disabled>
-                                    </div>
-
-                                    <div class="space-y-3 md:col-span-1">
-                                        <label for="role" class="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                                            </svg>
-                                            Role <span class="text-red-500 ml-1">*</span>
-                                        </label>
-                                        <select id="role" name="role" 
-                                                class="w-full px-4 py-3 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-700 dark:text-white transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed" 
-                                                required disabled>
-                                            <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div id="form-buttons" class="flex items-center justify-end space-x-4 mt-8 hidden">
-                                    <button type="button" id="cancel-edit" 
-                                            class="px-6 py-3 border-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-4 focus:ring-neutral-500/20 transition-all duration-200 font-medium">
-                                        <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                        Cancel
-                                    </button>
-                                    <button type="submit" 
-                                            class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
-                                        <span class="submit-text flex items-center">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                            Save Changes
-                                        </span>
-                                        <span class="submit-loading hidden flex items-center">
-                                            <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                            </svg>
-                                            Saving...
-                                        </span>
-                                    </button>
-                                </div>
-                            </form>
-
-                            <div id="edit-button-container" class="flex justify-end mt-8">
-                                <button type="button" id="enable-edit" 
-                                        class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                                    <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                    Edit Profile
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="change-password" class="tab-content hidden">
-                            <div class="max-w-lg mx-auto">
-                                <div class="text-center mb-8">
-                                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 rounded-full mb-4 shadow-lg">
-                                        <svg class="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                        </svg>
-                                    </div>
-                                    <h3 class="text-2xl font-bold text-neutral-800 dark:text-neutral-200 mb-3">Change Password</h3>
-                                    <p class="text-neutral-600 dark:text-neutral-400">Update your password to keep your account secure</p>
-                                </div>
-
-                                <form id="password-form" action="{{ route('users.updatePassword', $user->id) }}" method="POST">
-                                    @csrf
-                                    <div class="space-y-6">
-                                        <div class="space-y-3">
-                                            <label for="password" class="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                                </svg>
-                                                New Password <span class="text-red-500 ml-1">*</span>
-                                            </label>
-                                            <div class="relative">
-                                                <input type="password" id="password" name="password" 
-                                                       class="w-full px-4 py-3 pr-12 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-700 dark:text-white transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed" 
-                                                       placeholder="Enter new password" required disabled minlength="6">
-                                                <button type="button" 
-                                                        class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300 p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600 transition-all duration-200" 
-                                                        data-target="password" aria-label="Toggle password visibility">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
+                                <div class="relative inline-block mb-6 p-6">
+                                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-md opacity-50 animate-pulse"></div>
+                                        <div id="profileCardAvatar" class="relative w-52 h-52 mx-auto rounded-full overflow-hidden border-4 border-white dark:border-gray-700 shadow-2xl bg-white dark:bg-gray-800 transform transition-all duration-300 hover:scale-110" style="min-width: 208px; min-height: 208px; max-width: 208px; max-height: 208px;">
+                                            @if($user->img)
+                                                <img src="{{ asset('assets/images/super-admin/' . $user->img) }}" 
+                                                    alt="{{ $user->name }}" 
+                                                    class="absolute inset-0 w-full h-full object-cover object-center rounded-full"
+                                                    style="width: 208px !important; height: 208px !important; aspect-ratio: 1/1;"
+                                                    data-fallback-img>
+                                                <div class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center rounded-full hidden">
+                                                    <span class="text-4xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                                </div>
+                                            @else
+                                                <div class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center rounded-full">
+                                                    <span class="text-4xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                                </div>
+                                            @endif
                                         </div>
+                                </div>
 
-                                        <div class="space-y-3">
-                                            <label for="password_confirmation" class="block text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-                                                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                                </svg>
-                                                Confirm Password <span class="text-red-500 ml-1">*</span>
-                                            </label>
-                                            <div class="relative">
-                                                <input type="password" id="password_confirmation" name="password_confirmation" 
-                                                       class="w-full px-4 py-3 pr-12 border-2 border-neutral-300 dark:border-neutral-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-neutral-700 dark:text-white transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:text-neutral-500 disabled:cursor-not-allowed" 
-                                                       placeholder="Confirm new password" required disabled minlength="6">
-                                                <button type="button" 
-                                                        class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300 p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-600 transition-all duration-200" 
-                                                        data-target="password_confirmation" aria-label="Toggle password visibility">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <h2 class="text-2xl font-bold mb-3 text-gray-800 dark:text-white tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ $user->name }}</h2>
+                                <p class="text-gray-600 dark:text-gray-300 mb-6 break-words max-w-xs mx-auto leading-relaxed font-medium">{{ $user->email }}</p>
 
-                                    <div id="password-buttons" class="flex flex-col sm:flex-row items-center justify-center space-y-3 sm:space-y-0 sm:space-x-4 mt-8 hidden">
-                                        <button type="button" id="cancel-password" 
-                                                class="w-full sm:w-auto px-6 py-3 border-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:outline-none focus:ring-4 focus:ring-neutral-500/20 transition-all duration-200 font-medium">
-                                            <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                            Cancel
-                                        </button>
-                                        <button type="submit" 
-                                                class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center">
-                                            <span class="submit-text flex items-center">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                                </svg>
-                                                Update Password
-                                            </span>
-                                            <span class="submit-loading hidden flex items-center">
-                                                <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                                </svg>
-                                                Updating...
-                                            </span>
-                                        </button>
-                                    </div>
-                                </form>
-
-                                <div id="password-button-container" class="flex justify-center mt-8">
-                                    <button type="button" id="enable-password-edit" 
-                                            class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
-                                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                        </svg>
-                                        Change Password
-                                    </button>
+                                <div class="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                        <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"></path>
+                                    </svg>
+                                    {{ ucfirst($user->role) }}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="col-span-12 lg:col-span-8">
+                <div class="relative group ">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
+                    <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden px-4">
+
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-1">
+                            <div class="bg-white dark:bg-gray-800 rounded-t-2xl">
+                                <div class="p-8">
+
+                                    @if(session('success'))
+                                        <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800/50 text-green-700 dark:text-green-300 rounded-2xl shadow-sm">
+                                            <div class="flex items-center">
+                                                <svg class="w-5 h-5 mr-3 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <span class="font-medium">{{ session('success') }}</span>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($errors->any())
+                                        <div class="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800/50 text-red-700 dark:text-red-300 rounded-2xl shadow-sm">
+                                            <div class="flex items-start">
+                                                <svg class="w-5 h-5 mr-3 mt-0.5 text-red-600 dark:text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                <ul class="space-y-1">
+                                                    @foreach($errors->all() as $error)
+                                                        <li class="font-medium">{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="flex border-b-2 border-gray-200 dark:border-gray-700 mb-8" id="profile-tabs" role="tablist">
+                                        <button class="tab-button flex-1 px-6 py-4 text-sm font-semibold border-b-3 border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300 rounded-t-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 relative overflow-hidden group" data-tab="edit-profile" role="tab" aria-controls="edit-profile" aria-selected="true">
+                                            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                            <div class="relative flex items-center justify-center">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                                Edit Profile
+                                            </div>
+                                        </button>
+                                        <button class="tab-button flex-1 px-6 py-4 text-sm font-semibold border-b-3 border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300 rounded-t-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 relative overflow-hidden group" data-tab="change-password" role="tab" aria-controls="change-password" aria-selected="false">
+                                            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                            <div class="relative flex items-center justify-center">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                </svg>
+                                                Change Password
+                                            </div>
+                                        </button>
+                                    </div>
+
+                                    <div id="edit-profile" class="tab-content" role="tabpanel" aria-labelledby="edit-profile-tab">
+
+                                        <div class="mb-2">
+                                            <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-2 flex items-center">
+                                                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mr-3">
+                                                    <svg class="w-5 h-5 mx-1" fill="none" stroke="#3b82f6" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                </div>
+                                                Profile Image
+                                            </h3>
+                                            <div class="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8">
+                                                <div class="relative group">
+                                                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl blur opacity-50 group-hover:opacity-75 transition duration-300"></div>
+                                                    <div id="imagePreview" 
+                                                         class="relative w-32 h-32 rounded-2xl border-4 border-white dark:border-gray-700 shadow-2xl bg-center bg-cover overflow-hidden transition-all duration-300 transform group-hover:scale-105 bg-no-repeat"
+                                                         @if($user->img)
+                                                             style="background-image: url('{{ asset('assets/images/super-admin/' . $user->img) }}'); background-size: cover; background-position: center;"
+                                                         @endif>
+                                                        @if(!$user->img)
+                                                            <div class="w-full h-full bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center rounded-2xl">
+                                                                <span class="text-3xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex-1 w-full md:w-auto">
+                                                    <label for="img" 
+                                                        class="block cursor-pointer bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 p-2 rounded-2xl border-2 border-dashed border-blue-300 dark:border-blue-700 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-lg transition-all duration-300 opacity-50 cursor-not-allowed group">
+                                                        <div class="text-center">
+                                                            <svg class="mx-auto h-12 w-12 text-blue-500 dark:text-blue-400 mb-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                                            </svg>
+                                                            <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Upload new avatar</p>
+                                                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">JPG, PNG or GIF format</p>
+                                                            <p class="text-xs text-gray-500 dark:text-gray-500">Maximum size: 2MB • Recommended: 400x400px</p>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <form id="edit-profile-form" action="{{ route('users.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="file" id="img" name="img" accept=".png,.jpg,.jpeg,.gif" class="hidden" disabled>
+                                            
+                                            <div class="grid grid-cols-1 gap-8">
+
+                                                <div class="space-y-2">
+                                                    <label for="name" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                                                        <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                        </svg>
+                                                        Full Name <span class="text-red-500 ml-1">*</span>
+                                                    </label>
+                                                    <div class="relative">
+                                                        <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" 
+                                                               class="w-full mt-2 px-4 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed font-medium placeholder-gray-400 dark:placeholder-gray-500" 
+                                                               placeholder="Enter your full name" required readonly disabled>
+                                                    </div>
+                                                </div>
+
+                                                <div class="space-y-2">
+                                                    <label for="email" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                                                        <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        Email Address <span class="text-red-500 ml-1">*</span>
+                                                    </label>
+                                                    <div class="relative">
+                                                        <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" 
+                                                               class="w-full mt-2 px-4 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed font-medium placeholder-gray-400 dark:placeholder-gray-500" 
+                                                               placeholder="Enter your email address" required readonly disabled>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="form-buttons" class="flex flex-col sm:flex-row items-center justify-end space-y-4 sm:space-y-0 sm:space-x-4 mt-10 hidden">
+                                                <button type="button" id="cancel-edit" 
+                                                        class="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 font-semibold transform hover:scale-105">
+                                                    <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" 
+                                                        class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
+                                                    <span class="submit-text flex items-center">
+                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                        Save Changes
+                                                    </span>
+                                                    <span class="submit-loading hidden flex items-center">
+                                                        <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                                        </svg>
+                                                        Saving...
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </form>
+
+                                        <div id="edit-button-container" class="flex justify-end mt-10">
+                                            <button type="button" id="enable-edit" 
+                                                    class="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 relative overflow-hidden group">
+                                                <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                                <span class="relative flex items-center">
+                                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    Edit Profile
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="change-password" class="tab-content hidden" role="tabpanel" aria-labelledby="change-password-tab">
+                                        <div class="mx-auto">
+                                            <div class="text-center mb-10">
+                                                <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full mb-6 shadow-xl relative">
+                                                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur opacity-30 animate-pulse"></div>
+                                                    <svg class="relative w-12 h-12 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                    </svg>
+                                                </div>
+                                                <h3 class="text-3xl font-bold text-gray-800 dark:text-white mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Change Password</h3>
+                                                <p class="text-gray-600 dark:text-gray-400 text-lg">Update your password to keep your account secure</p>
+                                            </div>
+
+                                            <form id="password-form" action="{{ route('users.updatePassword', $user->id) }}" method="POST">
+                                                @csrf
+                                                <div class="space-y-8">
+
+                                                    <div class="space-y-2 mb-4">
+                                                        <label for="password" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                                                            <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                            </svg>
+                                                            New Password <span class="text-red-500 ml-1">*</span>
+                                                        </label>
+                                                        <div class="relative">
+                                                            <input type="password" id="password" name="password" 
+                                                                   class="w-full mt-2 px-4 py-4 pr-12 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed font-medium placeholder-gray-400 dark:placeholder-gray-500" 
+                                                                   placeholder="Enter new password" required disabled minlength="6">
+                                                            <button type="button" 
+                                                                    class="toggle-password absolute mt-2 right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400 p-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200" 
+                                                                    data-target="password" aria-label="Toggle password visibility" aria-pressed="false">
+                                                                <iconify-icon icon="ph:eye" style="font-size: 20px;"></iconify-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-2">
+                                                        <label for="password_confirmation" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
+                                                            <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                            </svg>
+                                                            Confirm Password <span class="text-red-500 ml-1">*</span>
+                                                        </label>
+                                                        <div class="relative">
+                                                            <input type="password" id="password_confirmation" name="password_confirmation" 
+                                                                   class="w-full mt-2 px-4 py-4 pr-12 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed font-medium placeholder-gray-400 dark:placeholder-gray-500" 
+                                                                   placeholder="Confirm new password" required disabled minlength="6">
+                                                            <button type="button" 
+                                                                    class="toggle-password absolute mt-2 right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 dark:text-gray-500 dark:hover:text-blue-400 p-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200" 
+                                                                    data-target="password_confirmation" aria-label="Toggle password visibility" aria-pressed="false">
+                                                                <iconify-icon icon="ph:eye" style="font-size: 20px;"></iconify-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div id="password-buttons" class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-10 hidden">
+                                                    <button type="button" id="cancel-password" 
+                                                            class="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 font-semibold transform hover:scale-105">
+                                                        <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                        Cancel
+                                                    </button>
+                                                    <button type="submit" 
+                                                            class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
+                                                        <span class="submit-text flex items-center">
+                                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                            </svg>
+                                                            Update Password
+                                                        </span>
+                                                        <span class="submit-loading hidden flex items-center">
+                                                            <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                                            </svg>
+                                                            Updating...
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </form>
+
+                                            <div id="password-button-container" class="flex justify-center mt-6 mb-6">
+                                                <button type="button" id="enable-password-edit" 
+                                                        class="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 relative overflow-hidden group">
+                                                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                                    <span class="relative flex items-center">
+                                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                                        </svg>
+                                                        Change Password
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/iconify@3.1.1/iconify.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/iconify/3.1.1/iconify.min.js"></script>
+<script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
 
 <script>
   window.Profile = {
     name: @json($user->name),
     email: @json($user->email),
-    role: @json($user->role),
     img: @json($user->img ? asset('assets/images/super-admin/' . $user->img) : ''),
     initial: @json(strtoupper(substr($user->name, 0, 1)))
   };
@@ -319,18 +357,81 @@
 
 <style>
 .tab-button[aria-selected="true"] {
-    color: #2563eb !important;
-    border-bottom-color: #2563eb !important;
-    background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1), transparent) !important;
+    @apply text-blue-600 dark:text-blue-400 border-b-blue-600 dark:border-b-blue-400 bg-gradient-to-b from-blue-100/50 to-transparent dark:from-blue-900/30;
 }
 
-.dark .tab-button[aria-selected="true"] {
-    color: #60a5fa !important;
-    border-bottom-color: #60a5fa !important;
+.border-b-3 {
+    border-bottom-width: 3px;
 }
 
 .notification-toast {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@keyframes tilt {
+    0%, 50%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(1deg);
+    }
+    75% {
+        transform: rotate(-1deg);
+    }
+}
+
+.animate-tilt {
+    animation: tilt 10s infinite linear;
+}
+
+.dark ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+}
+
+.focus-ring:focus {
+    @apply ring-4 ring-blue-500/20 ring-offset-2 ring-offset-white dark:ring-offset-gray-800;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-gradient {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-gradient:hover::before {
+    left: 100%;
 }
 
 @media (max-width: 640px) {
@@ -339,20 +440,50 @@
         right: 16px !important;
         top: 16px !important;
     }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
-.border-b-3 {
-    border-bottom-width: 3px;
+.form-input:focus {
+    @apply ring-4 ring-blue-500/20 border-blue-500 scale-105;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-input:disabled,
-select:disabled {
-    opacity: 0.7;
+.form-input:disabled {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed;
 }
 
-.dark input:disabled,
-.dark select:disabled {
-    opacity: 0.6;
+@keyframes shimmer {
+    0% {
+        background-position: -468px 0;
+    }
+    100% {
+        background-position: 468px 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 400% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.dark .shimmer {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 400% 100%;
+}
+
+* {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}
+
+.focus-visible {
+    @apply focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-500/20 focus-visible:ring-offset-2;
 }
 </style>
 
