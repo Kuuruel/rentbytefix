@@ -54,13 +54,23 @@ Route::prefix('aiapplication')->group(function () {
 });
 
 // Authentication
-Route::prefix('authentication')->group(function () {
-    Route::controller(AuthenticationController::class)->group(function () {
-        Route::get('/forgot-password', 'forgotPassword')->name('forgotPassword');
-        Route::get('/sign-in', 'showSigninForm')->name('showSigninForm');
-        Route::get('/sign-up', 'signup')->name('signup');
-        Route::post('/sign-in', 'signin')->name('signin');
-    });
+Route::middleware('guest')->group(function() {
+    Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
+});
+    Route::post('/login', [AuthenticationController::class, 'signin']);
+   
+
+Route::middleware(['auth'])->group(function(){
+    Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
+});
+
+
+Route::middleware(['auth', 'role:admin'])->group(function() {
+    Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super-admin.index');
+});
+
+Route::middleware(['auth', 'role:landlord'])->group(function () {
+    Route::get('/landlord', [LandlordController::class, 'index'])->name('landlord.index');
 });
 
 // chart
