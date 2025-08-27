@@ -1,5 +1,3 @@
-//user.js
-
 (function () {
   'use strict';
 
@@ -247,11 +245,11 @@
         });
       }
 
-function resetProfileForm() {
+      function resetProfileForm() {
         isEditMode = false;
         pendingImageData = null;
         
-        const profileInputs = document.querySelectorAll('#edit-profile-form input:not([type="file"]), #edit-profile-form select');
+        const profileInputs = document.querySelectorAll('#edit-profile-form input:not([type="file"]):not([type="hidden"]), #edit-profile-form select');
         profileInputs.forEach(input => {
           try {
             input.readOnly = true;
@@ -289,7 +287,7 @@ function resetProfileForm() {
       }
 
       function resetPasswordForm() {
-        const passwordInputs = document.querySelectorAll('#password-form input');
+        const passwordInputs = document.querySelectorAll('#password-form input:not([type="hidden"])');
         passwordInputs.forEach(input => {
           input.disabled = true;
           input.value = '';
@@ -350,7 +348,7 @@ function resetProfileForm() {
       if (enableEditBtn) {
         enableEditBtn.addEventListener('click', function () {
           isEditMode = true;
-          const inputs = document.querySelectorAll('#edit-profile-form input:not([type="file"]), #edit-profile-form select');
+          const inputs = document.querySelectorAll('#edit-profile-form input:not([type="file"]):not([type="hidden"]), #edit-profile-form select');
           inputs.forEach(input => {
             try {
               input.readOnly = false;
@@ -381,7 +379,7 @@ function resetProfileForm() {
 
       if (enablePasswordEditBtn) {
         enablePasswordEditBtn.addEventListener('click', function () {
-          const inputs = document.querySelectorAll('#password-form input');
+          const inputs = document.querySelectorAll('#password-form input:not([type="hidden"])');
           inputs.forEach(input => input.disabled = false);
           if (passwordButtons) passwordButtons.classList.remove('hidden');
           if (passwordButtonContainer) passwordButtonContainer.classList.add('hidden');
@@ -552,6 +550,22 @@ function resetProfileForm() {
         }
         const newUrl = window.location.pathname;
         window.history.replaceState({}, document.title, newUrl);
+      }
+
+      const flash = window.Flash || {};
+      if (flash.success) {
+        if (flash.success === 'profile') {
+          showNotification('Profile updated successfully!', 'success');
+        } else if (flash.success === 'password') {
+          showNotification('Password changed successfully!', 'success');
+        } else {
+          showNotification(String(flash.success), 'success');
+        }
+        window.Flash.success = null;
+      }
+      if (flash.error) {
+        showNotification(String(flash.error), 'error');
+        window.Flash.error = null;
       }
 
       log('user.js initialized successfully');

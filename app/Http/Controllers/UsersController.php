@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class UsersController extends Controller
 {
@@ -60,12 +63,10 @@ public function update(Request $request, $id)
         $updateData = [
             'name' => $request->name,
             'email' => $request->email,
-            // Role tidak diupdate, tetap menggunakan role yang sudah ada
             'role' => $user->role,
         ];
 
         if ($request->hasFile('img')) {
-            // Delete old image if exists
             if ($user->img) {
                 $this->deleteImage($user->img);
             }
@@ -95,9 +96,8 @@ public function update(Request $request, $id)
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-
-        // Prevent deleting the current authenticated user
-        if (auth()->check() && auth()->id() == $user->id) {
+        
+        if (Auth::check() && Auth::id() == $user->id) {
             return redirect()->back()->with('error', 'You cannot delete your own account');
         }
 
@@ -129,11 +129,9 @@ public function update(Request $request, $id)
 
     public function viewProfile($id = null)
     {
-        // If no ID provided, show current user's profile
         if ($id === null) {
-            $user = auth()->user();
+            $user = Auth::user();
             if (!$user) {
-                // If no authenticated user, redirect to login or show first user
                 $user = User::first();
                 if (!$user) {
                     abort(404, 'No users found');
@@ -149,18 +147,14 @@ public function update(Request $request, $id)
     private function handleImageUpload($file)
     {
         try {
-            // Generate unique filename
             $filename = time() . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
-            
-            // Set destination path
+
             $destination = public_path('assets/images/super-admin');
-            
-            // Create directory if it doesn't exist
+
             if (!file_exists($destination)) {
                 mkdir($destination, 0755, true);
             }
-            
-            // Move file to destination
+
             if ($file->move($destination, $filename)) {
                 return $filename;
             }
@@ -168,7 +162,7 @@ public function update(Request $request, $id)
             throw new \Exception('Failed to move uploaded file');
             
         } catch (\Exception $e) {
-            \Log::error('Image upload failed: ' . $e->getMessage());
+            Log::error('Image upload failed: ' . $e->getMessage());
             throw new \Exception('Failed to upload image. Please try again.');
         }
     }
@@ -187,7 +181,7 @@ public function update(Request $request, $id)
             return false;
             
         } catch (\Exception $e) {
-            \Log::error('Image deletion failed: ' . $e->getMessage());
+            Log::error('Image deletion failed: ' . $e->getMessage());
             return false;
         }
     }
