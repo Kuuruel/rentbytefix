@@ -1,10 +1,11 @@
 <?php
-// app/Models/Tenants.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+
 
 class Tenants extends Model
 {
@@ -32,8 +33,9 @@ class Tenants extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->hasOne(User::class, 'tenant_id');
     }
+
 
     public function getAvatarAttribute($value)
     {
@@ -60,4 +62,25 @@ class Tenants extends Model
               ->orWhere('email', 'like', '%' . $term . '%');
         });
     }
+
+    public function properties()
+{
+    return $this->hasMany(Property::class);
+}
+
+// Di model Tenant
+protected static function booted()
+{
+    static::created(function ($tenant) {
+        User::create([
+            'name' => $tenant->name,
+            'email' => $tenant->email,
+            'password' => Hash::make($tenant->password),
+            'role' => 'tenants',
+            'tenant_id' => $tenant->id
+        ]);
+    });
+}
+
+
 }

@@ -15,6 +15,8 @@ use App\Http\Controllers\CryptocurrencyController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\PropertyController;
+
 
 
 Route::get('/', [SuperAdminController::class, 'index'])->name('super-admin.index');
@@ -191,3 +193,10 @@ Route::prefix('tenants')->name('tenants.')->group(function () {
     Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
     Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
 });
+    // Property management routes
+Route::get('/landlord/index3', [PropertyController::class, 'index'])->name('landlord.index3');
+Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
+Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
+Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
+Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
+Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');

@@ -23,7 +23,7 @@ class AuthenticationController extends Controller
         return view('authentication.signup');
     }
 
-   public function signin(Request $request)
+    public function signin(Request $request)
 {
     $request->validate([
         'email' => 'required|email',
@@ -50,6 +50,6 @@ class AuthenticationController extends Controller
     // Login gagal - kembali dengan error dan input lama
     return back()->withErrors([
         'email' => 'Email atau password salah.',
-    ])->withInput($request->except('password'));
+    ])->withInput($request->except('password')); 
 }
 }
