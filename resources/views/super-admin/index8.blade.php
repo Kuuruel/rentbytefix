@@ -421,7 +421,7 @@
 
                         </ul>
                     </div>
-                    <div class="mt-8">
+                    {{-- <div class="mt-8">
                         <h6 class="text-lg mb-4">Billing Summary</h6>
                         <ul>
                             <li class="flex items-center gap-1 mb-3">
@@ -455,7 +455,7 @@
                             
 
                         </ul>
-                    </div>
+                    </div> --}}
 
                 </div>
             </div>

@@ -1,5 +1,4 @@
-
-            {{-- <li class="mt-2 mb-2">
+{{-- <li class="mt-2 mb-2">
                 <a href="{{ route('super-admin.index') }}">
                     <iconify-icon icon="hugeicons:dashboard-square-01" class="menu-icon"></iconify-icon>
                     <span>Dashboard</span>
@@ -34,7 +33,7 @@
                 </a>
             </li> --}}
 
-            {{-- <li class="">
+{{-- <li class="">
                 <a href="{{ route('super-admin.index4') }}"><i
                         class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
             </li>
@@ -442,3 +441,51 @@
                     </li>
                 </ul>
             </li> --}}
+
+
+
+
+
+{{-- <div class="flex flex-wrap gap-4">
+                                                <div
+                                                    class="form-switch switch-primary py-3 px-4 border rounded-lg relative mb-4">
+                                                    <label for="orderNotification"
+                                                        class="absolute w-full h-full start-0 top-0"></label>
+                                                    <div class="flex items-center gap-3 justify-between">
+                                                        <span
+                                                            class="form-check-label line-height-1 font-medium text-secondary-light">API
+                                                            Key
+                                                            Changed</span>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="orderNotification" checked>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="form-switch switch-primary py-3 px-4 border rounded-lg relative mb-4">
+                                                    <label for="orderNotification"
+                                                        class="absolute w-full h-full start-0 top-0"></label>
+                                                    <div class="flex items-center gap-3 justify-between">
+                                                        <span
+                                                            class="form-check-label line-height-1 font-medium text-secondary-light">API
+                                                            Key
+                                                            Changed</span>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="orderNotification" checked>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="form-switch switch-primary py-3 px-4 border rounded-lg relative mb-4">
+                                                    <label for="orderNotification"
+                                                        class="absolute w-full h-full start-0 top-0"></label>
+                                                    <div class="flex items-center gap-3 justify-between">
+                                                        <span
+                                                            class="form-check-label line-height-1 font-medium text-secondary-light">API
+                                                            Key
+                                                            Changed</span>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="orderNotification" checked>
+                                                    </div>
+                                                </div>
+
+
+                                            </div> --}}

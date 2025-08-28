@@ -423,13 +423,13 @@
                         <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
                     </td>
                <td class="px-4 py-4 text-center align-middle">
-    <span class="${status === 'Active'
+                    <span class="${status === 'Active'
                         ? 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm'
                         : 'bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-8 py-1.5 rounded-full font-medium text-sm'
                     }">
-        ${status}
-    </span>
-</td>
+                        ${status}
+                    </span>
+                </td>
 
                     <td class="px-4 py-4 text-center align-middle"> 
                         <div class="flex items-center gap-1.5 justify-center">

@@ -17,13 +17,13 @@
                 .sidebar-menu li.active>a .menu-icon,
                 .sidebar-menu li.active>a span {
                     background-color: #3b82f6;
-                        /* bg-blue-500 */
+                    /* bg-blue-500 */
 
-                        /* bg-blue-800 */
+                    /* bg-blue-800 */
 
-                        /* bg-blue-700 */
+                    /* bg-blue-700 */
 
-                        color: #ffffff !important;
+                    color: #ffffff !important;
                     font-weight: 600;
                     padding: 7px;
                 }
@@ -80,11 +80,34 @@
                     </li>
                 </ul>
             </li>
-            <li class="mt-2 mb-6">
+
+            {{-- <li class="mt-2 mb-6">
                 <a href="{{ route('super-admin.index3') }}">
                     <iconify-icon icon="guidance:settings" class="menu-icon"></iconify-icon>
                     <span class="px-2">Settings Global</span>
                 </a>
+            </li> --}}
+            <li class="dropdown mt-2 mb-6">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="guidance:settings" class="menu-icon"></iconify-icon>
+                    <span class="px-2">Settings Global</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li class="pb-2">
+                        <a href="{{ route('super-admin.index9') }}">
+                            {{-- <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon> --}}
+                            <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+                            <span class="px-2">Midtrans API Key</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('super-admin.index7') }}">
+                            {{-- <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon> --}}
+                            <i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i>
+                            <span class="px-2">Global Notifications</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
 
@@ -95,7 +118,7 @@
                 <a href="{{ route('super-admin.index4') }}"><i
                         class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
             </li> --}}
-            <li>
+            {{-- <li>
                 <a href="{{ route('super-admin.index5') }}"><i
                         class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Investment</a>
             </li>
@@ -106,14 +129,14 @@
             <li>
                 <a href="{{ route('super-admin.index7') }}"><i
                         class="ri-circle-fill circle-icon text-info-600 w-auto"></i> NFT & Gaming</a>
-            </li>
+            </li> --}}
             {{-- <li>
     <a href="{{ route('super-admin.index8') }}">
         <i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Statistic Users
     </a>
 </li> --}}
 
-            <li>
+            {{-- <li>
                 <a href="{{ route('super-admin.index9') }}"><i
                         class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
             </li>
@@ -478,6 +501,6 @@
                     </li>
                 </ul>
             </li>
-        </ul>
+        </ul> --}}
     </div>
 </aside>
