@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Tenants;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,9 +31,9 @@ class AuthenticationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:tenants,email',
             'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:admin,tenant',
+            'country' => 'required|string|max:100',
         ]);
 
         if ($validator->fails()) {
@@ -41,20 +42,20 @@ class AuthenticationController extends Controller
                 ->withInput();
         }
 
-        $user = User::create([
+        // Create tenant account
+        $tenant = Tenants::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'country' => $request->country,
+            'status' => 'Active',
+            'user_id' => 1, // Default user_id, adjust as needed
         ]);
 
-        Auth::login($user);
+        // Login tenant using custom guard
+        Auth::guard('tenant')->login($tenant);
 
-        if ($user->role === 'admin') {
-            return redirect()->route('super-admin.index');
-        } else {
-            return redirect()->route('landlord.index');
-        }
+        return redirect()->route('landlord.index');
     }
 
     public function signin(Request $request)
@@ -64,20 +65,29 @@ class AuthenticationController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
-            $request->session()->regenerate();
-
-            $user = Auth::user();
+        // First, try to authenticate as admin from users table
+        if (Auth::guard('web')->attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+            'role' => 'admin'
+        ], $request->filled('remember'))) {
             
-            if ($user->role === 'admin') {
-                return redirect()->route('super-admin.index');
-            } elseif ($user->role === 'tenant') {
-                return redirect()->route('landlord.index');
-            } else {
-                return redirect()->route('landlord.index');
-            }
+            $request->session()->regenerate();
+            return redirect()->route('super-admin.index');
         }
 
+        // If admin login failed, try to authenticate as tenant from tenants table
+        $tenant = Tenants::where('email', $request->email)
+                       ->where('status', 'Active')
+                       ->first();
+
+        if ($tenant && Hash::check($request->password, $tenant->password)) {
+            Auth::guard('tenant')->login($tenant, $request->filled('remember'));
+            $request->session()->regenerate();
+            return redirect()->route('landlord.index');
+        }
+
+        // If both attempts fail, return error
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->except('password'));
@@ -85,9 +95,13 @@ class AuthenticationController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        // Logout from both guards
+        Auth::guard('web')->logout();
+        Auth::guard('tenant')->logout();
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        
         return redirect()->route('showSigninForm');
     }
 }

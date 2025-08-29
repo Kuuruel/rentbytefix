@@ -19,14 +19,19 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    if (Auth::check()) {
-        $user = Auth::user();
+    // Check for admin authentication
+    if (Auth::guard('web')->check()) {
+        $user = Auth::guard('web')->user();
         if ($user->role === 'admin') {
             return redirect()->route('super-admin.index');
-        } else {
-            return redirect()->route('landlord.index');
         }
     }
+    
+    // Check for tenant authentication
+    if (Auth::guard('tenant')->check()) {
+        return redirect()->route('landlord.index');
+    }
+    
     return redirect()->route('showSigninForm');
 });
 
@@ -41,8 +46,11 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::prefix('super-admin')->group(function () {
+// Protected routes - using custom middleware for multi-guard authentication
+Route::middleware(['auth:web,tenant'])->group(function () {
+    
+    // Super Admin routes (only for admin users)
+    Route::prefix('super-admin')->middleware('auth:web')->group(function () {
         Route::controller(SuperAdminController::class)->group(function () {
             Route::get('/', 'index')->name('super-admin.index');
             Route::get('/index2', 'index2')->name('super-admin.index2');
@@ -56,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // Landlord/Tenant routes (for tenant users)
     Route::prefix('landlord')->group(function () {
         Route::controller(LandlordController::class)->group(function () {
             Route::get('/', 'index')->name('landlord.index');
@@ -70,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // Shared routes for both admin and tenant
     Route::controller(HomeController::class)->group(function () {
         Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
         Route::get('chatempty', 'chatempty')->name('chatempty');
@@ -177,7 +187,8 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-    Route::prefix('users')->group(function () {
+    // Users management routes (admin only)
+    Route::prefix('users')->middleware('auth:web')->group(function () {
         Route::controller(UsersController::class)->group(function () {
             Route::get('/add-user', 'addUser')->name('addUser');
             Route::post('/add-user', 'store')->name('users.store');
@@ -190,6 +201,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // Tenants management routes
     Route::resource('tenants', TenantController::class);
 
     Route::prefix('tenants')->name('tenants.')->group(function () {

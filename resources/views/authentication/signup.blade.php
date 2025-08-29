@@ -16,11 +16,8 @@
         <div class="lg:w-1/2 py-8 px-6 flex flex-col justify-center">
             <div class="lg:max-w-[464px] mx-auto w-full">
                 <div>
-                    <a href="{{ route('super-admin.index') }}" class="mb-2.5 max-w-[290px]">
-                        <img src="{{ asset('assets/images/logo.png') }}" alt="">
-                    </a>
-                    <h4 class="mb-3">Sign Up to your Account</h4>
-                    <p class="mb-8 text-secondary-light text-lg">Welcome! please enter your details</p>
+                    <h4 class="mb-3">Create Tenant Account</h4>
+                    <p class="mb-8 text-secondary-light text-lg">Welcome! Please enter your details to create a tenant account</p>
                 </div>
                 @if ($errors->any())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -45,11 +42,53 @@
                         </span>
                         <input type="email" name="email" value="{{ old('email') }}" class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl" placeholder="Email" required>
                     </div>
-                    <div class="mb-4">
-                        <select name="role" class="form-control h-[56px] border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl w-full" required>
-                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin Account</option>
+                    <div class="icon-field mb-4 relative">
+                        <span class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
+                            <iconify-icon icon="material-symbols:location-on"></iconify-icon>
+                        </span>
+
+                        @php
+                            // Untuk reuse: ambil old value atau property user (jika ada)
+                            $selectedCountry = old('country', $user->country ?? '');
+                        @endphp
+
+                        <select id="formCountry" name="country" required
+                            class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl w-full text-neutral-900 dark:text-white">
+                            <option value="" {{ $selectedCountry === '' ? 'selected' : '' }}>Select Country</option>
+                            <option value="Afghanistan" @selected($selectedCountry === 'Afghanistan')>Afghanistan</option>
+                            <option value="Albania" @selected($selectedCountry === 'Albania')>Albania</option>
+                            <option value="Algeria" @selected($selectedCountry === 'Algeria')>Algeria</option>
+                            <option value="Argentina" @selected($selectedCountry === 'Argentina')>Argentina</option>
+                            <option value="Australia" @selected($selectedCountry === 'Australia')>Australia</option>
+                            <option value="Austria" @selected($selectedCountry === 'Austria')>Austria</option>
+                            <option value="Belgium" @selected($selectedCountry === 'Belgium')>Belgium</option>
+                            <option value="Brazil" @selected($selectedCountry === 'Brazil')>Brazil</option>
+                            <option value="Canada" @selected($selectedCountry === 'Canada')>Canada</option>
+                            <option value="China" @selected($selectedCountry === 'China')>China</option>
+                            <option value="Denmark" @selected($selectedCountry === 'Denmark')>Denmark</option>
+                            <option value="Egypt" @selected($selectedCountry === 'Egypt')>Egypt</option>
+                            <option value="Finland" @selected($selectedCountry === 'Finland')>Finland</option>
+                            <option value="France" @selected($selectedCountry === 'France')>France</option>
+                            <option value="Germany" @selected($selectedCountry === 'Germany')>Germany</option>
+                            <option value="Indonesia" @selected($selectedCountry === 'Indonesia')>Indonesia</option>
+                            <option value="Italy" @selected($selectedCountry === 'Italy')>Italy</option>
+                            <option value="Japan" @selected($selectedCountry === 'Japan')>Japan</option>
+                            <option value="Malaysia" @selected($selectedCountry === 'Malaysia')>Malaysia</option>
+                            <option value="Netherlands" @selected($selectedCountry === 'Netherlands')>Netherlands</option>
+                            <option value="Norway" @selected($selectedCountry === 'Norway')>Norway</option>
+                            <option value="Philippines" @selected($selectedCountry === 'Philippines')>Philippines</option>
+                            <option value="Singapore" @selected($selectedCountry === 'Singapore')>Singapore</option>
+                            <option value="South Korea" @selected($selectedCountry === 'South Korea')>South Korea</option>
+                            <option value="Spain" @selected($selectedCountry === 'Spain')>Spain</option>
+                            <option value="Sweden" @selected($selectedCountry === 'Sweden')>Sweden</option>
+                            <option value="Switzerland" @selected($selectedCountry === 'Switzerland')>Switzerland</option>
+                            <option value="Thailand" @selected($selectedCountry === 'Thailand')>Thailand</option>
+                            <option value="United Kingdom" @selected($selectedCountry === 'United Kingdom')>United Kingdom</option>
+                            <option value="United States" @selected($selectedCountry === 'United States')>United States</option>
+                            <option value="Vietnam" @selected($selectedCountry === 'Vietnam')>Vietnam</option>
                         </select>
                     </div>
+
                     <div class="mb-4">
                         <div class="relative">
                             <div class="icon-field">
@@ -85,7 +124,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary justify-center text-sm btn-sm px-3 py-4 w-full rounded-xl mt-8">Sign Up</button>
+                    <button type="submit" class="btn btn-primary justify-center text-sm btn-sm px-3 py-4 w-full rounded-xl mt-8">Create Tenant Account</button>
 
                     <div class="mt-8 center-border-horizontal text-center relative before:absolute before:w-full before:h-[1px] before:top-1/2 before:-translate-y-1/2 before:bg-neutral-300 before:start-0">
                         <span class="bg-white dark:bg-dark-2 z-[2] relative px-4">Or sign up with</span>
@@ -101,7 +140,7 @@
                         </button>
                     </div>
                     <div class="mt-8 text-center text-sm">
-                        <p class="mb-0">Already have an account? <a href="{{ route('signin') }}" class="text-primary-600 font-semibold hover:underline">Sign In</a></p>
+                        <p class="mb-0">Already have an account? <a href="{{ route('showSigninForm') }}" class="text-primary-600 font-semibold hover:underline">Sign In</a></p>
                     </div>
                 </form>
             </div>
