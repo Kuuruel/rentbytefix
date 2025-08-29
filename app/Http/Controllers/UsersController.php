@@ -1,35 +1,43 @@
 <?php
 
-// namespace App\Http\Controllers;
+namespace App\Models;
 
-// use App\Models\User;
-// use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class UsersController extends Controller
+class User extends Authenticatable
 {
-    public function codeGenerator()
+    use HasFactory, Notifiable;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'img',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
     {
-        return view('aiapplication/codeGenerator');
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
     }
 
-    public function addUser()
+    public function isAdmin()
     {
-        return view('users/addUser');
+        return $this->role === 'admin';
     }
-    
-    public function usersGrid()
+
+    public function isTenant()
     {
-        return view('users/usersGrid');
+        return $this->role === 'tenant';
     }
-    
-    public function usersList()
-    {
-        return view('users/usersList');
-    }
-    
-    public function viewProfile()
-    {
-        return view('users/viewProfile');
-    }
-    
 }
