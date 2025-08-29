@@ -1,3 +1,5 @@
+<!-- resources\views\super-admin\index.blade.php -->
+
 @extends('layout.layout')
 
 @php

@@ -1,4 +1,4 @@
-<!-- meta tags and other links -->
+<!-- resources\views\authentication\signin.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 
