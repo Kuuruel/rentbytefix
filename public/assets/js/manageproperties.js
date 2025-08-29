@@ -16,7 +16,10 @@
         STORE: '/landlord/properties',
         UPDATE: (id) => `/landlord/properties/${id}`,
         DELETE: (id) => `/landlord/properties/${id}`,
-        DATA: '/landlord/properties/data'
+        DATA: '/landlord/properties/data',
+        BULK_DELETE: '/landlord/properties/bulk-delete',
+        RENTALS: '/landlord/rentals',
+        PAYMENT_STATUS: (billId) => `/landlord/rentals/${billId}/payment-status`
     };
 
     const DOM = {
@@ -66,6 +69,11 @@
         deleteCancel: document.getElementById('deleteCancel'),
         deleteConfirm: document.getElementById('deleteConfirm'),
 
+        bulkDeleteModal: document.getElementById('bulkDeleteModal'),
+        bulkDeleteCount: document.getElementById('bulkDeleteCount'),
+        bulkDeleteCancel: document.getElementById('bulkDeleteCancel'),
+        bulkDeleteConfirm: document.getElementById('bulkDeleteConfirm'),
+
         rentBackdrop: document.getElementById('rentNow'),
         closeRentBtn: document.getElementById('closeRentBtn'),
         closeRentFooterBtn: document.getElementById('closeRentFooterBtn'),
@@ -83,6 +91,19 @@
         
         rentForm: document.getElementById('rentForm'),
         generatePaymentBtn: document.getElementById('generatePaymentBtn'),
+
+        // Payment Link Modal Elements
+        paymentLinkModal: document.getElementById('paymentLinkModal'),
+        closePaymentLinkBtn: document.getElementById('closePaymentLinkBtn'),
+        closePaymentLinkFooterBtn: document.getElementById('closePaymentLinkFooterBtn'),
+        paymentPropertyName: document.getElementById('paymentPropertyName'),
+        paymentRenterName: document.getElementById('paymentRenterName'),
+        paymentAmount: document.getElementById('paymentAmount'),
+        paymentDueDate: document.getElementById('paymentDueDate'),
+        generatedPaymentLink: document.getElementById('generatedPaymentLink'),
+        copyPaymentLink: document.getElementById('copyPaymentLink'),
+        shareViaWhatsapp: document.getElementById('shareViaWhatsapp'),
+        generateAnotherLink: document.getElementById('generateAnotherLink'),
     };
 
     async function apiRequest(url, options = {}) {
@@ -348,6 +369,323 @@
         showRentModal(false);
     }
 
+    function showBulkDeleteModal() {
+        const checkedBoxes = document.querySelectorAll('.property-checkbox:checked');
+        const selectedCount = checkedBoxes.length;
+        
+        if (selectedCount === 0) {
+            showNotification('Please select properties to delete', 'error');
+            return;
+        }
+        
+        if (DOM.bulkDeleteCount) {
+            DOM.bulkDeleteCount.textContent = selectedCount;
+        }
+        
+        if (DOM.bulkDeleteModal) {
+            DOM.bulkDeleteModal.classList.remove('hidden');
+            DOM.bulkDeleteModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeBulkDeleteModal() {
+        if (DOM.bulkDeleteModal) {
+            DOM.bulkDeleteModal.classList.add('hidden');
+            DOM.bulkDeleteModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Payment Link Modal Functions
+    function showPaymentLinkModal(data) {
+        if (DOM.paymentPropertyName) DOM.paymentPropertyName.textContent = data.property_name;
+        if (DOM.paymentRenterName) DOM.paymentRenterName.textContent = data.renter_name;
+        if (DOM.paymentAmount) DOM.paymentAmount.textContent = data.amount;
+        if (DOM.paymentDueDate) DOM.paymentDueDate.textContent = data.due_date;
+        if (DOM.generatedPaymentLink) DOM.generatedPaymentLink.value = data.payment_link;
+        
+        if (DOM.paymentLinkModal) {
+            DOM.paymentLinkModal.classList.remove('hidden');
+            DOM.paymentLinkModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closePaymentLinkModal() {
+        if (DOM.paymentLinkModal) {
+            DOM.paymentLinkModal.classList.add('hidden');
+            DOM.paymentLinkModal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Payment functions
+    function handleCopyPaymentLink() {
+        const linkInput = DOM.generatedPaymentLink;
+        const copyText = DOM.copyPaymentLink?.querySelector('.copy-text');
+        const copySuccess = DOM.copyPaymentLink?.querySelector('.copy-success');
+        
+        if (linkInput) {
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            if (copyText && copySuccess) {
+                copyText.classList.add('hidden');
+                copySuccess.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    copyText.classList.remove('hidden');
+                    copySuccess.classList.add('hidden');
+                }, 2000);
+            }
+        }
+    }
+
+    function handleWhatsAppShare() {
+        const paymentLink = DOM.generatedPaymentLink?.value;
+        const propertyName = DOM.paymentPropertyName?.textContent;
+        const amount = DOM.paymentAmount?.textContent;
+        
+        if (paymentLink && propertyName && amount) {
+            const message = `Hi! Silakan lakukan pembayaran untuk penyewaan properti "${propertyName}" dengan total ${amount}. Link pembayaran: ${paymentLink}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+    }
+
+    function handleGenerateAnotherLink() {
+        closePaymentLinkModal();
+        if (DOM.rentForm) DOM.rentForm.reset();
+        showRentModal(true);
+    }
+
+    // Payment Status Modal
+    function showPaymentModal(paymentData) {
+        const existingModal = document.getElementById('paymentModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        const modal = document.createElement('div');
+        modal.id = 'paymentModal';
+        modal.className = 'fixed inset-0 z-50 flex items-center justify-center';
+        modal.innerHTML = `
+            <div class="absolute inset-0 bg-black/60"></div>
+            <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
+                 style="width: 32rem !important; max-width: 90vw !important;">
+                
+                <!-- Header -->
+                <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-neutral-800 dark:to-neutral-700">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
+                            <iconify-icon icon="ph:check-circle" class="text-2xl text-green-600 dark:text-green-400"></iconify-icon>
+                            Payment Created
+                        </h3>
+                        <button id="closePaymentModal" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="px-6 py-6">
+                    <div class="text-center mb-6">
+                        <div class="w-16 h-16 bg-green-100 dark:bg-green-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <iconify-icon icon="ph:currency-circle-dollar" class="text-green-600 dark:text-green-400 text-2xl"></iconify-icon>
+                        </div>
+                        <h4 class="text-lg font-semibold text-neutral-900 dark:text-white mb-2">Rental Successfully Created!</h4>
+                        <p class="text-sm text-neutral-600 dark:text-neutral-300">
+                            Please make payment to complete the rental process.
+                        </p>
+                    </div>
+
+                    <!-- Payment Info -->
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 mb-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total Payment</span>
+                            <span class="text-lg font-bold text-neutral-900 dark:text-white">${paymentData.amount}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Bill ID</span>
+                            <span class="text-sm font-semibold text-neutral-900 dark:text-white">#${paymentData.bill_id}</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col gap-3">
+                        <button onclick="window.open('${paymentData.payment_link}', '_blank')" 
+                                class="w-full px-6 py-3 rounded-lg text-sm bg-blue-600 hover:bg-blue-700 text-white transition-colors font-medium">
+                            <iconify-icon icon="ph:credit-card" class="mr-2"></iconify-icon>
+                            Pay Now
+                        </button>
+                        <button onclick="window.propertyManager.checkPaymentStatus(${paymentData.bill_id})" 
+                                class="w-full px-6 py-3 rounded-lg text-sm bg-green-600 hover:bg-green-700 text-white transition-colors font-medium">
+                            <iconify-icon icon="ph:arrow-clockwise" class="mr-2"></iconify-icon>
+                            Check Payment Status
+                        </button>
+                        <button id="closePaymentModalBtn" 
+                                class="w-full px-6 py-3 rounded-lg text-sm bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors font-medium">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+        
+        // Event listeners for close
+        document.getElementById('closePaymentModal').onclick = closePaymentModal;
+        document.getElementById('closePaymentModalBtn').onclick = closePaymentModal;
+        modal.onclick = (e) => {
+            if (e.target === modal) closePaymentModal();
+        };
+    }
+
+    function closePaymentModal() {
+        const modal = document.getElementById('paymentModal');
+        if (modal) {
+            modal.remove();
+            document.body.style.overflow = '';
+        }
+    }
+
+    async function checkPaymentStatus(billId) {
+        try {
+            const { data } = await apiRequest(API_ENDPOINTS.PAYMENT_STATUS(billId));
+            
+            if (data.success) {
+                const bill = data.data.bill;
+                const transaction = data.data.transaction;
+                
+                let message = '';
+                let type = 'info';
+                
+                switch (bill.status) {
+                    case 'paid':
+                        message = 'Pembayaran berhasil! Properti sudah disewa.';
+                        type = 'success';
+                        closePaymentModal();
+                        setTimeout(() => {
+                            loadProperties();
+                            clearAllSelections();
+                        }, 1000);
+                        break;
+                    case 'pending':
+                        if (transaction && transaction.va_number) {
+                            message = `Payment pending. Transfer to ${transaction.bank.toUpperCase()}: ${transaction.va_number}`;
+                        } else {
+                            message = 'Payment is still pending. Please complete the payment.';
+                        }
+                        type = 'info';
+                        break;
+                    case 'failed':
+                        message = 'Payment failed. Please try again.';
+                        type = 'error';
+                        break;
+                    default:
+                        message = `Status: ${bill.status}`;
+                        type = 'info';
+                }
+                
+                showNotification(message, type);
+            } else {
+                throw new Error(data.message || 'Failed to check payment status');
+            }
+        } catch (error) {
+            console.error('Error checking payment status:', error);
+            showNotification('Error checking payment status: ' + error.message, 'error');
+        }
+    }
+
+    async function handleBulkDelete() {
+        const checkedBoxes = document.querySelectorAll('.property-checkbox:checked');
+        const selectedIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+        
+        if (selectedIds.length === 0) {
+            showNotification('No properties selected for deletion', 'error');
+            return;
+        }
+
+        const confirmBtn = DOM.bulkDeleteConfirm;
+        const btnText = confirmBtn?.querySelector('.bulk-delete-text');
+        const btnLoading = confirmBtn?.querySelector('.bulk-delete-loading');
+
+        try {
+            if (btnText) btnText.classList.add('hidden');
+            if (btnLoading) btnLoading.classList.remove('hidden');
+            if (confirmBtn) confirmBtn.disabled = true;
+
+            let response, data;
+            
+            try {
+                const idsParam = selectedIds.join(',');
+                const result = await apiRequest(`${API_ENDPOINTS.BULK_DELETE}?ids=${idsParam}`, {
+                    method: 'DELETE'
+                });
+                response = result.response;
+                data = result.data;
+            } catch (deleteError) {
+                try {
+                    const result = await apiRequest(API_ENDPOINTS.BULK_DELETE, {
+                        method: 'DELETE',
+                        body: JSON.stringify({ ids: selectedIds })
+                    });
+                    response = result.response;
+                    data = result.data;
+                } catch (deleteBodyError) {
+                    console.log('Bulk delete not available, deleting individually...');
+                    let successCount = 0;
+                    let errors = [];
+                    
+                    for (const id of selectedIds) {
+                        try {
+                            await apiRequest(API_ENDPOINTS.DELETE(id), {
+                                method: 'DELETE'
+                            });
+                            successCount++;
+                        } catch (individualError) {
+                            errors.push(`Property ${id}: ${individualError.message}`);
+                        }
+                    }
+                    
+                    if (successCount > 0) {
+                        closeBulkDeleteModal();
+                        loadProperties();
+                        clearAllSelections();
+                        
+                        if (errors.length > 0) {
+                            showNotification(`${successCount} properties deleted successfully. ${errors.length} failed.`, 'error');
+                            console.error('Individual delete errors:', errors);
+                        } else {
+                            showNotification(`${successCount} properties deleted successfully!`, 'delete');
+                        }
+                    } else {
+                        throw new Error('Failed to delete any properties');
+                    }
+                    return;
+                }
+            }
+
+            if (data.success) {
+                closeBulkDeleteModal();
+                loadProperties();
+                clearAllSelections();
+                showNotification(`${selectedIds.length} properties deleted successfully!`, 'delete');
+            } else {
+                throw new Error(data.message || 'Failed to delete properties');
+            }
+        } catch (error) {
+            console.error('Bulk delete error:', error);
+            showNotification('Error deleting properties: ' + error.message, 'error');
+        } finally {
+            if (btnText) btnText.classList.remove('hidden');
+            if (btnLoading) btnLoading.classList.add('hidden');
+            if (confirmBtn) confirmBtn.disabled = false;
+        }
+    }
+
     window.rentNow = function(id) {
         console.log('Rent Now clicked for ID:', id);
         
@@ -428,10 +766,6 @@
         endDateInput.value = formattedEndDate;
     }
 
-    const today = new Date().toISOString().split('T')[0];
-    DOM.startDate.setAttribute("min", today);
-
-
     async function handleRentSubmit(e) {
         e.preventDefault();
         
@@ -454,20 +788,24 @@
                 end_date: DOM.endDate?.value
             };
             
-            const { data } = await apiRequest('/landlord/rentals', {
+            const { data } = await apiRequest(API_ENDPOINTS.RENTALS, {
                 method: 'POST',
                 body: JSON.stringify(rentData)
             });
             
             if (data.success) {
                 closeRentModal();
-                showNotification('Rental created successfully! Payment has been generated.', 'success');
+                
+                // Show payment link modal if payment_link is available
+                if (data.data.payment_link) {
+                    showPaymentLinkModal(data.data);
+                } else {
+                    // Fallback to payment modal if no payment_link
+                    showPaymentModal(data.data);
+                }
                 
                 loadProperties();
-                
-                if (data.payment_url) {
-                    window.open(data.payment_url, '_blank');
-                }
+                showNotification('Payment link generated successfully!', 'success');
             } else {
                 throw new Error(data.message || 'Failed to create rental');
             }
@@ -536,7 +874,7 @@
                 <td>
                     <div class="flex items-center gap-0">
                         <div class="form-check style-check flex items-center">
-                            <input class="form-check-input rounded border input-form-dark" type="checkbox" value="${property.id}">
+                            <input class="form-check-input rounded border input-form-dark property-checkbox" type="checkbox" value="${property.id}">
                         </div>
                     </div>
                 </td>
@@ -583,10 +921,127 @@
                         <button onclick="confirmDelete(${property.id})" class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center">
                          <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
                         </button>
+                       
                     </div>
                 </td>
             `;
             DOM.tableBody.appendChild(row);
+        });
+    }
+
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('.property-checkbox');
+        const isChecked = DOM.selectAll?.checked || false;
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+        
+        updateSelectActions();
+    }
+
+    function updateSelectActions() {
+        const checkedBoxes = document.querySelectorAll('.property-checkbox:checked');
+        const selectedCount = checkedBoxes.length;
+
+        let bulkActionsContainer = document.getElementById('bulkActionsContainer');
+
+        if (selectedCount > 0) {
+            if (!bulkActionsContainer) {
+                bulkActionsContainer = document.createElement('div');
+                bulkActionsContainer.id = 'bulkActionsContainer';
+                bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
+                bulkActionsContainer.innerHTML = `
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
+                        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            <span id="selectedCount">${selectedCount}</span> property(ies) selected
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                            Delete Selected
+                        </button>
+                        <button id="clearSelection" class="bg-gray-500 hover:bg-gray-600 text-black dark:text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                            <iconify-icon icon="ph:x" class="text-sm"></iconify-icon>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            `;
+
+                const tableContainer = document.querySelector('.table-responsive');
+                if (tableContainer) {
+                    tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
+                }
+            } else {
+                const selectedCountEl = document.getElementById('selectedCount');
+                if (selectedCountEl) {
+                    selectedCountEl.textContent = selectedCount;
+                }
+            }
+
+            const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+            const clearSelectionBtn = document.getElementById('clearSelection');
+
+            if (bulkDeleteBtn) {
+                bulkDeleteBtn.onclick = showBulkDeleteModal;
+            }
+            if (clearSelectionBtn) {
+                clearSelectionBtn.onclick = clearAllSelections;
+            }
+
+        } else {
+            if (bulkActionsContainer) {
+                bulkActionsContainer.remove();
+            }
+        }
+    }
+
+    function updateSelectAll() {
+        const checkboxes = document.querySelectorAll('.property-checkbox');
+        const checkedBoxes = document.querySelectorAll('.property-checkbox:checked');
+
+        if (DOM.selectAll) {
+            if (checkboxes.length === 0) {
+                DOM.selectAll.checked = false;
+                DOM.selectAll.indeterminate = false;
+            } else if (checkedBoxes.length === checkboxes.length) {
+                DOM.selectAll.checked = true;
+                DOM.selectAll.indeterminate = false;
+            } else if (checkedBoxes.length > 0) {
+                DOM.selectAll.checked = false;
+                DOM.selectAll.indeterminate = true;
+            } else {
+                DOM.selectAll.checked = false;
+                DOM.selectAll.indeterminate = false;
+            }
+        }
+        
+        updateSelectActions();
+    }
+
+    function clearAllSelections() {
+        const checkboxes = document.querySelectorAll('.property-checkbox');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        
+        if (DOM.selectAll) {
+            DOM.selectAll.checked = false;
+            DOM.selectAll.indeterminate = false;
+        }
+        
+        updateSelectActions();
+    }
+
+    function initSelectEventListeners() {
+        DOM.selectAll?.addEventListener('change', toggleSelectAll);
+
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('property-checkbox')) {
+                updateSelectAll();
+            }
         });
     }
 
@@ -799,7 +1254,7 @@
             DOM.detailStatus.innerHTML = `
                 <span class="${status === 'Available' ? 
                     'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400' : 
-                    'bg-red-100 text-red-700 border border-red-200'
+                    'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400'
                 } px-5 py-1 rounded-full text-xs font-semibold">
                     ${status.toUpperCase()}
                 </span>
@@ -867,6 +1322,7 @@
     }
 
     function initEventListeners() {
+        // Property form events
         DOM.propertyForm?.addEventListener('submit', handleFormSubmit);
         DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
         DOM.formCancel?.addEventListener('click', closeModal);
@@ -875,18 +1331,28 @@
             if (e.target === DOM.modalBackdrop) closeModal();
         });
 
+        // Details modal events
         DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
         DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
         DOM.detailsBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.detailsBackdrop) closeDetailsModal();
         });
 
+        // Delete modal events
         DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
         DOM.deleteConfirm?.addEventListener('click', handleDelete);
         DOM.deleteBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.deleteBackdrop) closeDeleteModal();
         });
 
+        // Bulk delete modal events
+        DOM.bulkDeleteCancel?.addEventListener('click', closeBulkDeleteModal);
+        DOM.bulkDeleteConfirm?.addEventListener('click', handleBulkDelete);
+        DOM.bulkDeleteModal?.addEventListener('click', (e) => {
+            if (e.target === DOM.bulkDeleteModal) closeBulkDeleteModal();
+        });
+
+        // Rent modal events
         DOM.closeRentBtn?.addEventListener('click', closeRentModal);
         DOM.closeRentFooterBtn?.addEventListener('click', closeRentModal);
         DOM.rentBackdrop?.addEventListener('click', (e) => {
@@ -894,9 +1360,19 @@
         });
         
         DOM.rentForm?.addEventListener('submit', handleRentSubmit);
-        
         DOM.startDate?.addEventListener('change', calculateEndDate);
 
+        // Payment Link Modal Events
+        DOM.closePaymentLinkBtn?.addEventListener('click', closePaymentLinkModal);
+        DOM.closePaymentLinkFooterBtn?.addEventListener('click', closePaymentLinkModal);
+        DOM.copyPaymentLink?.addEventListener('click', handleCopyPaymentLink);
+        DOM.shareViaWhatsapp?.addEventListener('click', handleWhatsAppShare);
+        DOM.generateAnotherLink?.addEventListener('click', handleGenerateAnotherLink);
+        DOM.paymentLinkModal?.addEventListener('click', (e) => {
+            if (e.target === DOM.paymentLinkModal) closePaymentLinkModal();
+        });
+
+        // Search and filter events
         DOM.searchInput?.addEventListener('input', debounce(() => {
             state.query = DOM.searchInput.value;
             state.page = 1;
@@ -915,14 +1391,27 @@
             loadProperties();
         });
 
+        // Global keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
                 closeDetailsModal();
                 closeDeleteModal();
                 closeRentModal();
+                closeBulkDeleteModal();
+                closePaymentLinkModal();
+                closePaymentModal();
             }
         });
+
+        // Initialize select all functionality
+        initSelectEventListeners();
+
+        // Set today as minimum date for start date
+        const today = new Date().toISOString().split('T')[0];
+        if (DOM.startDate) {
+            DOM.startDate.setAttribute("min", today);
+        }
     }
 
     function renderSpinnerRow() {
@@ -938,6 +1427,16 @@
             </tr>
         `;
     }
+
+    // Expose functions to global scope for use in HTML onclick attributes
+    window.propertyManager = {
+        checkPaymentStatus: checkPaymentStatus,
+        rentNow: window.rentNow,
+        rentNowFromDetails: window.rentNowFromDetails,
+        viewProperty: window.viewProperty,
+        editProperty: window.editProperty,
+        confirmDelete: window.confirmDelete
+    };
 
     function init() {
         console.log('Initializing Property Management...');

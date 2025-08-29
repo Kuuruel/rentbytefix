@@ -33,9 +33,16 @@ class MidtransService
             $transaction = Transaction::updateOrCreate(
                 ['bill_id' => $bill->id],
                 [
-                    'midtrans_response' => $notification,
-                    'status' => $transactionStatus,
-                    'paid_at' => in_array($transactionStatus, ['settlement', 'capture', 'success']) ? now() : null
+                    'order_id' => $orderId,
+                    'transaction_id' => $notification['transaction_id'] ?? null,
+                    'gross_amount' => $notification['gross_amount'] ?? $bill->amount,
+                    'payment_type' => $notification['payment_type'] ?? null,
+                    'transaction_status' => $transactionStatus,
+                    'fraud_status' => $fraudStatus,
+                    'status_code' => $notification['status_code'] ?? null,
+                    'bank' => $notification['va_numbers'][0]['bank'] ?? $notification['permata_va_number'] ?? null,
+                    'va_number' => $notification['va_numbers'][0]['va_number'] ?? $notification['permata_va_number'] ?? null,
+                    'transaction_time' => $notification['transaction_time'] ?? now(),
                 ]
             );
 

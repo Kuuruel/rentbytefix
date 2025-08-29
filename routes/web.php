@@ -16,6 +16,7 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\RentalController;
 
 
 
@@ -210,3 +211,16 @@ Route::post('/landlord/properties', [PropertyController::class, 'store'])->name(
 Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
 Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
 Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
+
+
+// Hapus middleware untuk testing, pindahkan ke luar group
+Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+
+// Payment callback routes
+Route::get('/landlord/payments/success', [RentalController::class, 'paymentSuccess'])->name('landlord.payments.success');
+Route::get('/landlord/payments/error', [RentalController::class, 'paymentError'])->name('landlord.payments.error');
+Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
+
+// Webhook route (tetap tanpa middleware)
+Route::post('/webhook/midtrans', [RentalController::class, 'webhook'])->name('midtrans.webhook');

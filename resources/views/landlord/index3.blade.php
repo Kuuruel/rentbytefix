@@ -19,7 +19,7 @@
                         <option value="20">20</option>
                     </select>
                     <form class="navbar-search" onsubmit="return false;">
-                        <input id="searchInput" type="text" class="bg-white dark:bg-neutral-700 h-10 w-auto" name="search" placeholder="Search tenants...">
+                        <input id="searchInput" type="text" class="bg-white dark:bg-neutral-700 h-10 w-auto" name="search" placeholder="Search properties...">
                         <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     </form>
                     <select id="statusFilter" class=" form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
@@ -95,6 +95,7 @@
     </div>
 </div>
 
+<!-- Property Modal -->
 <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
@@ -175,105 +176,7 @@
     </div>
 </div>
 
-<div id="detailsBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center">
-    <div class="absolute inset-0 bg-black/60"></div>
-    <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
-         style="width: 36rem !important; max-width: 90vw !important;">
-        
-        <!-- Header -->
-        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-neutral-800 dark:to-neutral-700">
-            <div class="flex justify-between items-center">
-                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
-                    <iconify-icon icon="ph:house" class="text-2xl text-blue-600 dark:text-blue-400"></iconify-icon>
-                    Property Details
-                </h3>
-                <button id="closeDetailsBtn" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>
-            </div>
-        </div>
-
-        <!-- Body -->
-        <div class="px-6 py-6">
-            <div id="propertyDetails" class="space-y-6">
-                
-                <!-- Nama + Status -->
-                <div class="flex items-center gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-600">
-                    {{-- <img id="detailAvatar" src="" alt="Property Image" 
-                         class="w-16 h-16 rounded-lg object-cover border-4 border-blue-100 dark:border-blue-900 shadow-md"> --}}
-                    <div>
-                        <h4 id="detailName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
-                        <div id="detailStatus" class="mt-1"></div>
-                    </div>
-                </div>
-
-                <!-- Info Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <iconify-icon icon="ph:identification-card" class="text-purple-600 dark:text-purple-400"></iconify-icon>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Property ID</span>
-                        </div>
-                        <p id="detailId" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
-                    </div>
-
-                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <iconify-icon icon="ph:tag" class="text-green-600 dark:text-green-400"></iconify-icon>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Type</span>
-                        </div>
-                        <p id="detailType" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
-                    </div>
-
-                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <iconify-icon icon="ph:map-pin" class="text-red-600 dark:text-red-400"></iconify-icon>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Address</span>
-                        </div>
-                        <p id="detailAddress" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
-                    </div>
-
-                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <iconify-icon icon="ph:currency-circle-dollar" class="text-yellow-600 dark:text-yellow-400"></iconify-icon>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Price</span>
-                        </div>
-                        <p id="detailPrice" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
-                    </div>
-
-                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <iconify-icon icon="ph:calendar" class="text-blue-600 dark:text-blue-400"></iconify-icon>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Rent Type</span>
-                        </div>
-                        <p id="detailRentType" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
-                    </div>
-
-                </div>
-
-                <!-- Meta Info -->
-                {{-- <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
-                    <div class="flex items-center gap-2 mb-2">
-                        <iconify-icon icon="ph:clock" class="text-indigo-600 dark:text-indigo-400"></iconify-icon>
-                        <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Created At</span>
-                    </div>
-                    <p id="detailCreatedAt" class="text-sm text-neutral-700 dark:text-neutral-300"></p>
-                </div> --}}
-
-            </div>
-
-            <!-- Footer -->
-            <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6 gap-3">
-                <button id="closeDetailsFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
-                    Close
-                </button>
-                <button onclick="rentNowFromDetails()" class="px-6 py-2  rounded-lg  text-sm bg-info-600 hover:bg-info-700 text-white  transition-colors">
-                    Rent Now
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- Rent Now Modal -->
 <div id="rentNow" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
@@ -358,8 +261,12 @@
                     </button>
                     <button type="submit" id="generatePaymentBtn" class="px-6 py-2 rounded-lg text-sm bg-info-600 hover:bg-info-700 text-white transition-colors">
                         <span class="btn-text">Generate Payment</span>
-                        <span class="btn-loading hidden">
-                            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></div>
+                         <span class="submit-loading hidden">
+                            <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
                         </span>
                     </button>
                 </div>
@@ -368,6 +275,236 @@
     </div>
 </div>
 
+<!-- Payment Link Modal -->
+<div id="paymentLinkModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
+         style="width: 40rem !important; max-width: 90vw !important;">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
+                    <iconify-icon icon="ph:check-circle" class="text-2xl text-green-600 dark:text-green-400"></iconify-icon>
+                    Payment Link Generated
+                </h3>
+                <button id="closePaymentLinkBtn" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 py-6">
+            <!-- Success Message -->
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 dark:bg-green-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <iconify-icon icon="ph:check-circle" class="text-green-600 dark:text-green-400 text-3xl"></iconify-icon>
+                </div>
+                <h4 class="text-lg font-semibold text-neutral-900 dark:text-white mb-2">Payment Link Successfully Created!</h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-300">
+                    Share this payment link with the renter to complete the payment.
+                </p>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 mb-6">
+                <h5 class="font-semibold text-neutral-900 dark:text-white mb-3">Payment Details</h5>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <span class="text-neutral-600 dark:text-neutral-400">Property:</span>
+                        <p id="paymentPropertyName" class="font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+                    <div>
+                        <span class="text-neutral-600 dark:text-neutral-400">Renter:</span>
+                        <p id="paymentRenterName" class="font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+                    <div>
+                        <span class="text-neutral-600 dark:text-neutral-400">Amount:</span>
+                        <p id="paymentAmount" class="font-semibold text-green-600 dark:text-green-400"></p>
+                    </div>
+                    <div>
+                        <span class="text-neutral-600 dark:text-neutral-400">Due Date:</span>
+                        <p id="paymentDueDate" class="font-semibold text-red-600 dark:text-red-400"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Link -->
+            <div class="space-y-3">
+                <label class="block text-sm font-medium text-neutral-600 dark:text-neutral-400">Payment Link</label>
+                <div class="flex gap-2">
+                    <input id="generatedPaymentLink" type="text" readonly
+                        class="flex-1 bg-neutral-100 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 text-sm font-mono">
+                    <button id="copyPaymentLink" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors flex items-center gap-2">
+                        <iconify-icon icon="ph:copy" class="text-lg"></iconify-icon>
+                        <span class="copy-text">Copy</span>
+                        <span class="copy-success hidden text-green-300">Copied!</span>
+                    </button>
+                </div>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                    This link will expire after the due date. Make sure to share it with the renter as soon as possible.
+                </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6">
+                <div class="flex gap-3">
+                    <button id="generateAnotherLink" class="px-4 py-2 bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
+                        Create Another
+                    </button>
+                    <button id="closePaymentLinkFooterBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Delete Modal -->
+ <div id="bulkDeleteModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div
+            class="bg-white dark:bg-neutral-700 rounded-xl w-[28rem] max-w-[90vw] mx-4 shadow-xl z-10 overflow-hidden border border-red-200 dark:border-red-800">
+            <div class="px-6 py-4 border-b border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-red-100 dark:bg-red-800/40 rounded-full flex items-center justify-center">
+                        <iconify-icon icon="ph:trash" class="text-red-600 dark:text-red-400 text-lg"></iconify-icon>
+                    </div>
+                    <h3 class="text-lg font-semibold text-red-900 dark:text-red-100">Delete Multiple Properties</h3>
+                </div>
+            </div>
+
+            <div class="px-6 py-6">
+                <div class="text-center mb-6">
+                    <div
+                        class="w-16 h-16 bg-red-100 dark:bg-red-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <iconify-icon icon="ph:warning-circle"
+                            class="text-red-600 dark:text-red-400 text-2xl"></iconify-icon>
+                    </div>
+                    <h4 class="text-lg font-semibold text-neutral-900 dark:text-white mb-2">Are you absolutely sure?</h4>
+                    <p class="text-sm text-neutral-600 dark:text-neutral-300">
+                        You are about to permanently delete <span id="bulkDeleteCount"
+                            class="font-semibold text-red-600 dark:text-red-400">0</span> property(ies).
+                    </p>
+                    <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
+                        This action cannot be undone and will remove all associated data.
+                    </p>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button id="bulkDeleteCancel"
+                        class="px-4 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
+                        Cancel
+                    </button>
+                    <button id="bulkDeleteConfirm"
+                        class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors">
+                        <span class="bulk-delete-text">Yes, Delete</span>
+                        <span class="bulk-delete-loading hidden flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Deleting...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Property Details Modal -->
+<div id="detailsBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
+         style="width: 36rem !important; max-width: 90vw !important;">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-neutral-800 dark:to-neutral-700">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
+                    <iconify-icon icon="ph:house" class="text-2xl text-blue-600 dark:text-blue-400"></iconify-icon>
+                    Property Details
+                </h3>
+                <button id="closeDetailsBtn" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 py-6">
+            <div id="propertyDetails" class="space-y-6">
+                
+                <!-- Nama + Status -->
+                <div class="flex items-center gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-600">
+                    <div>
+                        <h4 id="detailName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
+                        <div id="detailStatus" class="mt-1"></div>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:identification-card" class="text-purple-600 dark:text-purple-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Property ID</span>
+                        </div>
+                        <p id="detailId" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:tag" class="text-green-600 dark:text-green-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Type</span>
+                        </div>
+                        <p id="detailType" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:map-pin" class="text-red-600 dark:text-red-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Address</span>
+                        </div>
+                        <p id="detailAddress" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:currency-circle-dollar" class="text-yellow-600 dark:text-yellow-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Price</span>
+                        </div>
+                        <p id="detailPrice" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:calendar" class="text-blue-600 dark:text-blue-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Rent Type</span>
+                        </div>
+                        <p id="detailRentType" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6 gap-3">
+                <button id="closeDetailsFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
+                    Close
+                </button>
+                <button onclick="rentNowFromDetails()" class="px-6 py-2  rounded-lg  text-sm bg-info-600 hover:bg-info-700 text-white  transition-colors">
+                    Rent Now
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
 <div id="deleteBackdrop" class="fixed inset-0 z-40 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl w-96 max-w-[90vw] mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600">
