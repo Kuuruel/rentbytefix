@@ -7,7 +7,11 @@
 <body class="dark:bg-neutral-800 bg-neutral-100 dark:text-white">
 
     <!-- ..::  header area start ::.. -->
+    @if(Auth::guard('web')->check())
     <x-sidebar-admin />
+@else
+    <x-sidebar-landlord />
+@endif
     <!-- ..::  header area end ::.. -->
 
     <main class="dashboard-main">
