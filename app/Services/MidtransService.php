@@ -19,7 +19,6 @@ class MidtransService
             $transactionStatus = $notification['transaction_status'];
             $fraudStatus = $notification['fraud_status'] ?? null;
 
-            // Parse Bill ID dari order_id format "BILL-123"
             $billId = str_replace('BILL-', '', $orderId);
             $bill = Bill::with('property')->find($billId);
             
@@ -28,7 +27,6 @@ class MidtransService
                 return false;
             }
 
-            // Update atau buat record transaction dengan struktur yang ada
             $transaction = Transaction::updateOrCreate(
                 ['bill_id' => $bill->id],
                 [
@@ -44,10 +42,9 @@ class MidtransService
                 'status' => $transactionStatus
             ]);
 
-            // Handle status transaksi
             if ($transactionStatus == 'capture') {
                 if ($fraudStatus == 'challenge') {
-                    $bill->update(['status' => 'pending']); // Masih menunggu verifikasi
+                    $bill->update(['status' => 'pending']);
                 } else if ($fraudStatus == 'accept') {
                     $this->handlePembayaranBerhasil($bill);
                 }
@@ -58,7 +55,6 @@ class MidtransService
                 Log::info("Bill {$bill->id} status: pending");
             } else if (in_array($transactionStatus, ['deny', 'expire', 'cancel', 'failure'])) {
                 $bill->update(['status' => 'failed']);
-                // Kembalikan status properti ke Available jika pembayaran gagal
                 if ($bill->property && $bill->property->status === 'Processing') {
                     $bill->property->update(['status' => 'Available']);
                     Log::info("Property {$bill->property->id} status dikembalikan ke Available");
@@ -80,13 +76,11 @@ class MidtransService
 
     private function handlePembayaranBerhasil(Bill $bill)
     {
-        // Update status bill
         $bill->update([
             'status' => 'paid',
             'payment_date' => now()
         ]);
 
-        // Update status properti menjadi 'Rented'
         if ($bill->property) {
             $bill->property->update(['status' => 'Rented']);
             Log::info("Status properti '{$bill->property->name}' berubah menjadi Rented", [
@@ -104,7 +98,6 @@ class MidtransService
 
     public function createPayment(Bill $bill)
     {
-        // Set server key
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
         \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized', true);

@@ -6,6 +6,7 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class PropertyController extends Controller
 {
@@ -17,10 +18,9 @@ class PropertyController extends Controller
     public function data(Request $request): JsonResponse
     {
         try {
-            \Log::info('Properties data method called', ['request' => $request->all()]);
+            Log::info('Properties data method called', ['request' => $request->all()]);
             $query = Property::query();
-            
-            // Search functionality
+
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
                 $query->where(function($q) use ($searchTerm) {
@@ -29,13 +29,11 @@ class PropertyController extends Controller
                       ->orWhere('address', 'like', "%{$searchTerm}%");
                 });
             }
-            
-            // Status filter
+
             if ($request->filled('status')) {
                 $query->where('status', $request->status);
             }
-            
-            // Pagination
+
             $perPage = $request->get('per_page', 10);
             $properties = $query->orderBy('created_at', 'desc')->paginate($perPage);
             
@@ -44,7 +42,7 @@ class PropertyController extends Controller
                 'data' => $properties
             ]);
         } catch (\Exception $e) {
-            \Log::error('Properties data error: ' . $e->getMessage(), [
+            Log::error('Properties data error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
                 'request' => $request->all()
             ]);

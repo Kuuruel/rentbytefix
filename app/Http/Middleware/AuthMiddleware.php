@@ -11,10 +11,8 @@ class AuthMiddleware
     public function handle(Request $request, Closure $next, ...$guards)
     {
         $authenticated = false;
-        
-        // Check if user is authenticated with any of the guards
+
         if (empty($guards)) {
-            // If no guards specified, check both web and tenant guards
             $guards = ['web', 'tenant'];
         }
         

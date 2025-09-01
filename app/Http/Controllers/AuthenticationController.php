@@ -42,17 +42,15 @@ class AuthenticationController extends Controller
                 ->withInput();
         }
 
-        // Create tenant account
         $tenant = Tenants::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'country' => $request->country,
             'status' => 'Active',
-            'user_id' => 1, // Default user_id, adjust as needed
+            'user_id' => 1,
         ]);
 
-        // Login tenant using custom guard
         Auth::guard('tenant')->login($tenant);
 
         return redirect()->route('landlord.index');
@@ -65,7 +63,6 @@ class AuthenticationController extends Controller
                 'password' => 'required',
             ]);
 
-        // First, try to authenticate as admin from users table
         if (Auth::guard('web')->attempt([
             'email' => $request->email,
             'password' => $request->password,
@@ -76,7 +73,6 @@ class AuthenticationController extends Controller
             return redirect()->route('super-admin.index');
         }
 
-        // If admin login failed, try to authenticate as tenant from tenants table
         $tenant = Tenants::where('email', $request->email)
                        ->where('status', 'Active')
                        ->first();
@@ -87,7 +83,6 @@ class AuthenticationController extends Controller
             return redirect()->route('landlord.index');
         }
 
-        // If both attempts fail, return error
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->withInput($request->except('password'));
@@ -95,7 +90,6 @@ class AuthenticationController extends Controller
 
     public function logout(Request $request)
     {
-        // Logout from both guards
         Auth::guard('web')->logout();
         Auth::guard('tenant')->logout();
         

@@ -1,5 +1,4 @@
 <?php
-// app/Models/Property.php
 
 namespace App\Models;
 
@@ -54,8 +53,8 @@ class Property extends Model
         return $query->where('status', 'Rented');
     }
 
-    public function tenant()
+    public function tenants()
 {
-    return $this->belongsTo(Tenant::class);
+    return $this->belongsTo(Tenants::class);
 }
 }

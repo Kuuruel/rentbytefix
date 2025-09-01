@@ -10,13 +10,13 @@ class Renter extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',  // Milik tenant mana (pemilik properti)
+        'tenant_id',
         'name',
         'phone', 
         'email',
-        'unit_id',      // Dari struktur database
-        'start_date',   // Dari struktur database
-        'end_date'      // Dari struktur database
+        'unit_id',
+        'start_date',
+        'end_date'
     ];
 
     protected $casts = [
@@ -26,50 +26,43 @@ class Renter extends Model
         'updated_at' => 'datetime'
     ];
 
-    // Relasi ke Bills (satu renter bisa punya banyak bills)
     public function bills()
     {
         return $this->hasMany(Bill::class);
     }
 
-    // Relasi ke User/Tenant (pemilik properti)
     public function tenant()
     {
         return $this->belongsTo(User::class, 'tenant_id');
     }
 
-    // Relasi ke Properties (melalui bills)
     public function properties()
     {
         return $this->hasManyThrough(
             Property::class,
             Bill::class,
-            'renter_id',     // Foreign key on bills table
-            'id',            // Foreign key on properties table  
-            'id',            // Local key on renters table
-            'property_id'    // Local key on bills table
+            'renter_id',
+            'id',
+            'id',
+            'property_id'
         );
     }
 
-    // Accessor untuk format nama
     public function getFullNameAttribute()
     {
         return $this->name;
     }
 
-    // Accessor untuk format phone
     public function getFormattedPhoneAttribute()
     {
         return $this->phone ? '+62' . ltrim($this->phone, '0') : null;
     }
 
-    // Scope untuk filter by tenant
     public function scopeByTenant($query, $tenantId)
     {
         return $query->where('tenant_id', $tenantId);
     }
 
-    // Scope untuk renter yang pernah bayar
     public function scopeWithPaidRentals($query)
     {
         return $query->whereHas('bills', function ($q) {
@@ -77,7 +70,6 @@ class Renter extends Model
         });
     }
 
-    // Method untuk cek apakah renter ini pernah sewa properti tertentu
     public function hasRentedProperty($propertyId)
     {
         return $this->bills()
@@ -86,7 +78,6 @@ class Renter extends Model
                    ->exists();
     }
 
-    // Method untuk total pembayaran dari renter ini
     public function getTotalPaymentsAttribute()
     {
         return $this->bills()
@@ -94,7 +85,6 @@ class Renter extends Model
                    ->sum('amount');
     }
 
-    // Method untuk rental history
     public function rentalHistory()
     {
         return $this->bills()

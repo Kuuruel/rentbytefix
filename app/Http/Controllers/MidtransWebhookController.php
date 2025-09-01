@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Property;
-use App\Models\Rental;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
 
 class MidtransWebhookController extends Controller
@@ -13,8 +13,7 @@ class MidtransWebhookController extends Controller
     {
         $serverKey = config('midtrans.server_key');
         $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
-        
-        // Verify signature
+
         if ($hashed !== $request->signature_key) {
             return response()->json(['message' => 'Invalid signature'], 400);
         }
@@ -28,50 +27,47 @@ class MidtransWebhookController extends Controller
             'transaction_status' => $transactionStatus,
             'fraud_status' => $fraudStatus
         ]);
+
+        $booking = Transaction::where('order_id', $orderId)->first();
         
-        // Find rental by bill_id
-        $rental = Rental::where('bill_id', $orderId)->first();
-        
-        if (!$rental) {
-            Log::error('Rental not found for order_id: ' . $orderId);
-            return response()->json(['message' => 'Rental not found'], 404);
+        if (!$booking) {
+            Log::error('Booking not found for order_id: ' . $orderId);
+            return response()->json(['message' => 'Booking not found'], 404);
         }
         
-        $property = Property::find($rental->property_id);
+        $property = Property::find($booking->property_id);
         
         if (!$property) {
-            Log::error('Property not found for rental: ' . $rental->id);
+            Log::error('Property not found for booking: ' . $booking->id);
             return response()->json(['message' => 'Property not found'], 404);
         }
         
         switch ($transactionStatus) {
             case 'capture':
             case 'settlement':
-                // Payment successful
-                $rental->update([
+                $booking->update([
                     'payment_status' => 'paid',
-                    'payment_date' => now()
+                    'payment_date' => now(),
+                    'status' => 'confirmed'
                 ]);
                 
                 $property->update(['status' => 'Rented']);
                 
                 Log::info('Payment successful, property status updated to Rented', [
-                    'rental_id' => $rental->id,
+                    'booking_id' => $booking->id,
                     'property_id' => $property->id
                 ]);
                 break;
                 
             case 'pending':
-                // Payment pending, keep Processing status
-                $rental->update(['payment_status' => 'pending']);
+                $booking->update(['payment_status' => 'pending']);
                 break;
                 
             case 'deny':
             case 'cancel':
             case 'expire':
             case 'failure':
-                // Payment failed, revert to Available
-                $rental->update([
+                $booking->update([
                     'payment_status' => 'failed',
                     'status' => 'cancelled'
                 ]);
@@ -79,7 +75,7 @@ class MidtransWebhookController extends Controller
                 $property->update(['status' => 'Available']);
                 
                 Log::info('Payment failed, property status reverted to Available', [
-                    'rental_id' => $rental->id,
+                    'booking_id' => $booking->id,
                     'property_id' => $property->id,
                     'transaction_status' => $transactionStatus
                 ]);

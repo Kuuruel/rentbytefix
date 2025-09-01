@@ -23,15 +23,13 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    // Check for admin authentication
     if (Auth::guard('web')->check()) {
         $user = Auth::guard('web')->user();
         if ($user->role === 'admin') {
             return redirect()->route('super-admin.index');
         }
     }
-    
-    // Check for tenant authentication
+
     if (Auth::guard('tenant')->check()) {
         return redirect()->route('landlord.index');
     }
@@ -50,7 +48,6 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
-// Authentication
 Route::middleware('guest')->group(function() {
     Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
 });
@@ -69,10 +66,8 @@ Route::middleware(['auth', 'role:landlord'])->group(function () {
     Route::get('/landlord', [LandlordController::class, 'index'])->name('landlord.index');
 });
 
-// Protected routes - using custom middleware for multi-guard authentication
 Route::middleware(['auth:web,tenant'])->group(function () {
-    
-    // Super Admin routes (only for admin users)
+
     Route::prefix('super-admin')->middleware('auth:web')->group(function () {
         Route::controller(SuperAdminController::class)->group(function () {
             Route::get('/', 'index')->name('super-admin.index');
@@ -87,7 +82,6 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    // Landlord/Tenant routes (for tenant users)
     Route::prefix('landlord')->group(function () {
         Route::controller(LandlordController::class)->group(function () {
             Route::get('/', 'index')->name('landlord.index');
@@ -102,7 +96,6 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    // Shared routes for both admin and tenant
     Route::controller(HomeController::class)->group(function () {
         Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
         Route::get('chatempty', 'chatempty')->name('chatempty');
@@ -210,7 +203,6 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    // Users management routes (admin only)
     Route::prefix('users')->middleware('auth:web')->group(function () {
         Route::controller(UsersController::class)->group(function () {
             Route::get('/add-user', 'addUser')->name('addUser');
@@ -224,7 +216,6 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    // Tenant profile routes (for tenant users)
     Route::prefix('tenant')->group(function () {
         Route::controller(TenantController::class)->group(function () {
             Route::get('/view-profile/{id?}', 'viewProfileTenant')->name('viewProfileTenant');
@@ -233,7 +224,6 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    // Tenants management routes
     Route::resource('tenants', TenantController::class);
 
     Route::prefix('tenants')->name('tenants.')->group(function () {
@@ -244,24 +234,20 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
     });
 
-    // Property management routes
     Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
     Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
     Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
     Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
     Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
 
-    // Rental management routes
     Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
     Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-    // Payment callback routes
     Route::get('/landlord/payments/success', [RentalController::class, 'paymentSuccess'])->name('landlord.payments.success');
     Route::get('/landlord/payments/error', [RentalController::class, 'paymentError'])->name('landlord.payments.error');
     Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
 });
 
-// Webhook routes (no authentication required)
 Route::prefix('rental')->group(function () {
     Route::post('/store', [RentalController::class, 'store']);
     Route::post('/webhook', [RentalController::class, 'webhook']);
