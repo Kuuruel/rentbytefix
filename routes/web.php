@@ -194,7 +194,7 @@ Route::middleware(['auth:web,tenant'])->group(function () {
             Route::post('/add-user', 'store')->name('users.store');
             Route::get('/users-grid', 'usersGrid')->name('usersGrid');
             Route::get('/users-list', 'usersList')->name('usersList');
-            Route::get('/view-profile/{id?}', 'viewProfile')->name('viewProfile');
+            Route::get('/view-profile/{id?}', 'viewProfileAdmin')->name('viewProfileAdmin');
             Route::put('/update-profile/{id}', 'update')->name('users.update');
             Route::post('/update-password/{id}', 'updatePassword')->name('users.updatePassword');
             Route::delete('/delete/{id}', 'destroy')->name('users.destroy');
