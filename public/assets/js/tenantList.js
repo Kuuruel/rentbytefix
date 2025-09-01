@@ -1,4 +1,4 @@
-//tenantList.js
+//tenantList.js - Fixed Version
 
 (function () {
     'use strict';
@@ -86,12 +86,18 @@
 
             const headers = { ...defaultHeaders, ...options.headers };
 
+            console.log('Making API request:', { url, method: options.method || 'GET', headers });
+
             const response = await fetch(url, {
                 ...options,
                 headers
             });
 
+            console.log('Response status:', response.status, response.statusText);
+
             const contentType = response.headers.get('content-type');
+            console.log('Response content-type:', contentType);
+
             if (contentType && contentType.includes('text/html')) {
                 console.error('Received HTML response instead of JSON:', response.url);
  
@@ -105,10 +111,28 @@
                 throw new Error('Unexpected response format. Expected JSON but received HTML.');
             }
 
-            const data = await response.json();
+            let data;
+            try {
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                data = responseText ? JSON.parse(responseText) : {};
+            } catch (parseError) {
+                console.error('Failed to parse JSON response:', parseError);
+                throw new Error(`Invalid JSON response from server: ${parseError.message}`);
+            }
 
             if (!response.ok) {
-                throw new Error(data.message || `HTTP Error: ${response.status} ${response.statusText}`);
+                console.error('API Error Response:', data);
+                const errorMessage = data.message || `HTTP Error: ${response.status} ${response.statusText}`;
+                
+                // If there are validation errors, include them
+                if (data.errors) {
+                    const error = new Error(errorMessage);
+                    error.validationErrors = data.errors;
+                    throw error;
+                }
+                
+                throw new Error(errorMessage);
             }
 
             return { response, data };
@@ -117,10 +141,11 @@
                 url,
                 method: options.method || 'GET',
                 error: error.message,
+                validationErrors: error.validationErrors,
                 stack: error.stack
             });
 
-            throw new Error(`API Request Failed: ${error.message}`);
+            throw error; // Re-throw the original error to preserve validation errors
         }
     }
 
@@ -589,7 +614,6 @@
         DOM.pageNumbers.innerHTML = pageHTML;
 
         addPaginationEventListeners(totalPages);
-
     }
 
     function addPaginationEventListeners(totalPages) {
@@ -619,78 +643,6 @@
         const lastPageBtn = DOM.pageNumbers.querySelector('#lastPageBtn');
         if (lastPageBtn && !lastPageBtn.disabled) {
             lastPageBtn.addEventListener('click', () => goToPage(totalPages));
-        }
-    }
-
-    function initEventListeners() {
-        DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
-
-        DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
-        DOM.statusFilter?.addEventListener('change', updateFilters);
-        DOM.perPageSelect?.addEventListener('change', updatePerPage);
-
-        DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
-        DOM.formCancel?.addEventListener('click', closeModal);
-        DOM.closeModalBtn?.addEventListener('click', closeModal);
-        DOM.modalBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.modalBackdrop) closeModal();
-        });
-
-        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
-        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
-        DOM.detailsBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
-        });
-
-        DOM.deleteConfirm?.addEventListener('click', deleteTenant);
-        DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
-        DOM.deleteBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.deleteBackdrop) closeDeleteModal();
-        });
-
-        initSelectEventListeners();
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeDetailsModal();
-                closeDeleteModal();
-            }
-        });
-
-        document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
-        document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
-        document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
-        });
-
-        document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
-        document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
-        document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                hideBulkDeleteModal();
-                hideBulkStatusModal();
-            }
-        });
-    }
-
-    function goToPage(page) {
-        const filtered = getFiltered();
-        const totalPages = getTotalPages(filtered);
-
-        if (isNaN(page) || page < 1 || page > totalPages) {
-            const input = document.querySelector('#pageNumbers input[type="number"]');
-            if (input) input.value = state.page;
-            return;
-        }
-
-        if (page >= 1 && page <= totalPages) {
-            state.page = page;
-            render();
         }
     }
 
@@ -910,6 +862,8 @@
                 formData.password = DOM.formPassword.value;
             }
 
+            console.log('Form data to be sent:', formData);
+
             const isEdit = state.isEditing;
             const method = isEdit ? 'PUT' : 'POST';
             const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
@@ -918,6 +872,8 @@
                 method: method,
                 body: JSON.stringify(formData)
             });
+
+            console.log('Server response:', data);
 
             if (data.success) {
                 const tenantName = formData.name;
@@ -946,13 +902,26 @@
         } catch (error) {
             console.error('Form submit error:', error);
 
+            // Handle validation errors
+            if (error.validationErrors) {
+                showErrors(error.validationErrors);
+                return;
+            }
+
+            // Try to parse error message for validation errors
             try {
-                const errorData = JSON.parse(error.message);
-                if (errorData.errors) {
-                    showErrors(errorData.errors);
-                    return;
+                const errorMessage = error.message;
+                if (errorMessage.includes('{') && errorMessage.includes('errors')) {
+                    const startIndex = errorMessage.indexOf('{');
+                    const jsonPart = errorMessage.substring(startIndex);
+                    const errorData = JSON.parse(jsonPart);
+                    if (errorData.errors) {
+                        showErrors(errorData.errors);
+                        return;
+                    }
                 }
             } catch (parseError) {
+                console.log('Could not parse error as JSON, showing generic error');
             }
 
             showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
@@ -999,7 +968,6 @@
         state.page = 1;
         render();
     }
-
 
     function toggleSelectAll() {
         const checkboxes = document.querySelectorAll('.tbody-checkbox');
@@ -1324,9 +1292,12 @@
                 closeModal();
                 closeDetailsModal();
                 closeDeleteModal();
+                hideBulkDeleteModal();
+                hideBulkStatusModal();
             }
         });
 
+        // Bulk action event listeners
         document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
         document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
         document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
@@ -1337,13 +1308,6 @@
         document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
         document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                hideBulkDeleteModal();
-                hideBulkStatusModal();
-            }
         });
     }
 
@@ -1359,6 +1323,7 @@
         };
     }
 
+    // Global function exports
     window.viewTenant = viewTenant;
     window.editTenant = editTenant;
     window.confirmDelete = confirmDelete;

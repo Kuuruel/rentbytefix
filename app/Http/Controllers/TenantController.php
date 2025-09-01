@@ -98,114 +98,94 @@ class TenantController extends Controller
         }
     }
 
-    public function store(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:tenants,email',
-                'password' => 'required|string|min:6',
-                'note' => 'nullable|string|max:1000',
-                'status' => 'required|in:Active,Inactive',
-                'country' => 'required|string|max:100'
-            ]);
+public function store(Request $request)
+{
+    try {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:tenants,email',
+            'password' => 'required|string|min:6',
+            'note' => 'nullable|string|max:1000',
+            'status' => 'required|in:Active,Inactive',
+            'country' => 'required|string|max:100'
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation failed',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-
-            $data = $validator->validated();
-            $data['password'] = Hash::make($data['password']);
-
-            $userId = Auth::id();
-
-            if (!$userId) {
-                $firstUser = User::first();
-                if ($firstUser) {
-                    $userId = $firstUser->id;
-                } else {
-                    $systemUser = $this->ensureDefaultUser();
-                    $userId = $systemUser->id;
-                }
-            } else {
-                $userExists = User::where('id', $userId)->exists();
-                if (!$userExists) {
-                    $firstUser = User::first();
-                    if ($firstUser) {
-                        $userId = $firstUser->id;
-                    } else {
-                        $systemUser = $this->ensureDefaultUser();
-                        $userId = $systemUser->id;
-                    }
-                }
-                if (!$firstUser) {
-                    $firstUser = User::create([
-                        'name' => 'System Admin',
-                        'email' => 'admin@localhost',
-                        'password' => Hash::make('password'),
-                        'email_verified_at' => now()
-                    ]);
-                }
-                $userId = $firstUser->id;
-            }
-
-            $data['user_id'] = $userId;
-            $data['avatar'] = '/assets/images/user-list/user-list1.png';
-
-            DB::beginTransaction();
-
-            $tenant = Tenants::create($data);
-            $tenant->load('user');
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Tenant created successfully',
-                'tenant' => $tenant
-            ], 201);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollback();
-            Log::error('Database error creating tenant: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-
-            if (strpos($e->getMessage(), 'user_id') !== false || strpos($e->getMessage(), 'foreign') !== false) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User reference error. Please contact administrator.',
-                    'debug' => config('app.debug') ? $e->getMessage() : null
-                ], 500);
-            }
-
-            if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'UNIQUE') !== false || strpos($e->getMessage(), 'UNIQUE') !== false) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email address already exists'
-                ], 422);
-            }
-
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error occurred',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-            ], 500);
-        } catch (\Exception $e) {
-            DB::rollback();
-            Log::error('Error creating tenant: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
+        $data = $validator->validated();
+        $data['password'] = Hash::make($data['password']);
+
+        // ===== Simplified and safe user resolution =====
+        $authUserId = Auth::id();
+        $userId = null;
+
+        if ($authUserId && User::where('id', $authUserId)->exists()) {
+            $userId = $authUserId;
+        } else {
+            // ensureDefaultUser() will return an existing first user or create one
+            $systemUser = $this->ensureDefaultUser();
+            $userId = $systemUser->id;
+        }
+        // ===============================================
+
+        $data['user_id'] = $userId;
+        $data['avatar'] = '/assets/images/user-list/user-list1.png';
+
+        DB::beginTransaction();
+
+        $tenant = Tenants::create($data);
+        $tenant->load('user');
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tenant created successfully',
+            'tenant' => $tenant
+        ], 201);
+    } catch (\Illuminate\Database\QueryException $e) {
+        DB::rollback();
+        Log::error('Database error creating tenant: ' . $e->getMessage());
+        Log::error('Stack trace: ' . $e->getTraceAsString());
+
+        if (strpos($e->getMessage(), 'user_id') !== false || strpos($e->getMessage(), 'foreign') !== false) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create tenant',
-                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+                'message' => 'User reference error. Please contact administrator.',
+                'debug' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
+
+        if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'UNIQUE') !== false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email address already exists'
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Database error occurred',
+            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+        ], 500);
+    } catch (\Exception $e) {
+        DB::rollback();
+        Log::error('Error creating tenant: ' . $e->getMessage());
+        Log::error('Stack trace: ' . $e->getTraceAsString());
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create tenant',
+            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+        ], 500);
     }
+}
 
     public function show($id)
     {
