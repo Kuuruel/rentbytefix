@@ -26,6 +26,15 @@
                     </span>
                 </button>
 
+                <!-- Language Dropdown Start  -->
+                <div class="hidden sm:inline-block">
+                    <button data-dropdown-toggle="dropdownInformation" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center" type="button">
+                        <img src="{{ asset('assets/images/lang-flag.png') }}" alt="image" class="w-6 h-6 object-cover rounded-full">
+                    </button>
+                    <!-- Language dropdown content tetap sama -->
+                </div>
+
+                <!-- Message Dropdown Start  -->
                 <button data-dropdown-toggle="dropdownMessage" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center" type="button">
                     <iconify-icon icon="mage:email" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
                 </button>
@@ -140,3 +149,138 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Logout -->
+<div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden opacity-0 transition-opacity duration-300 p-4">
+    <div id="modalContent" class="bg-white rounded-lg p-4 sm:p-6  max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <iconify-icon icon="lucide:log-out" class="text-red-600 text-base sm:text-lg"></iconify-icon>
+            </div>
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 leading-tight">Konfirmasi Logout</h2>
+        </div>
+        
+        <p class="mb-6 text-sm sm:text-base text-gray-600 leading-relaxed">Apakah kamu yakin ingin keluar dari Rentbyte?</p>
+        
+        <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+            <button 
+                id="cancelButton" 
+                type="button"
+                class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors text-sm sm:text-base font-medium"
+            >
+                Batal
+            </button>
+            
+            <button 
+                id="confirmLogout" 
+                type="button"
+                class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-sm sm:text-base font-medium"
+            >
+                Ya, Keluar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Form Logout (Hidden) -->
+<form id="logoutForm" method="POST" action="{{ route('logout') }}" class="hidden">
+    @csrf
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutButton = document.getElementById('logoutButton');
+    const logoutModal = document.getElementById('logoutModal');
+    const modalContent = document.getElementById('modalContent');
+    const cancelButton = document.getElementById('cancelButton');
+    const confirmLogout = document.getElementById('confirmLogout');
+    const logoutForm = document.getElementById('logoutForm');
+
+    // Fungsi untuk membuka modal
+    function openModal() {
+        logoutModal.classList.remove('hidden');
+        // Force reflow untuk memastikan transisi berjalan
+        logoutModal.offsetHeight;
+        logoutModal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+        
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Fungsi untuk menutup modal
+    function closeModal() {
+        logoutModal.classList.add('opacity-0');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
+        
+        // Hide modal setelah animasi selesai
+        setTimeout(() => {
+            logoutModal.classList.add('hidden');
+        }, 300);
+    }
+
+    // Event listeners
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openModal();
+        });
+    }
+    
+    if (cancelButton) {
+        cancelButton.addEventListener('click', closeModal);
+    }
+    
+    // Tutup modal saat klik di luar modal content
+    if (logoutModal) {
+        logoutModal.addEventListener('click', function(e) {
+            if (e.target === logoutModal) {
+                closeModal();
+            }
+        });
+    }
+    
+    // Konfirmasi logout
+    if (confirmLogout) {
+        confirmLogout.addEventListener('click', function() {
+            logoutForm.submit();
+        });
+    }
+    
+    // Tutup modal dengan tombol Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+});
+</script>
+
+<style>
+/* CSS untuk memastikan transisi berjalan dengan baik */
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.duration-300 {
+    transition-duration: 300ms;
+}
+</style>

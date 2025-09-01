@@ -58,12 +58,12 @@ class AuthenticationController extends Controller
         return redirect()->route('landlord.index');
     }
 
-    public function signin(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+     public function signin(Request $request)
+        {
+            $request->validate([
+                'email'    => 'required|email',
+                'password' => 'required',
+            ]);
 
         // First, try to authenticate as admin from users table
         if (Auth::guard('web')->attempt([

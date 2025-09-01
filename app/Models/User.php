@@ -16,6 +16,7 @@ class User extends Authenticatable
         'password',
         'role',
         'img',
+        'tenant_id',
     ];
 
     protected $hidden = [
@@ -34,7 +35,14 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === 'admin';
+    
+    public function tenant()
+    {
+        return $this->belongsTo(Tenants::class, 'tenant_id');
     }
+
+
+}
 
     public function isTenant()
     {
