@@ -98,8 +98,14 @@ class Bill extends Model
     }
 
     // Method untuk latest transaction
+
     public function latestTransaction()
     {
         return $this->hasOne(Transaction::class)->latestOfMany();
+    }
+
+    public function successfulTransaction()
+    {
+        return $this->hasOne(Transaction::class)->where('status', Transaction::STATUS_SUCCESS);
     }
 }

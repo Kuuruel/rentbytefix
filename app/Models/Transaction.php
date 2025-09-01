@@ -1,147 +1,178 @@
 <?php
 
-// app/Services/MidtransService.php
-namespace App\Services;
+namespace App\Models;
 
-use App\Models\Bill;
-use App\Models\Transaction;
-use App\Models\Property;
-use App\Models\Rental;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class MidtransService
+class Transaction extends Model
 {
-    public function handleNotification($notification)
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'bill_id',
+        'midtrans_response',
+        'status',
+        'paid_at',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'midtrans_response' => 'array',
+        'paid_at' => 'datetime',
+    ];
+
+    /**
+     * Status constants
+     */
+    const STATUS_PENDING = 'pending';
+    const STATUS_SUCCESS = 'success';
+    const STATUS_FAILED = 'failed';
+
+    /**
+     * Get all available status options
+     *
+     * @return array
+     */
+    public static function getStatusOptions(): array
     {
-        try {
-            DB::beginTransaction();
-
-            $orderId = $notification['order_id'];
-            $transactionStatus = $notification['transaction_status'];
-            $fraudStatus = $notification['fraud_status'] ?? null;
-
-            // Cari bill berdasarkan order_id
-            $bill = Bill::where('id', str_replace('BILL-', '', $orderId))->first();
-            
-            if (!$bill) {
-                Log::error("Bill tidak ditemukan untuk order_id: {$orderId}");
-                return false;
-            }
-
-            // Update atau buat record transaction
-            $transaction = Transaction::updateOrCreate(
-                ['bill_id' => $bill->id],
-                [
-                    'midtrans_response' => $notification,
-                    'status' => $transactionStatus,
-                    'paid_at' => in_array($transactionStatus, ['settlement', 'capture', 'success']) ? now() : null
-                ]
-            );
-
-            // Handle berbagai status transaksi
-            if ($transactionStatus == 'capture') {
-                if ($fraudStatus == 'challenge') {
-                    $bill->update(['status' => 'challenge']);
-                } else if ($fraudStatus == 'accept') {
-                    $this->handlePembayaranBerhasil($bill);
-                }
-            } else if ($transactionStatus == 'settlement') {
-                $this->handlePembayaranBerhasil($bill);
-            } else if ($transactionStatus == 'pending') {
-                $bill->update(['status' => 'pending']);
-            } else if (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
-                $bill->update(['status' => 'failed']);
-                // Kembalikan status properti ke Available jika pembayaran gagal
-                $property = Property::find($bill->property_id);
-                if ($property && $property->status === 'Pending') {
-                    $property->update(['status' => 'Available']);
-                }
-            }
-
-            DB::commit();
-            return true;
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error webhook Midtrans: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    private function handlePembayaranBerhasil(Bill $bill)
-    {
-        // Update status bill
-        $bill->update([
-            'status' => 'paid',
-            'paid_at' => now()
-        ]);
-
-        // Update status properti menjadi 'Rented'
-        $property = Property::find($bill->property_id);
-        if ($property) {
-            $property->update(['status' => 'Rented']);
-            Log::info("Status properti {$property->name} berubah menjadi Rented");
-        }
-
-        // Buat record rental jika diperlukan
-        $rental = Rental::updateOrCreate(
-            [
-                'property_id' => $bill->property_id,
-                'renter_id' => $bill->renter_id,
-            ],
-            [
-                'tenant_id' => $bill->tenant_id,
-                'bill_id' => $bill->id,
-                'start_date' => $bill->renter->start_date,
-                'end_date' => $bill->renter->end_date,
-                'amount' => $bill->amount,
-                'status' => 'active',
-            ]
-        );
-
-        Log::info("Pembayaran berhasil untuk Bill ID: {$bill->id}, Status properti berubah menjadi Rented");
-    }
-
-    public function createPayment(Bill $bill)
-    {
-        // Set server key Anda
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
-        \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized', true);
-        \Midtrans\Config::$is3ds = config('midtrans.is_3ds', true);
-
-        $params = [
-            'transaction_details' => [
-                'order_id' => 'BILL-' . $bill->id,
-                'gross_amount' => $bill->amount,
-            ],
-            'customer_details' => [
-                'first_name' => $bill->renter->name,
-                'email' => $bill->renter->email,
-                'phone' => $bill->renter->phone,
-            ],
-            'item_details' => [
-                [
-                    'id' => $bill->property_id,
-                    'price' => $bill->amount,
-                    'quantity' => 1,
-                    'name' => 'Sewa Properti: ' . $bill->property->name,
-                ]
-            ],
-            'callbacks' => [
-                'finish' => url('/landlord/payment/success'),
-                'error' => url('/landlord/payment/error'),
-                'pending' => url('/landlord/payment/pending')
-            ]
+        return [
+            self::STATUS_PENDING => 'Pending',
+            self::STATUS_SUCCESS => 'Success',
+            self::STATUS_FAILED => 'Failed',
         ];
+    }
 
-        try {
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-            return $snapToken;
-        } catch (\Exception $e) {
-            Log::error('Error Midtrans: ' . $e->getMessage());
-            throw $e;
-        }
+    /**
+     * Relationship: Transaction belongs to Bill
+     *
+     * @return BelongsTo
+     */
+    public function bill(): BelongsTo
+    {
+        return $this->belongsTo(Bill::class);
+    }
+
+    /**
+     * Scope: Get successful transactions
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSuccessful($query)
+    {
+        return $query->where('status', self::STATUS_SUCCESS);
+    }
+
+    /**
+     * Scope: Get pending transactions
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', self::STATUS_PENDING);
+    }
+
+    /**
+     * Scope: Get failed transactions
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFailed($query)
+    {
+        return $query->where('status', self::STATUS_FAILED);
+    }
+
+    /**
+     * Check if transaction is successful
+     *
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->status === self::STATUS_SUCCESS;
+    }
+
+    /**
+     * Check if transaction is pending
+     *
+     * @return bool
+     */
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    /**
+     * Check if transaction is failed
+     *
+     * @return bool
+     */
+    public function isFailed(): bool
+    {
+        return $this->status === self::STATUS_FAILED;
+    }
+
+    /**
+     * Mark transaction as successful
+     *
+     * @return bool
+     */
+    public function markAsSuccessful(): bool
+    {
+        return $this->update([
+            'status' => self::STATUS_SUCCESS,
+            'paid_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark transaction as failed
+     *
+     * @return bool
+     */
+    public function markAsFailed(): bool
+    {
+        return $this->update([
+            'status' => self::STATUS_FAILED,
+        ]);
+    }
+
+    /**
+     * Get formatted paid at date
+     *
+     * @return string|null
+     */
+    public function getFormattedPaidAtAttribute(): ?string
+    {
+        return $this->paid_at ? $this->paid_at->format('d M Y H:i:s') : null;
+    }
+
+    /**
+     * Get status badge color for UI
+     *
+     * @return string
+     */
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+            self::STATUS_PENDING => 'warning',
+            self::STATUS_SUCCESS => 'success',
+            self::STATUS_FAILED => 'danger',
+            default => 'secondary',
+        };
     }
 }

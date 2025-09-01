@@ -17,6 +17,7 @@ use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RentalController;
+use App\Http\Controllers\MidtransWebhookController;
 
 
 
@@ -223,4 +224,8 @@ Route::get('/landlord/payments/error', [RentalController::class, 'paymentError']
 Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
 
 // Webhook route (tetap tanpa middleware)
-Route::post('/webhook/midtrans', [RentalController::class, 'webhook'])->name('midtrans.webhook');
+Route::prefix('rental')->group(function () {
+    Route::post('/store', [RentalController::class, 'store']);
+    Route::post('/webhook', [RentalController::class, 'webhook']); // ← INI HARUS ADA
+    Route::get('/test-settlement/{billId}', [RentalController::class, 'testWebhookSettlement']);
+});

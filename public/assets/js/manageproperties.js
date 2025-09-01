@@ -771,7 +771,7 @@
         
         const generateBtn = DOM.generatePaymentBtn;
         const btnText = generateBtn?.querySelector('.btn-text');
-        const btnLoading = generateBtn?.querySelector('.btn-loading');
+        const btnLoading = generateBtn?.querySelector('.submit-loading');
         
         try {
             if (btnText) btnText.classList.add('hidden');
@@ -882,7 +882,7 @@
                     <div class="flex items-center gap-3">
                         <div>
                             <h6 class="text-base mb-0 fw-medium text-primary-bold">${escapeHtml(property.name)}</h6>
-                        </div>
+                        </div> 
                     </div>
                 </td>
                 <td>
@@ -906,28 +906,50 @@
                     </span>
                 </td>
                 <td class="text-center">
-                    <span class="${property.status === 'Available' ? 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400' : 'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400'} px-5 py-1 rounded-full text-sm font-medium">
+                    <span class="${getStatusClass(property.status)} px-5 py-1 rounded-full text-sm font-medium">
                         ${escapeHtml(property.status)}
                     </span>
                 </td>
-                <td class="text-center">
-                    <div class="flex items-center justify-center gap-2">
-                        <button onclick="viewProperty(${property.id})" class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center">
-                           <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
-                        </button>
-                        <button onclick="editProperty(${property.id})" class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center">
-                            <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
-                        </button>
-                        <button onclick="confirmDelete(${property.id})" class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center">
-                         <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
-                        </button>
-                       
-                    </div>
-                </td>
+               <td class="text-center">
+    <div class="flex items-center justify-center gap-2">
+        <button onclick="viewProperty(${property.id})" class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center">
+           <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+        </button>
+        
+                ${property.status === 'Available' ? `
+                    <button onclick="editProperty(${property.id})" class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center">
+                        <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
+                    </button>
+                    <button onclick="confirmDelete(${property.id})" class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center">
+                        <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
+                    </button>
+                ` : `
+                    <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot edit ${property.status.toLowerCase()} property">
+                        <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
+                    </button>
+                    <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot delete ${property.status.toLowerCase()} property">
+                        <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
+                    </button>
+                `}
+            </div>
+        </td>
             `;
             DOM.tableBody.appendChild(row);
         });
     }
+
+    function getStatusClass(status) {
+    switch(status) {
+        case 'Available':
+            return 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400';
+        case 'Processing':
+            return 'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400';
+        case 'Rented':
+            return 'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400';
+        default:
+            return 'bg-neutral-100 dark:bg-neutral-600/25 text-neutral-600 dark:text-neutral-400';
+    }
+}
 
     function toggleSelectAll() {
         const checkboxes = document.querySelectorAll('.property-checkbox');

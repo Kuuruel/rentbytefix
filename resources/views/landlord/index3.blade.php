@@ -22,11 +22,12 @@
                         <input id="searchInput" type="text" class="bg-white dark:bg-neutral-700 h-10 w-auto" name="search" placeholder="Search properties...">
                         <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     </form>
-                    <select id="statusFilter" class=" form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
-                        <option value="">Status</option>
-                        <option value="Available">Available</option>
-                        <option value="Rented">Rented</option>
-                    </select>
+                    <select id="statusFilter" class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
+                    <option value="">Status</option>
+                    <option value="Available">Available</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Rented">Rented</option>
+                </select>
                 </div>
                 <button id="btnOpenCreate" class="btn btn-primary text-sm btn-sm px-3 py-3 rounded-lg flex items-center gap-2">
                     <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
@@ -348,9 +349,6 @@
             <!-- Actions -->
             <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6">
                 <div class="flex gap-3">
-                    <button id="generateAnotherLink" class="px-4 py-2 bg-neutral-200 dark:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded text-sm font-medium hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
-                        Create Another
-                    </button>
                     <button id="closePaymentLinkFooterBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors">
                         Done
                     </button>

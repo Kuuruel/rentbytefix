@@ -1,12 +1,10 @@
 <?php
 
-// app/Services/MidtransService.php
 namespace App\Services;
 
 use App\Models\Bill;
 use App\Models\Transaction;
 use App\Models\Property;
-use App\Models\Rental;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,35 +19,35 @@ class MidtransService
             $transactionStatus = $notification['transaction_status'];
             $fraudStatus = $notification['fraud_status'] ?? null;
 
-            // Cari bill berdasarkan order_id
-            $bill = Bill::where('id', str_replace('BILL-', '', $orderId))->first();
+            // Parse Bill ID dari order_id format "BILL-123"
+            $billId = str_replace('BILL-', '', $orderId);
+            $bill = Bill::with('property')->find($billId);
             
             if (!$bill) {
                 Log::error("Bill tidak ditemukan untuk order_id: {$orderId}");
                 return false;
             }
 
-            // Update atau buat record transaction
+            // Update atau buat record transaction dengan struktur yang ada
             $transaction = Transaction::updateOrCreate(
                 ['bill_id' => $bill->id],
                 [
-                    'order_id' => $orderId,
-                    'transaction_id' => $notification['transaction_id'] ?? null,
-                    'gross_amount' => $notification['gross_amount'] ?? $bill->amount,
-                    'payment_type' => $notification['payment_type'] ?? null,
-                    'transaction_status' => $transactionStatus,
-                    'fraud_status' => $fraudStatus,
-                    'status_code' => $notification['status_code'] ?? null,
-                    'bank' => $notification['va_numbers'][0]['bank'] ?? $notification['permata_va_number'] ?? null,
-                    'va_number' => $notification['va_numbers'][0]['va_number'] ?? $notification['permata_va_number'] ?? null,
-                    'transaction_time' => $notification['transaction_time'] ?? now(),
+                    'midtrans_response' => $notification,
+                    'status' => $transactionStatus,
+                    'paid_at' => in_array($transactionStatus, ['settlement', 'capture']) ? now() : null
                 ]
             );
 
-            // Handle berbagai status transaksi
+            Log::info('Transaction record updated', [
+                'transaction_id' => $transaction->id,
+                'bill_id' => $bill->id,
+                'status' => $transactionStatus
+            ]);
+
+            // Handle status transaksi
             if ($transactionStatus == 'capture') {
                 if ($fraudStatus == 'challenge') {
-                    $bill->update(['status' => 'challenge']);
+                    $bill->update(['status' => 'pending']); // Masih menunggu verifikasi
                 } else if ($fraudStatus == 'accept') {
                     $this->handlePembayaranBerhasil($bill);
                 }
@@ -57,12 +55,13 @@ class MidtransService
                 $this->handlePembayaranBerhasil($bill);
             } else if ($transactionStatus == 'pending') {
                 $bill->update(['status' => 'pending']);
-            } else if (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+                Log::info("Bill {$bill->id} status: pending");
+            } else if (in_array($transactionStatus, ['deny', 'expire', 'cancel', 'failure'])) {
                 $bill->update(['status' => 'failed']);
                 // Kembalikan status properti ke Available jika pembayaran gagal
-                $property = Property::find($bill->property_id);
-                if ($property && $property->status === 'Pending') {
-                    $property->update(['status' => 'Available']);
+                if ($bill->property && $bill->property->status === 'Processing') {
+                    $bill->property->update(['status' => 'Available']);
+                    Log::info("Property {$bill->property->id} status dikembalikan ke Available");
                 }
             }
 
@@ -71,7 +70,10 @@ class MidtransService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error webhook Midtrans: ' . $e->getMessage());
+            Log::error('Error webhook Midtrans: ' . $e->getMessage(), [
+                'notification' => $notification ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
             return false;
         }
     }
@@ -81,38 +83,28 @@ class MidtransService
         // Update status bill
         $bill->update([
             'status' => 'paid',
-            'paid_at' => now()
+            'payment_date' => now()
         ]);
 
         // Update status properti menjadi 'Rented'
-        $property = Property::find($bill->property_id);
-        if ($property) {
-            $property->update(['status' => 'Rented']);
-            Log::info("Status properti {$property->name} berubah menjadi Rented");
+        if ($bill->property) {
+            $bill->property->update(['status' => 'Rented']);
+            Log::info("Status properti '{$bill->property->name}' berubah menjadi Rented", [
+                'property_id' => $bill->property->id,
+                'bill_id' => $bill->id
+            ]);
         }
 
-        // Buat record rental jika diperlukan
-        $rental = Rental::updateOrCreate(
-            [
-                'property_id' => $bill->property_id,
-                'renter_id' => $bill->renter_id,
-            ],
-            [
-                'tenant_id' => $bill->tenant_id,
-                'bill_id' => $bill->id,
-                'start_date' => $bill->renter->start_date,
-                'end_date' => $bill->renter->end_date,
-                'amount' => $bill->amount,
-                'status' => 'active',
-            ]
-        );
-
-        Log::info("Pembayaran berhasil untuk Bill ID: {$bill->id}, Status properti berubah menjadi Rented");
+        Log::info("Pembayaran berhasil!", [
+            'bill_id' => $bill->id,
+            'property_status' => 'Rented',
+            'bill_status' => 'paid'
+        ]);
     }
 
     public function createPayment(Bill $bill)
     {
-        // Set server key Anda
+        // Set server key
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
         \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized', true);
@@ -138,16 +130,20 @@ class MidtransService
             ],
             'callbacks' => [
                 'finish' => url('/landlord/payment/success'),
-                'error' => url('/landlord/payment/error'),
+                'error' => url('/landlord/payment/error'), 
                 'pending' => url('/landlord/payment/pending')
             ]
         ];
 
         try {
             $snapToken = \Midtrans\Snap::getSnapToken($params);
+            Log::info('Snap token created successfully', [
+                'bill_id' => $bill->id,
+                'order_id' => 'BILL-' . $bill->id
+            ]);
             return $snapToken;
         } catch (\Exception $e) {
-            Log::error('Error Midtrans: ' . $e->getMessage());
+            Log::error('Error creating Midtrans payment: ' . $e->getMessage());
             throw $e;
         }
     }
