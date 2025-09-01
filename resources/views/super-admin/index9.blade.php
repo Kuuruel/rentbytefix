@@ -53,67 +53,108 @@
                     <div id="default-tab-content">
                         <div id="edit-profile" role="tabpanel" aria-labelledby="edit-profile-tab">
 
-                            <form action="#">
+                            <form action="{{ route('admin.midtrans.store') }}" method="POST">
+                                @csrf
                                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-6">
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
-                                            <label for="name"
+                                            <label for="merchant_id"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">
                                                 Merchant ID <span class="text-danger-600">*</span></label>
-                                            <input type="text" class="form-control rounded-lg" id="name"
-                                                placeholder="Enter Merchant ID">
+                                            <input type="text" class="form-control rounded-lg" id="merchant_id"
+                                                name="merchant_id"
+                                                value="{{ old('merchant_id', $midtrans_settings->merchant_id ?? '') }}"
+                                                placeholder="Enter Merchant ID" required>
+                                            @error('merchant_id')
+                                                <span class="text-danger-600 text-sm">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
-                                            <label for="email"
+                                            <label for="client_key"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Client
                                                 Key
                                                 <span class="text-danger-600">*</span></label>
-                                            <input type="email" class="form-control rounded-lg" id="email"
-                                                placeholder="Enter Client Key">
+                                            <input type="text" class="form-control rounded-lg" id="client_key"
+                                                name="client_key"
+                                                value="{{ old('client_key', $midtrans_settings->client_key ?? '') }}"
+                                                placeholder="Enter Client Key" required>
+                                            @error('client_key')
+                                                <span class="text-danger-600 text-sm">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
-                                            <label for="number"
+                                            <label for="server_key"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Server
-                                                Key</label>
-                                            <input type="email" class="form-control rounded-lg" id="number"
-                                                placeholder="Enter Server Key">
+                                                Key <span class="text-danger-600">*</span></label>
+                                            <div class="relative">
+                                                <input type="password" class="form-control rounded-lg pr-12" id="server_key"
+                                                    name="server_key"
+                                                    value="{{ old('server_key', $midtrans_settings->server_key ?? '') }}"
+                                                    placeholder="Enter Server Key" required>
+                                                <button type="button"
+                                                    class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                                    data-toggle="#server_key">
+                                                    <i class="ri-eye-line"></i>
+                                                </button>
+                                            </div>
+                                            @error('server_key')
+                                                <span class="text-danger-600 text-sm">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
-                                            <label for="depart" yang do
+                                            <label for="environment"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Environment
                                                 <span class="text-danger-600">*</span> </label>
-                                            <select class="form-control rounded-lg form-select" id="depart">
-                                                <option>Sandbox </option>
-                                                <option>Production </option>
-
+                                            <select class="form-control rounded-lg form-select" id="environment"
+                                                name="environment" required>
+                                                <option value="">Select Environment</option>
+                                                <option value="sandbox"
+                                                    {{ old('environment', $midtrans_settings->environment ?? '') == 'sandbox' ? 'selected' : '' }}>
+                                                    Sandbox
+                                                </option>
+                                                <option value="production"
+                                                    {{ old('environment', $midtrans_settings->environment ?? '') == 'production' ? 'selected' : '' }}>
+                                                    Production
+                                                </option>
                                             </select>
+                                            @error('environment')
+                                                <span class="text-danger-600 text-sm">{{ $message }}</span>
+                                            @enderror
                                         </div>
                                     </div>
 
                                     <div class="col-span-12">
                                         <div class="mb-5">
-                                            <label for="desc"
+                                            <label for="webhook_url"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Webhook
                                                 / Notification URL</label>
-                                            <textarea name="#0" class="form-control rounded-lg" id="desc" placeholder="url here..."
-                                                style="height: 100px;"></textarea>
+                                            <textarea name="webhook_url" class="form-control rounded-lg" id="webhook_url"
+                                                placeholder="https://yourdomain.com/midtrans/notification" style="height: 100px;">{{ old('webhook_url', $midtrans_settings->webhook_url ?? '') }}</textarea>
+                                            @error('webhook_url')
+                                                <span class="text-danger-600 text-sm">{{ $message }}</span>
+                                            @enderror
+                                            <small class="text-gray-500 mt-1">
+                                                URL ini akan menerima notifikasi dari Midtrans ketika status transaksi
+                                                berubah
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-end gap-3">
                                     <button type="button"
-                                        class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg">
+                                        class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg"
+                                        onclick="window.history.back()">
                                         Cancel
                                     </button>
-                                    <button type="button"
+                                    <button type="submit"
                                         class="btn btn-primary border border-primary-600 text-base px-10 py-[10px] rounded-lg">
-                                        Save
+                                        Save Configuration
                                     </button>
                                 </div>
                             </form>
@@ -124,4 +165,16 @@
             </div>
         </div>
     </div>
+
+    @if (session('success'))
+        <div class="alert alert-success mt-4">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger mt-4">
+            {{ session('error') }}
+        </div>
+    @endif
 @endsection

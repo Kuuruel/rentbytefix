@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['admin', 'landlord']);
+            // Cek apakah kolom role sudah ada atau belum
+            if (!Schema::hasColumn('users', 'role')) {
+                $table->enum('role', ['admin', 'landlord'])->default('landlord');
+            }
         });
     }
 
@@ -22,7 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
+            // Cek apakah kolom role ada sebelum di-drop
+            if (Schema::hasColumn('users', 'role')) {
+                $table->dropColumn('role');
+            }
         });
     }
 };

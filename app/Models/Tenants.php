@@ -97,7 +97,11 @@ class Tenants extends Model
     {
         return $query->where('country', $country);
     }
-
+    // Tambahkan relasi ini di model Tenants  
+    public function notificationReads()
+    {
+        return $this->hasMany(NotificationRead::class, 'tenant_id');
+    }
     /**
      * Accessor untuk mendapatkan status dalam bahasa Indonesia
      */

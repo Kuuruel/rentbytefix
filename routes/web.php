@@ -17,9 +17,37 @@ use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\LandlordController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\MidtransController;
 
+// Tambahkan routes ini ke dalam middleware auth di web.php
+
+// Global Notifications Routes
+Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
+    Route::controller(\App\Http\Controllers\Admin\NotificationController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+
+        // AJAX Routes
+        Route::get('/get-notifications', 'getNotifications')->name('get');
+        Route::get('/get-all-notifications', 'getAllNotifications')->name('get-all');
+        Route::get('/get-archived-notifications', 'getArchivedNotifications')->name('get-archived');
+        Route::get('/get-tenants', 'getTenants')->name('get-tenants');
+        Route::get('/get-settings', 'getSettings')->name('get-settings');
+
+        // Actions
+        Route::post('/store', 'store')->name('store');
+        Route::post('/update-settings', 'updateSettings')->name('update-settings');
+        Route::post('/{id}/archive', 'archive')->name('archive');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{id}/mark-read', 'markAsRead')->name('mark-read');
+
+        // Bulk Actions
+        Route::post('/bulk-archive', 'bulkArchive')->name('bulk-archive');
+        Route::post('/bulk-delete', 'bulkDelete')->name('bulk-delete');
+    });
+});
 /*
-|--------------------------------------------------------------------------
+|-----------------------------------------------------------------------
 | Default Route
 |--------------------------------------------------------------------------
 */
@@ -68,8 +96,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/index4', 'index4')->name('super-admin.index4');
             Route::get('/index5', 'index5')->name('super-admin.index5');
             Route::get('/index6', 'index6')->name('super-admin.index6');
-            Route::get('/index7', 'index7')->name('super-admin.index7');
-            Route::get('/index8', 'index8')->name('super-admin.index8');
+            // Ganti route lama
+            Route::get('/index7', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('super-admin.index7');
+            Route::get('/index8/{tenant_id}', 'index8')->name('super-admin.index8');
+
             Route::get('/index9', 'index9')->name('super-admin.index9');
         });
     });
@@ -227,5 +257,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
         Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
         Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
+    });
+    Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+        Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
+        Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
     });
 });

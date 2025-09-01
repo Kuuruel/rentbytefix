@@ -1,6 +1,8 @@
 @extends('layout.layout')
+
 @php
     $title = 'Global Notifications';
+    $metaTags = '<meta name="csrf-token" content="' . csrf_token() . '">';
     $subTitle = 'Global Notifications';
     $script = '<script>
         // ======================== Upload Image Start =====================
@@ -73,7 +75,7 @@
                     </ul>
                     <div id="default-tab-content">
                         <div class="hidden" id="edit-profile" role="tabpanel" aria-labelledby="edit-profile-tab">
-                            <form action="#">
+                            <form action="javascript:void(0)">
                                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-6">
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
@@ -141,37 +143,37 @@
 
                                     <script>
                                         // Sample tenant data - replace with your actual data
-                                        const tenants = [{
-                                                id: 1,
-                                                name: 'PT. ABC Corporation',
-                                                email: 'admin@abc.com',
-                                                status: 'active'
-                                            },
-                                            {
-                                                id: 2,
-                                                name: 'CV. XYZ Solutions',
-                                                email: 'contact@xyz.com',
-                                                status: 'inactive'
-                                            },
-                                            {
-                                                id: 3,
-                                                name: 'UD. Maju Jaya',
-                                                email: 'info@majujaya.com',
-                                                status: 'active'
-                                            },
-                                            {
-                                                id: 4,
-                                                name: 'PT. Tech Innovate',
-                                                email: 'admin@techinnovate.com',
-                                                status: 'active'
-                                            },
-                                            {
-                                                id: 5,
-                                                name: 'CV. Digital Plus',
-                                                email: 'hello@digitalplus.com',
-                                                status: 'inactive'
-                                            }
-                                        ];
+                                        // const tenants = [{
+                                        //         id: 1,
+                                        //         name: 'PT. ABC Corporation',
+                                        //         email: 'admin@abc.com',
+                                        //         status: 'active'
+                                        //     },
+                                        //     {
+                                        //         id: 2,
+                                        //         name: 'CV. XYZ Solutions',
+                                        //         email: 'contact@xyz.com',
+                                        //         status: 'inactive'
+                                        //     },
+                                        //     {
+                                        //         id: 3,
+                                        //         name: 'UD. Maju Jaya',
+                                        //         email: 'info@majujaya.com',
+                                        //         status: 'active'
+                                        //     },
+                                        //     {
+                                        //         id: 4,
+                                        //         name: 'PT. Tech Innovate',
+                                        //         email: 'admin@techinnovate.com',
+                                        //         status: 'active'
+                                        //     },
+                                        //     {
+                                        //         id: 5,
+                                        //         name: 'CV. Digital Plus',
+                                        //         email: 'hello@digitalplus.com',
+                                        //         status: 'inactive'
+                                        //     }
+                                        // ];
 
                                         let selectedTenants = [];
 
@@ -425,7 +427,7 @@
                                         class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-14 py-[11px] rounded-lg">
                                         Cancel
                                     </button>
-                                    <button type="button"
+                                    <button type="button" onclick="submitNotification()"
                                         class="btn btn-primary border border-primary-600 text-base px-14 py-3 rounded-lg">
                                         Send
                                     </button>
@@ -485,13 +487,11 @@
                                                                         <iconify-icon icon="ion:search-outline"
                                                                             class="icon"></iconify-icon>
                                                                     </form>
-
-                                                                    <select id="statusFilter"
-                                                                        class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
-                                                                        <option value="">Filter by Priority</option>
-                                                                        <option value="Active">All Tenants</option>
-                                                                        <option value="Inactive">Specific Tenants</option>
-                                                                        {{-- <option value="Inactive">Spesific Role</option> --}}
+                                                                    <select id="targetFilter"
+                                                                        class="form-select form-select-sm w-auto">
+                                                                        <option value="">Filter by Target</option>
+                                                                        <option value="all">All Tenants</option>
+                                                                        <option value="specific">Specific Tenants</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -609,11 +609,11 @@
                                                                     </form>
 
                                                                     <select id="statusFilter"
-                                                                        class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
+                                                                        class="form-select form-select-sm w-auto">
                                                                         <option value="">Filter by Priority</option>
-                                                                        <option value="Active">All Tenants</option>
-                                                                        <option value="Inactive">Specific Tenants</option>
-                                                                        {{-- <option value="Inactive">Spesific Role</option> --}}
+                                                                        <option value="Normal">Normal</option>
+                                                                        <option value="Important">Important</option>
+                                                                        <option value="Critical">Critical</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -846,7 +846,7 @@
                                     <div class="mb-6">
                                         <label
                                             class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">
-                                            Display Notification Settings  <span class="text-danger-600">*</span>
+                                            Display Notification Settings <span class="text-danger-600">*</span>
                                         </label>
                                         <div class="mb-5">
 
@@ -1023,4 +1023,729 @@
             </div>
         </div>
     </div>
+    <script>
+        // Global variables
+        let currentPage = 1;
+        let currentTab = 'active';
+        let searchTerm = '';
+        let priorityFilter = '';
+        let selectedNotifications = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load default settings
+            loadSettings();
+
+            // Load tenants for dropdown
+            loadTenants();
+
+            // Load notifications
+            loadNotifications();
+
+            // Setup event listeners
+            setupEventListeners();
+
+            // Setup form submit
+            setupFormSubmit();
+        });
+
+        // Load notification settings
+        function loadSettings() {
+            fetch('/admin/notifications/get-settings')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        populateSettingsForm(data.data);
+                    }
+                })
+                .catch(error => console.error('Error loading settings:', error));
+        }
+
+        // Populate settings form
+        function populateSettingsForm(settings) {
+            // Default priority
+            document.getElementById('default-priority').value = settings.priority;
+
+            // Default delivery methods
+            if (settings.delivery_methods && Array.isArray(settings.delivery_methods)) {
+                settings.delivery_methods.forEach(method => {
+                    const checkbox = document.getElementById(`settings-${method.toLowerCase().replace(' ', '-')}`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                updateSettingsSelection();
+            }
+
+            // Email settings
+            if (settings.email_from) {
+                document.getElementById('from-email').value = settings.email_from;
+            }
+            if (settings.email_footer) {
+                document.getElementById('email-footer').value = settings.email_footer;
+            }
+
+            // Push settings
+            document.getElementById('notificationToggle').checked = settings.push_enabled;
+            document.getElementById('displayNotifications').value = settings.display_count;
+            updateToggleText();
+        }
+
+        // Load tenants untuk dropdown
+        function loadTenants() {
+            fetch('/admin/notifications/get-tenants')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.tenantsData = data.data;
+                        updateTenantDropdown();
+                    }
+                })
+                .catch(error => console.error('Error loading tenants:', error));
+        }
+
+        // Update tenant dropdown dengan data dari database
+        function updateTenantDropdown() {
+            // Update global tenants variable
+            window.tenants = window.tenantsData;
+        }
+
+        // Load notifications berdasarkan tab aktif
+        function loadNotifications(page = 1) {
+            const endpoint = currentTab === 'active' ?
+                '/admin/notifications/get-all-notifications' :
+                '/admin/notifications/get-archived-notifications';
+
+            const params = new URLSearchParams({
+                page: page,
+                per_page: 10,
+                search: searchTerm,
+                priority: priorityFilter
+            });
+
+            showLoading();
+
+            fetch(`${endpoint}?${params}`)
+                .then(response => response.json())
+                .then(data => {
+                    hideLoading();
+                    if (data.data) {
+                        populateTable(data.data);
+                        updatePagination(data.pagination);
+                    }
+                })
+                .catch(error => {
+                    hideLoading();
+                    console.error('Error loading notifications:', error);
+                    showAlert('Error loading notifications', 'error');
+                });
+        }
+
+        // Populate table dengan data
+        function populateTable(notifications) {
+            const tbody = document.querySelector('#tableBody');
+            tbody.innerHTML = '';
+
+            if (notifications.length === 0) {
+                tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-8 text-neutral-500">
+                    No notifications found
+                </td>
+            </tr>
+        `;
+                return;
+            }
+
+            notifications.forEach((notif, index) => {
+                const row = createTableRow(notif, index);
+                tbody.appendChild(row);
+            });
+        }
+
+        // Create table row
+        function createTableRow(notif, index) {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-neutral-50 dark:hover:bg-neutral-800';
+
+            const rowNumber = ((currentPage - 1) * 10) + index + 1;
+
+            tr.innerHTML = `
+        <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+                <div class="form-check style-check flex items-center">
+                    <input class="form-check-input rounded border input-form-dark notification-checkbox" 
+                           type="checkbox" value="${notif.id}" onchange="updateSelectedNotifications()">
+                </div>
+                <span class="text-sm text-neutral-700 dark:text-neutral-300">${rowNumber}</span>
+            </div>
+        </td>
+        <td class="px-4 py-3">
+            <span class="text-sm font-medium text-neutral-900 dark:text-white">${notif.title}</span>
+        </td>
+        <td class="px-4 py-3">
+            <span class="px-3 py-1.5 rounded-full font-medium text-xs ${notif.priority_badge}">
+                ${notif.priority}
+            </span>
+        </td>
+        <td class="px-4 py-3">
+            <span class="text-sm text-neutral-700 dark:text-neutral-300" title="${notif.message}">
+                ${notif.message}
+            </span>
+        </td>
+        <td class="px-4 py-3 text-center">
+            <span class="text-xs text-neutral-600 dark:text-neutral-400">
+                ${notif.target_audience}
+            </span>
+        </td>
+        <td class="px-4 py-3 text-center">
+            <span class="text-xs text-neutral-600 dark:text-neutral-400">
+                ${currentTab === 'active' ? notif.created_at : notif.archived_at}
+            </span>
+        </td>
+        <td class="px-4 py-3 text-center">
+            ${getActionButtons(notif)}
+        </td>
+    `;
+
+            return tr;
+        }
+
+        // Get action buttons berdasarkan tab
+        function getActionButtons(notif) {
+            if (currentTab === 'active') {
+                return `
+            <div class="flex items-center justify-center gap-2">
+                <button onclick="archiveNotification(${notif.id})" 
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-warning-100 text-warning-600 hover:bg-warning-200 transition-colors"
+                        title="Archive">
+                    <iconify-icon icon="lucide:archive" class="text-sm"></iconify-icon>
+                </button>
+            </div>
+        `;
+            } else {
+                return `
+            <div class="flex items-center justify-center gap-2">
+                <button onclick="restoreNotification(${notif.id})" 
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-success-100 text-success-600 hover:bg-success-200 transition-colors"
+                        title="Restore">
+                    <iconify-icon icon="lucide:rotate-ccw" class="text-sm"></iconify-icon>
+                </button>
+                <button onclick="deleteNotification(${notif.id})" 
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 transition-colors"
+                        title="Delete Permanently">
+                    <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
+                </button>
+            </div>
+        `;
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab switching
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('[data-tabs-target="#styled-todoList"]')) {
+                    currentTab = 'active';
+                    currentPage = 1;
+                    loadNotifications();
+                }
+                if (e.target.closest('[data-tabs-target="#styled-recentLead"]')) {
+                    currentTab = 'archived';
+                    currentPage = 1;
+                    loadNotifications();
+                }
+            });
+
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                let searchTimeout;
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        searchTerm = this.value;
+                        currentPage = 1;
+                        loadNotifications();
+                    }, 500);
+                });
+            }
+
+            // Priority filter
+            const prioritySelect = document.getElementById('statusFilter');
+            if (prioritySelect) {
+                prioritySelect.addEventListener('change', function() {
+                    priorityFilter = this.value;
+                    currentPage = 1;
+                    loadNotifications();
+                });
+            }
+
+            // Select all checkbox
+            const selectAllCheckbox = document.getElementById('selectAll');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    const checkboxes = document.querySelectorAll('.notification-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                    updateSelectedNotifications();
+                });
+            }
+        }
+
+        // Setup form submit
+        function setupFormSubmit() {
+            // Create notification form submit
+            const createForm = document.querySelector('form[action="#"]');
+            if (createForm) {
+                const submitBtn = createForm.querySelector('button[type="button"]:last-child');
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        submitNotification();
+                    });
+                }
+            }
+
+            // Settings form submit
+            const settingsSubmitBtn = document.querySelector('#notification-password button[type="button"]:last-child');
+            if (settingsSubmitBtn) {
+                settingsSubmitBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    submitSettings();
+                });
+            }
+        }
+
+        // Submit notification baru
+        function submitNotification() {
+            const formData = {
+                title: document.getElementById('name').value,
+                message: document.getElementById('desc').value,
+                priority: document.getElementById('desig').value,
+                target_type: document.getElementById('depart').value,
+                target_tenant_ids: document.getElementById('depart').value === 'specific' ? selectedTenants : [],
+                delivery_methods: getSelectedDeliveryMethods()
+            };
+
+            // Validation
+            if (!formData.title || !formData.message || !formData.priority) {
+                showAlert('Please fill all required fields', 'error');
+                return;
+            }
+
+            if (formData.delivery_methods.length === 0) {
+                showAlert('Please select at least one delivery method', 'error');
+                return;
+            }
+
+            if (formData.target_type === 'specific' && formData.target_tenant_ids.length === 0) {
+                showAlert('Please select at least one tenant', 'error');
+                return;
+            }
+
+            // Submit
+            fetch('/admin/notifications/store', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('Notification created successfully', 'success');
+                        resetCreateForm();
+                        loadNotifications(); // Reload table
+                    } else {
+                        showAlert('Error creating notification', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('Error creating notification', 'error');
+                });
+        }
+
+        // Submit settings
+        function submitSettings() {
+            const formData = {
+                default_priority: document.getElementById('default-priority').value,
+                default_delivery_methods: getSelectedSettingsDeliveryMethods(),
+                email_from: document.getElementById('from-email').value,
+                email_footer: document.getElementById('email-footer').value,
+                push_enabled: document.getElementById('notificationToggle').checked,
+                dashboard_display_count: parseInt(document.getElementById('displayNotifications').value)
+            };
+
+            fetch('/admin/notifications/update-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('Settings updated successfully', 'success');
+                    } else {
+                        showAlert('Error updating settings', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('Error updating settings', 'error');
+                });
+        }
+
+        // Get selected delivery methods dari create form
+        function getSelectedDeliveryMethods() {
+            const checkboxes = document.querySelectorAll('#dropdown-content input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // Get selected delivery methods dari settings form
+        function getSelectedSettingsDeliveryMethods() {
+            const checkboxes = document.querySelectorAll('#settings-dropdown-content input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // Archive notification
+        function archiveNotification(id) {
+            if (confirm('Are you sure you want to archive this notification?')) {
+                fetch(`/admin/notifications/${id}/archive`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showAlert('Notification archived successfully', 'success');
+                            loadNotifications();
+                        } else {
+                            showAlert('Error archiving notification', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('Error archiving notification', 'error');
+                    });
+            }
+        }
+
+        // Restore notification
+        function restoreNotification(id) {
+            if (confirm('Are you sure you want to restore this notification?')) {
+                fetch(`/admin/notifications/${id}/restore`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showAlert('Notification restored successfully', 'success');
+                            loadNotifications();
+                        } else {
+                            showAlert('Error restoring notification', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('Error restoring notification', 'error');
+                    });
+            }
+        }
+
+        // Delete notification permanent
+        function deleteNotification(id) {
+            if (confirm('Are you sure you want to delete this notification permanently? This action cannot be undone.')) {
+                fetch(`/admin/notifications/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showAlert('Notification deleted permanently', 'success');
+                            loadNotifications();
+                        } else {
+                            showAlert('Error deleting notification', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showAlert('Error deleting notification', 'error');
+                    });
+            }
+        }
+
+        // Update selected notifications untuk bulk actions
+        function updateSelectedNotifications() {
+            const checkboxes = document.querySelectorAll('.notification-checkbox:checked');
+            selectedNotifications = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+            // Update select all checkbox
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const allCheckboxes = document.querySelectorAll('.notification-checkbox');
+
+            if (selectedNotifications.length === 0) {
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.checked = false;
+            } else if (selectedNotifications.length === allCheckboxes.length) {
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.checked = true;
+            } else {
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+
+        // Reset create form
+        function resetCreateForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('desc').value = '';
+            document.getElementById('depart').value = 'all';
+            document.getElementById('desig').value = 'Normal';
+
+            // Reset delivery methods
+            const deliveryCheckboxes = document.querySelectorAll('#dropdown-content input[type="checkbox"]');
+            deliveryCheckboxes.forEach(cb => cb.checked = false);
+            updateSelection();
+
+            // Reset tenant selection
+            selectedTenants = [];
+            document.getElementById('tenantSelection').style.display = 'none';
+        }
+
+        // Update pagination
+        function updatePagination(pagination) {
+            const paginationInfo = document.getElementById('paginationInfo');
+            const pageNumbers = document.getElementById('pageNumbers');
+
+            // Update info
+            paginationInfo.textContent =
+                `Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total} entries`;
+
+            // Update page numbers
+            pageNumbers.innerHTML = '';
+
+            // Previous button
+            if (pagination.current_page > 1) {
+                const prevBtn = createPageButton('Previous', pagination.current_page - 1);
+                pageNumbers.appendChild(prevBtn);
+            }
+
+            // Page numbers
+            const startPage = Math.max(1, pagination.current_page - 2);
+            const endPage = Math.min(pagination.last_page, pagination.current_page + 2);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = createPageButton(i, i, i === pagination.current_page);
+                pageNumbers.appendChild(pageBtn);
+            }
+
+            // Next button
+            if (pagination.current_page < pagination.last_page) {
+                const nextBtn = createPageButton('Next', pagination.current_page + 1);
+                pageNumbers.appendChild(nextBtn);
+            }
+        }
+
+        // Create page button
+        function createPageButton(text, page, isActive = false) {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.className = `px-3 py-1 rounded-lg text-sm transition-colors ${
+        isActive 
+            ? 'bg-primary-600 text-white' 
+            : 'bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-50'
+    }`;
+
+            if (!isActive) {
+                button.addEventListener('click', () => {
+                    currentPage = page;
+                    loadNotifications(page);
+                });
+            }
+
+            return button;
+        }
+
+        // Show/hide loading
+        function showLoading() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.classList.remove('hidden');
+            }
+        }
+
+        function hideLoading() {
+            const spinner = document.getElementById('loadingSpinner');
+            if (spinner) {
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+        'bg-blue-500 text-white'
+    }`;
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Replace script tenants hardcoded dengan ini:
+
+        // Load tenants dari database saat halaman load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTenantsFromDatabase();
+        });
+
+        // Load tenants dari database
+        function loadTenantsFromDatabase() {
+            console.log('Loading tenants from database...');
+
+            fetch('/admin/notifications/get-tenants')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Tenants loaded:', data);
+                    if (data.success) {
+                        // Replace global tenants variable dengan data dari database
+                        window.tenants = data.data;
+                        console.log('Tenants set to window:', window.tenants);
+                    } else {
+                        console.error('Failed to load tenants:', data);
+                        // Fallback ke empty array
+                        window.tenants = [];
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading tenants:', error);
+                    // Fallback ke empty array
+                    window.tenants = [];
+                });
+        }
+
+        // Update toggleTenantList function
+        function toggleTenantList() {
+            const select = document.getElementById('depart');
+            const tenantSelection = document.getElementById('tenantSelection');
+
+            if (select.value === 'specific') {
+                tenantSelection.style.display = 'block';
+
+                // Pastikan tenants sudah load sebelum render
+                if (window.tenants && window.tenants.length > 0) {
+                    renderTenantList(window.tenants);
+                } else {
+                    // Reload tenants jika belum ada data
+                    loadTenantsFromDatabase();
+                    setTimeout(() => {
+                        if (window.tenants) {
+                            renderTenantList(window.tenants);
+                        }
+                    }, 1000);
+                }
+            } else {
+                tenantSelection.style.display = 'none';
+                selectedTenants = [];
+            }
+        }
+
+        // Update searchTenants function
+        function searchTenants() {
+            const searchTerm = document.getElementById('tenantSearch').value.toLowerCase();
+
+            if (!window.tenants) {
+                console.log('Tenants not loaded yet, loading...');
+                loadTenantsFromDatabase();
+                return;
+            }
+
+            const filteredTenants = window.tenants.filter(tenant =>
+                tenant.name.toLowerCase().includes(searchTerm) ||
+                tenant.email.toLowerCase().includes(searchTerm)
+            );
+
+            console.log('Filtered tenants:', filteredTenants);
+            renderTenantList(filteredTenants);
+        }
+
+        // Update renderTenantList untuk data dari database
+        function renderTenantList(tenantData) {
+            const tenantList = document.getElementById('tenantList');
+
+            if (!tenantList) {
+                console.error('Tenant list element not found');
+                return;
+            }
+
+            tenantList.innerHTML = '';
+
+            if (!tenantData || tenantData.length === 0) {
+                tenantList.innerHTML = '<p class="text-gray-500 text-sm p-2">No tenants found</p>';
+                return;
+            }
+
+            tenantData.forEach(tenant => {
+                const isSelected = selectedTenants.includes(tenant.id);
+                const tenantItem = document.createElement('div');
+                tenantItem.className =
+                    `flex items-center p-4 hover:bg-gray-50 rounded-lg cursor-pointer border transition-colors mb-3 ${isSelected ? 'bg-blue-50 border-blue-200' : 'border-gray-200'}`;
+                tenantItem.onclick = () => toggleTenantSelection(tenant.id);
+
+                // Status badge sesuai dengan data dari database
+                const statusBadge = tenant.status === 'Active' ?
+                    `<span class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-3 py-1.5 rounded-full font-medium text-xs sm:text-sm">Active</span>` :
+                    `<span class="bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400 px-3 py-1.5 rounded-full font-medium text-xs sm:text-sm">Inactive</span>`;
+
+                tenantItem.innerHTML = `
+            <input type="checkbox" 
+                id="tenant_${tenant.id}" 
+                ${isSelected ? 'checked' : ''}
+                class="h-4 w-4 text-blue-600 rounded flex-shrink-0"
+                onchange="toggleTenantSelection(${tenant.id})"
+                onclick="event.stopPropagation();">
+            <div class="flex-1" style="margin-left: 20px;">
+                <div class="font-medium text-gray-900 dark:text-white">${tenant.name}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">${tenant.email}</div>
+            </div>
+            <div class="flex-shrink-0" style="margin-left: 20px;">
+                ${statusBadge}
+            </div>
+        `;
+
+                tenantList.appendChild(tenantItem);
+            });
+
+            console.log('Tenant list rendered with', tenantData.length, 'items');
+        }
+
+        // Remove hardcoded tenants array - sekarang pakai dari database
+        // Delete bagian const tenants = [...] yang hardcoded
+    </script>
 @endsection

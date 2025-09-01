@@ -72,41 +72,29 @@
                     </div>
                 </div>
 
-                <button data-dropdown-toggle="dropdownNotification"
-                    class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center"
+                <button data-dropdown-toggle="dropdownNotification" id="notificationButton"
+                    class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center relative"
                     type="button">
                     <iconify-icon icon="iconoir:bell" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
+                    <span id="notificationBadge"
+                        class="absolute -top-1 -right-1 w-5 h-5 bg-danger-600 text-white rounded-full text-xs flex items-center justify-center hidden">0</span>
                 </button>
                 <div id="dropdownNotification"
                     class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
                     <div
                         class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 m-4 flex items-center justify-between gap-2">
-                        <h6 class="text-lg text-neutral-900 font-semibold mb-0">Notification</h6>
-                        <span
-                            class="w-10 h-10 bg-white dark:bg-neutral-600 text-primary-600 dark:text-white font-bold flex justify-center items-center rounded-full">05</span>
+                        <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">Notification</h6>
+                        <span id="notificationCount"
+                            class="w-10 h-10 bg-white dark:bg-neutral-600 text-primary-600 dark:text-white font-bold flex justify-center items-center rounded-full">0</span>
                     </div>
                     <div class="scroll-sm !border-t-0">
-                        <div class="max-h-[400px] overflow-y-auto">
-                            <a href="javascript:void(0)"
-                                class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 justify-between gap-1">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="flex-shrink-0 relative w-11 h-11 bg-success-200 dark:bg-success-600/25 text-success-600 flex justify-center items-center rounded-full">
-                                        <iconify-icon icon="bitcoin-icons:verify-outline"
-                                            class="text-2xl"></iconify-icon>
-                                    </div>
-                                    <div>
-                                        <h6 class="text-sm fw-semibold mb-1">Congratulations</h6>
-                                        <p class="mb-0 text-sm line-clamp-1">Your profile has been Verified.</p>
-                                    </div>
-                                </div>
-                                <div class="shrink-0">
-                                    <span class="text-sm text-neutral-500">23 Mins ago</span>
-                                </div>
-                            </a>
+                        <div class="max-h-[400px] overflow-y-auto" id="notificationList">
+                            <div class="text-center py-4" id="notificationLoading">
+                                <span class="text-sm text-neutral-500">Loading...</span>
+                            </div>
                         </div>
                         <div class="text-center py-3 px-4">
-                            <a href="javascript:void(0)"
+                            <a href="{{ route('super-admin.index7') }}"
                                 class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">See
                                 All Notification</a>
                         </div>
@@ -177,3 +165,195 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Navbar Notification Functions
+    // Tambahkan ini ke layout utama atau navbar blade
+
+    // Load notifications untuk dropdown navbar
+    function loadNavbarNotifications() {
+        const notificationList = document.getElementById('notificationList');
+        const notificationCount = document.getElementById('notificationCount');
+        const notificationBadge = document.getElementById('notificationBadge');
+        const loadingElement = document.getElementById('notificationLoading');
+
+        if (loadingElement) {
+            loadingElement.style.display = 'block';
+        }
+
+        fetch('/admin/notifications/get-notifications')
+            .then(response => response.json())
+            .then(data => {
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                }
+
+                if (data.notifications && notificationList) {
+                    populateNavbarNotifications(data.notifications);
+                }
+
+                // Update counters
+                if (notificationCount) {
+                    notificationCount.textContent = data.total_count || 0;
+                }
+
+                if (notificationBadge) {
+                    if (data.unread_count > 0) {
+                        notificationBadge.textContent = data.unread_count;
+                        notificationBadge.classList.remove('hidden');
+                    } else {
+                        notificationBadge.classList.add('hidden');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error loading navbar notifications:', error);
+                if (loadingElement) {
+                    loadingElement.style.display = 'none';
+                }
+                if (notificationList) {
+                    notificationList.innerHTML =
+                        '<div class="text-center py-4"><span class="text-sm text-red-500">Error loading notifications</span></div>';
+                }
+            });
+    }
+
+    // Populate navbar notification dropdown
+    function populateNavbarNotifications(notifications) {
+        const notificationList = document.getElementById('notificationList');
+
+        if (!notificationList) return;
+
+        if (notifications.length === 0) {
+            notificationList.innerHTML = `
+            <div class="text-center py-8">
+                <iconify-icon icon="lucide:bell-off" class="text-4xl text-gray-400 mb-2"></iconify-icon>
+                <p class="text-sm text-gray-500">No notifications</p>
+            </div>
+        `;
+            return;
+        }
+
+        notificationList.innerHTML = '';
+
+        notifications.forEach(notification => {
+            const notificationItem = createNavbarNotificationItem(notification);
+            notificationList.appendChild(notificationItem);
+        });
+    }
+
+    // Create navbar notification item
+    function createNavbarNotificationItem(notification) {
+        const item = document.createElement('div');
+        item.className = `px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 ${
+        !notification.is_read ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+    }`;
+
+        item.onclick = () => markNotificationAsRead(notification.id);
+
+        const priorityIcon = getPriorityIcon(notification.priority);
+        const priorityColor = getPriorityColor(notification.priority);
+
+        item.innerHTML = `
+        <div class="flex items-start gap-3">
+            <div class="flex-shrink-0 mt-1">
+                <div class="w-8 h-8 rounded-full ${priorityColor} flex items-center justify-center">
+                    <iconify-icon icon="${priorityIcon}" class="text-sm text-white"></iconify-icon>
+                </div>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between mb-1">
+                    <h6 class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                        ${notification.title}
+                    </h6>
+                    ${!notification.is_read ? '<div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>' : ''}
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-1">
+                    ${notification.message}
+                </p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-500">${notification.created_at}</span>
+                    <span class="text-xs px-2 py-1 rounded-full ${notification.priority_badge}">
+                        ${notification.priority}
+                    </span>
+                </div>
+            </div>
+        </div>
+    `;
+
+        return item;
+    }
+
+    // Get priority icon
+    function getPriorityIcon(priority) {
+        switch (priority) {
+            case 'Critical':
+                return 'lucide:alert-triangle';
+            case 'Important':
+                return 'lucide:info';
+            case 'Normal':
+            default:
+                return 'lucide:bell';
+        }
+    }
+
+    // Get priority color
+    function getPriorityColor(priority) {
+        switch (priority) {
+            case 'Critical':
+                return 'bg-red-500';
+            case 'Important':
+                return 'bg-yellow-500';
+            case 'Normal':
+            default:
+                return 'bg-blue-500';
+        }
+    }
+
+    // Mark notification as read
+    function markNotificationAsRead(notificationId) {
+        fetch(`/admin/notifications/${notificationId}/mark-read`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload navbar notifications
+                    loadNavbarNotifications();
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
+    }
+
+    // Auto refresh notifications setiap 30 detik
+    function startNotificationAutoRefresh() {
+        setInterval(() => {
+            loadNavbarNotifications();
+        }, 30000); // 30 seconds
+    }
+
+    // Initialize navbar notifications saat halaman load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load initial notifications
+        loadNavbarNotifications();
+
+        // Start auto refresh
+        startNotificationAutoRefresh();
+
+        // Refresh notifications ketika dropdown dibuka
+        const notificationButton = document.getElementById('notificationButton');
+        if (notificationButton) {
+            notificationButton.addEventListener('click', function() {
+                setTimeout(() => {
+                    loadNavbarNotifications();
+                }, 100);
+            });
+        }
+    });
+</script>
