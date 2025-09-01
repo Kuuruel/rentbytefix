@@ -42,7 +42,7 @@
                         <a href="{{ route('landlord.index8') }}"><i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Medical</a>
                     </li>
                     <li>
-                        <a href="{{ route('index9') }}"><i class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
+                        <a href="{{ route('landlord.index9') }}"><i class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
                     </li>
                 </ul>
             </li>
@@ -273,7 +273,7 @@
                         <a href="{{ route('addUser') }}"><i class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Add User</a>
                     </li>
                     <li>
-                        <a href="{{ route('viewProfile') }}"><i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> View Profile</a>
+                        <a href="{{ route('viewProfileTenant') }}"><i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> View Profile</a>
                     </li>
                 </ul>
             </li>

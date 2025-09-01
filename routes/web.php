@@ -54,13 +54,12 @@ Route::prefix('authentication')->group(function () {
 Route::middleware('guest')->group(function() {
     Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
 });
-    Route::post('/login', [AuthenticationController::class, 'signin']);
-   
+
+Route::post('/login', [AuthenticationController::class, 'signin']);
 
 Route::middleware(['auth'])->group(function(){
     Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 });
-
 
 Route::middleware(['auth', 'role:admin'])->group(function() {
     Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super-admin.index');
@@ -225,6 +224,15 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
+    // Tenant profile routes (for tenant users)
+    Route::prefix('tenant')->group(function () {
+        Route::controller(TenantController::class)->group(function () {
+            Route::get('/view-profile/{id?}', 'viewProfileTenant')->name('viewProfileTenant');
+            Route::put('/update-profile/{id}', 'updateTenantProfile')->name('tenant.updateProfile');
+            Route::post('/update-password/{id}', 'updateTenantPassword')->name('tenant.updatePassword');
+        });
+    });
+
     // Tenants management routes
     Route::resource('tenants', TenantController::class);
 
@@ -235,52 +243,27 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
         Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
     });
-});
+
     // Property management routes
-Route::get('/landlord/index3', [PropertyController::class, 'index'])->name('landlord.index3');
-Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
-Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
-Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
-Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
-Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
+    Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
+    Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
+    Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
+    Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
+    Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
 
+    // Rental management routes
+    Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+    Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-// Hapus middleware untuk testing, pindahkan ke luar group
-Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+    // Payment callback routes
+    Route::get('/landlord/payments/success', [RentalController::class, 'paymentSuccess'])->name('landlord.payments.success');
+    Route::get('/landlord/payments/error', [RentalController::class, 'paymentError'])->name('landlord.payments.error');
+    Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
+});
 
-// Payment callback routes
-Route::get('/landlord/payments/success', [RentalController::class, 'paymentSuccess'])->name('landlord.payments.success');
-Route::get('/landlord/payments/error', [RentalController::class, 'paymentError'])->name('landlord.payments.error');
-Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
-
-// Webhook route (tetap tanpa middleware)
+// Webhook routes (no authentication required)
 Route::prefix('rental')->group(function () {
     Route::post('/store', [RentalController::class, 'store']);
-    Route::post('/webhook', [RentalController::class, 'webhook']); // ← INI HARUS ADA
-    Route::get('/test-settlement/{billId}', [RentalController::class, 'testWebhookSettlement']);
-});
-    // Property management routes
-Route::get('/landlord/index3', [PropertyController::class, 'index'])->name('landlord.index3');
-Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
-Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
-Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
-Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
-Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
-
-
-// Hapus middleware untuk testing, pindahkan ke luar group
-Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
-
-// Payment callback routes
-Route::get('/landlord/payments/success', [RentalController::class, 'paymentSuccess'])->name('landlord.payments.success');
-Route::get('/landlord/payments/error', [RentalController::class, 'paymentError'])->name('landlord.payments.error');
-Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
-
-// Webhook route (tetap tanpa middleware)
-Route::prefix('rental')->group(function () {
-    Route::post('/store', [RentalController::class, 'store']);
-    Route::post('/webhook', [RentalController::class, 'webhook']); // ← INI HARUS ADA
+    Route::post('/webhook', [RentalController::class, 'webhook']);
     Route::get('/test-settlement/{billId}', [RentalController::class, 'testWebhookSettlement']);
 });
