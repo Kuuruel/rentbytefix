@@ -26,15 +26,12 @@
                     </span>
                 </button>
 
-                <!-- Language Dropdown Start  -->
                 <div class="hidden sm:inline-block">
                     <button data-dropdown-toggle="dropdownInformation" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center" type="button">
                         <img src="{{ asset('assets/images/lang-flag.png') }}" alt="image" class="w-6 h-6 object-cover rounded-full">
                     </button>
-                    <!-- Language dropdown content tetap sama -->
                 </div>
 
-                <!-- Message Dropdown Start  -->
                 <button data-dropdown-toggle="dropdownMessage" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center" type="button">
                     <iconify-icon icon="mage:email" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
                 </button>
@@ -100,12 +97,35 @@
                 </div>
 
                 <button data-dropdown-toggle="dropdownProfile" class="flex justify-center items-center rounded-full" type="button">
-                    @if(Auth::check() && Auth::user()->img)
-                        <img src="{{ asset('assets/images/super-admin/' . Auth::user()->img) }}" alt="image" class="w-10 h-10 object-fit-cover rounded-full">
+                    @if(Auth::guard('web')->check())
+                        @if(Auth::user()->img)
+                            <img src="{{ asset('assets/images/super-admin/' . Auth::user()->img) }}"
+                                alt="image"
+                                class="w-10 h-10 object-cover rounded-full">
+                        @else
+                            <img src="{{ asset('assets/images/user.png') }}"
+                                alt="image"
+                                class="w-10 h-10 object-cover rounded-full">
+                        @endif
+
+                    @elseif(Auth::guard('tenant')->check())
+                        @if(Auth::guard('tenant')->user()->avatar)
+                            <img src="{{ asset('assets/images/tenants/' . Auth::guard('tenant')->user()->avatar) }}"
+                                alt="image"
+                                class="w-10 h-10 object-cover rounded-full">
+                        @else
+                            <img src="{{ asset('assets/images/user.png') }}"
+                                alt="image"
+                                class="w-10 h-10 object-cover rounded-full">
+                        @endif
+
                     @else
-                        <img src="{{ asset('assets/images/user.png') }}" alt="image" class="w-10 h-10 object-fit-cover rounded-full">
+                        <img src="{{ asset('assets/images/user.png') }}"
+                            alt="image"
+                            class="w-10 h-10 object-cover rounded-full">
                     @endif
                 </button>
+
                 <div id="dropdownProfile" class="z-10 hidden bg-white dark:bg-neutral-700 rounded-lg shadow-lg dropdown-menu-sm p-3">
                     <div class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 mb-4 flex items-center justify-between gap-2">
                         <div>
@@ -118,63 +138,57 @@
                     </div>
 
                     <div class="max-h-[400px] overflow-y-auto scroll-sm pe-2">
-    <ul class="flex flex-col">
-        {{-- Profil: pilih route berdasarkan guard (admin/web atau tenant) --}}
-        @if(Auth::guard('web')->check())
-            {{-- web guard (admin/landlord/super-admin) --}}
-            <li>
-                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
-                   href="{{ route('viewProfileAdmin', ['id' => Auth::user()->id]) }}">
-                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
-                    My Profile
-                </a>
-            </li>
-        @elseif(Auth::guard('tenant')->check())
-            {{-- tenant guard --}}
-            <li>
-                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
-                   href="{{ route('viewProfileTenant', ['id' => Auth::guard('tenant')->user()->id]) }}">
-                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
-                    My Profile
-                </a>
-            </li>
-        @else
-            {{-- fallback: pakai route named admin tanpa id (route menerima optional id) --}}
-            <li>
-                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
-                   href="{{ route('viewProfileAdmin') }}">
-                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
-                    My Profile
-                </a>
-            </li>
-        @endif
+                        <ul class="flex flex-col">
+                            @if(Auth::guard('web')->check())
+                                <li>
+                                    <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
+                                    href="{{ route('viewProfileAdmin', ['id' => Auth::user()->id]) }}">
+                                        <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
+                                        My Profile
+                                    </a>
+                                </li>
+                            @elseif(Auth::guard('tenant')->check())
+                                <li>
+                                    <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
+                                    href="{{ route('viewProfileTenant', ['id' => Auth::guard('tenant')->user()->id]) }}">
+                                        <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
+                                        My Profile
+                                    </a>
+                                </li>
+                            @else
+                                <li>
+                                    <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
+                                    href="{{ route('viewProfileAdmin') }}">
+                                        <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
+                                        My Profile
+                                    </a>
+                                </li>
+                            @endif
 
-        <li>
-            <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('email') }}">
-                <iconify-icon icon="tabler:message-check" class="icon text-xl"></iconify-icon> Inbox
-            </a>
-        </li>
-        <li>
-            <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('company') }}">
-                <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl"></iconify-icon> Setting
-            </a>
-        </li>
+                            <li>
+                                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('email') }}">
+                                    <iconify-icon icon="tabler:message-check" class="icon text-xl"></iconify-icon> Inbox
+                                </a>
+                            </li>
+                            <li>
+                                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('company') }}">
+                                    <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl"></iconify-icon> Setting
+                                </a>
+                            </li>
 
-        {{-- Ganti form submit langsung jadi tombol yang membuka modal --}}
-        <li>
-            <button id="logoutButton" class="text-black px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left bg-transparent border-0">
-                <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
-            </button>
-        </li>
-    </ul>
-</div>
+                            <li>
+                                <button id="logoutButton" class="text-black px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left bg-transparent border-0">
+                                    <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal Logout -->
 <div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] hidden opacity-0 transition-opacity duration-300 p-4">
     <div id="modalContent" class="bg-white rounded-lg p-4 sm:p-6  max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
         <div class="flex items-center gap-3 mb-4">
@@ -206,7 +220,6 @@
     </div>
 </div>
 
-<!-- Form Logout (Hidden) -->
 <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="hidden">
     @csrf
 </form>
@@ -220,35 +233,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmLogout = document.getElementById('confirmLogout');
     const logoutForm = document.getElementById('logoutForm');
 
-    // Fungsi untuk membuka modal
     function openModal() {
         logoutModal.classList.remove('hidden');
-        // Force reflow untuk memastikan transisi berjalan
         logoutModal.offsetHeight;
         logoutModal.classList.remove('opacity-0');
         modalContent.classList.remove('scale-95');
         modalContent.classList.add('scale-100');
-        
-        // Prevent body scroll
+
         document.body.style.overflow = 'hidden';
     }
 
-    // Fungsi untuk menutup modal
     function closeModal() {
         logoutModal.classList.add('opacity-0');
         modalContent.classList.remove('scale-100');
         modalContent.classList.add('scale-95');
-        
-        // Restore body scroll
+
         document.body.style.overflow = '';
-        
-        // Hide modal setelah animasi selesai
+
         setTimeout(() => {
             logoutModal.classList.add('hidden');
         }, 300);
     }
 
-    // Event listeners
     if (logoutButton) {
         logoutButton.addEventListener('click', function(e) {
             e.preventDefault();
@@ -260,8 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (cancelButton) {
         cancelButton.addEventListener('click', closeModal);
     }
-    
-    // Tutup modal saat klik di luar modal content
+
     if (logoutModal) {
         logoutModal.addEventListener('click', function(e) {
             if (e.target === logoutModal) {
@@ -269,15 +274,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
-    // Konfirmasi logout
+
     if (confirmLogout) {
         confirmLogout.addEventListener('click', function() {
             logoutForm.submit();
         });
     }
-    
-    // Tutup modal dengan tombol Escape
+
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
             closeModal();
@@ -287,7 +290,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* CSS untuk memastikan transisi berjalan dengan baik */
 .transition-opacity {
     transition-property: opacity;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);

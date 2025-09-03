@@ -209,18 +209,6 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Note Field (Full Width) -->
-                                                <div class="space-y-2 md:col-span-2">
-                                                    <label for="note" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
-                                                        <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                        </svg>
-                                                        Notes
-                                                    </label>
-                                                    <textarea id="note" name="note" rows="4"
-                                                              class="w-full mt-2 px-4 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed font-medium placeholder-gray-400 dark:placeholder-gray-500" 
-                                                              placeholder="Add any additional notes..." readonly disabled>{{ old('note', $tenant->note) }}</textarea>
-                                                </div>
                                             </div>
 
                                             <!-- Form Buttons -->

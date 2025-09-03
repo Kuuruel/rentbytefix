@@ -69,6 +69,78 @@ class TenantController extends Controller
         }
     }
 
+    /**
+ * Update tenant profile (dipanggil dari route tenant.updateProfile)
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  int|null $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function updateTenantProfile(Request $request, $id = null)
+{
+    try {
+        // Ambil tenant: jika id dikirim (admin), pakai itu. Jika tidak, fallback ke tenant yang login.
+        if ($id) {
+            $tenant = Tenants::findOrFail($id);
+        } else {
+            if (Auth::guard('tenant')->check()) {
+                $tenant = Tenants::findOrFail(Auth::guard('tenant')->id());
+            } else {
+                // kalau tidak ada, kembalikan error/forbidden
+                abort(403, 'Unauthorized');
+            }
+        }
+
+        // Validasi
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255|unique:tenants,email,' . $tenant->id,
+            'country' => 'nullable|string|max:100',
+            'status'  => 'nullable|in:Active,Inactive',
+            'note'    => 'nullable|string',
+            'avatar'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
+        ]);
+
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = time() . '_' . preg_replace('/\s+/', '_', strtolower($file->getClientOriginalName()));
+            $dest = public_path('assets/images/tenants');
+
+            if (!file_exists($dest)) {
+                mkdir($dest, 0755, true);
+            }
+
+            // Hapus avatar lama (jika ada dan bukan path default)
+            if ($tenant->avatar) {
+                $oldPath = $dest . DIRECTORY_SEPARATOR . $tenant->avatar;
+                if (file_exists($oldPath) && is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
+            $file->move($dest, $filename);
+            $tenant->avatar = $filename;
+        }
+
+        // Update fields
+        $tenant->name    = $request->input('name');
+        $tenant->email   = $request->input('email');
+        $tenant->country = $request->input('country', $tenant->country);
+        $tenant->status  = $request->input('status', $tenant->status);
+        $tenant->note    = $request->input('note', $tenant->note);
+
+        $tenant->save();
+
+        // flash 'profile' supaya tenant-profile.js menampilkan toast yang sama
+        return redirect()->back()->with('success', 'profile');
+
+    } catch (\Throwable $e) {
+        Log::error('updateTenantProfile error: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Gagal memperbarui profil tenant.');
+    }
+}
+
     public function index()
     {
         try {
