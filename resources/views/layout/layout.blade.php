@@ -4,6 +4,9 @@
 
 <x-head />
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
+
+
 <body class="dark:bg-neutral-800 bg-neutral-100 dark:text-white">
 
     <!-- ..::  header area start ::.. -->

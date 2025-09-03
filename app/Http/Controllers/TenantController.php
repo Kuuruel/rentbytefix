@@ -208,6 +208,44 @@ public function store(Request $request)
         }
     }
 
+    /**
+ * Show tenant profile view (for admin or tenant self).
+ *
+ * @param int|null $id
+ * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+ */
+public function viewProfileTenant($id = null)
+{
+    try {
+        // Jika id dikirim (admin mengklik profil tenant), pakai itu
+        if ($id) {
+            $tenant = Tenants::with('user')->findOrFail($id);
+        } else {
+            // Jika tidak ada id, coba ambil tenant berdasarkan guard tenant yang login
+            if (Auth::guard('tenant')->check()) {
+                $authTenantId = Auth::guard('tenant')->id();
+                // asumsi: model Tenants menyimpan record tenant yang terkait dengan guard tenant
+                $tenant = Tenants::with('user')->findOrFail($authTenantId);
+            } else {
+                // fallback: jika user web (admin) mengakses tanpa id, coba cari tenant berdasarkan user_id
+                if (Auth::check()) {
+                    $tenant = Tenants::with('user')->where('user_id', Auth::id())->firstOrFail();
+                } else {
+                    abort(403, 'Unauthorized');
+                }
+            }
+        }
+
+        return view('users.viewProfileTenant', compact('tenant'));
+    } catch (\Exception $e) {
+        Log::error('Error loading tenant profile: ' . $e->getMessage());
+        Log::error('Trace: ' . $e->getTraceAsString());
+
+        return redirect()->back()->with('error', 'Gagal memuat profil tenant.');
+    }
+}
+
+
     public function update(Request $request, $id)
     {
         try {

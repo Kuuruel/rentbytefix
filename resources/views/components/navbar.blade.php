@@ -118,32 +118,56 @@
                     </div>
 
                     <div class="max-h-[400px] overflow-y-auto scroll-sm pe-2">
-                        <ul class="flex flex-col">
-                            <li>
-                                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('viewProfileAdmin') }}">
-                                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon> My Profile
-                                </a>
-                            </li>
-                            <li>
-                                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('email') }}">
-                                    <iconify-icon icon="tabler:message-check" class="icon text-xl"></iconify-icon> Inbox
-                                </a>
-                            </li>
-                            <li>
-                                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('company') }}">
-                                    <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl"></iconify-icon> Setting
-                                </a>
-                            </li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST" class="m-0">
-                                    @csrf
-                                    <button type="submit" class="text-black px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left">
-                                        <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+    <ul class="flex flex-col">
+        {{-- Profil: pilih route berdasarkan guard (admin/web atau tenant) --}}
+        @if(Auth::guard('web')->check())
+            {{-- web guard (admin/landlord/super-admin) --}}
+            <li>
+                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
+                   href="{{ route('viewProfileAdmin', ['id' => Auth::user()->id]) }}">
+                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
+                    My Profile
+                </a>
+            </li>
+        @elseif(Auth::guard('tenant')->check())
+            {{-- tenant guard --}}
+            <li>
+                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
+                   href="{{ route('viewProfileTenant', ['id' => Auth::guard('tenant')->user()->id]) }}">
+                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
+                    My Profile
+                </a>
+            </li>
+        @else
+            {{-- fallback: pakai route named admin tanpa id (route menerima optional id) --}}
+            <li>
+                <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4"
+                   href="{{ route('viewProfileAdmin') }}">
+                    <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
+                    My Profile
+                </a>
+            </li>
+        @endif
+
+        <li>
+            <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('email') }}">
+                <iconify-icon icon="tabler:message-check" class="icon text-xl"></iconify-icon> Inbox
+            </a>
+        </li>
+        <li>
+            <a class="text-black px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('company') }}">
+                <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl"></iconify-icon> Setting
+            </a>
+        </li>
+
+        {{-- Ganti form submit langsung jadi tombol yang membuka modal --}}
+        <li>
+            <button id="logoutButton" class="text-black px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left bg-transparent border-0">
+                <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
+            </button>
+        </li>
+    </ul>
+</div>
                 </div>
             </div>
         </div>
@@ -151,7 +175,7 @@
 </div>
 
 <!-- Modal Logout -->
-<div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] hidden opacity-0 transition-opacity duration-300 p-4">
+<div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] hidden opacity-0 transition-opacity duration-300 p-4">
     <div id="modalContent" class="bg-white rounded-lg p-4 sm:p-6  max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
         <div class="flex items-center gap-3 mb-4">
             <div class="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
