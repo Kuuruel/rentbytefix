@@ -34,6 +34,11 @@ class Property extends Model
         return ucfirst($value);
     }
 
+    public function renters()
+{
+    return $this->hasMany(Renter::class);
+}
+
     public function getStatusAttribute($value)
     {
         return ucfirst($value);

@@ -11,9 +11,11 @@ class Renter extends Model
 
     protected $fillable = [
         'tenant_id',
+        'property_id',
         'name',
         'phone', 
         'email',
+        'address',
         'unit_id',
         'start_date',
         'end_date'
@@ -92,4 +94,11 @@ class Renter extends Model
                    ->where('status', 'paid')
                    ->orderBy('created_at', 'desc');
     }
+
+    public function property()
+{
+    return $this->belongsTo(Property::class);
+}
+
+
 }

@@ -243,13 +243,19 @@ Route::middleware(['auth:web,tenant'])->group(function () {
     Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
     Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-    Route::get('/landlord/payments/success', [RentalController::class, 'paymentSuccess'])->name('landlord.payments.success');
-    Route::get('/landlord/payments/error', [RentalController::class, 'paymentError'])->name('landlord.payments.error');
-    Route::get('/landlord/payments/pending', [RentalController::class, 'paymentPending'])->name('landlord.payments.pending');
-});
+Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
+Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
+Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-Route::prefix('rental')->group(function () {
-    Route::post('/store', [RentalController::class, 'store']);
-    Route::post('/webhook', [RentalController::class, 'webhook']);
-    Route::get('/test-settlement/{billId}', [RentalController::class, 'testWebhookSettlement']);
+ Route::prefix('landlord')->group(function () {
+        Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
+            ->name('landlord.transactions.data');
+            
+        Route::get('/transactions/{billId}/print', [App\Http\Controllers\TransactionController::class, 'printTransaction'])
+            ->name('landlord.transactions.print');
+            
+        Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
+            ->name('landlord.rentals.payment-status');
+    });
 });
