@@ -69,77 +69,79 @@ class TenantController extends Controller
         }
     }
 
-    /**
- * Update tenant profile (dipanggil dari route tenant.updateProfile)
- *
- * @param  \Illuminate\Http\Request  $request
- * @param  int|null $id
- * @return \Illuminate\Http\RedirectResponse
- */
-public function updateTenantProfile(Request $request, $id = null)
-{
-    try {
-        // Ambil tenant: jika id dikirim (admin), pakai itu. Jika tidak, fallback ke tenant yang login.
-        if ($id) {
-            $tenant = Tenants::findOrFail($id);
-        } else {
-            if (Auth::guard('tenant')->check()) {
-                $tenant = Tenants::findOrFail(Auth::guard('tenant')->id());
+    public function updateTenantProfile(Request $request, $id = null)
+    {
+        try {
+            if ($id) {
+                $tenant = Tenants::findOrFail($id);
             } else {
-                // kalau tidak ada, kembalikan error/forbidden
-                abort(403, 'Unauthorized');
-            }
-        }
-
-        // Validasi
-        $request->validate([
-            'name'    => 'required|string|max:255',
-            'email'   => 'required|email|max:255|unique:tenants,email,' . $tenant->id,
-            'country' => 'nullable|string|max:100',
-            'status'  => 'nullable|in:Active,Inactive',
-            'note'    => 'nullable|string',
-            'avatar'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
-        ]);
-
-        // Handle avatar upload
-        if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-            $filename = time() . '_' . preg_replace('/\s+/', '_', strtolower($file->getClientOriginalName()));
-            $dest = public_path('assets/images/tenants');
-
-            if (!file_exists($dest)) {
-                mkdir($dest, 0755, true);
-            }
-
-            // Hapus avatar lama (jika ada dan bukan path default)
-            if ($tenant->avatar) {
-                $oldPath = $dest . DIRECTORY_SEPARATOR . $tenant->avatar;
-                if (file_exists($oldPath) && is_file($oldPath)) {
-                    @unlink($oldPath);
+                if (Auth::guard('tenant')->check()) {
+                    $tenant = Tenants::findOrFail(Auth::guard('tenant')->id());
+                } else {
+                    abort(403, 'Unauthorized');
                 }
             }
 
-            $file->move($dest, $filename);
-            $tenant->avatar = $filename;
+            $request->validate([
+                'name'    => 'required|string|max:255',
+                'email'   => 'required|email|max:255|unique:tenants,email,' . $tenant->id,
+                'country' => 'nullable|string|max:100',
+                'status'  => 'nullable|in:Active,Inactive',
+                'note'    => 'nullable|string',
+                'avatar'  => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            if ($request->hasFile('avatar')) {
+                $file = $request->file('avatar');
+                $filename = time() . '_' . preg_replace('/\s+/', '_', strtolower($file->getClientOriginalName()));
+                $dest = public_path('assets/images/tenants');
+
+                if (!file_exists($dest)) {
+                    mkdir($dest, 0755, true);
+                }
+
+                if ($tenant->avatar) {
+                    $oldPath = $dest . DIRECTORY_SEPARATOR . $tenant->avatar;
+                    if (file_exists($oldPath) && is_file($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                }
+
+                $file->move($dest, $filename);
+                $tenant->avatar = $filename;
+            }
+
+            $tenant->name    = $request->input('name');
+            $tenant->email   = $request->input('email');
+            $tenant->country = $request->input('country', $tenant->country);
+            $tenant->status  = $request->input('status', $tenant->status);
+            $tenant->note    = $request->input('note', $tenant->note);
+
+            $tenant->save();
+
+            return redirect()->back()->with('success', 'profile');
+
+        } catch (\Throwable $e) {
+            Log::error('updateTenantProfile error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal memperbarui profil tenant.');
         }
+    }
 
-        // Update fields
-        $tenant->name    = $request->input('name');
-        $tenant->email   = $request->input('email');
-        $tenant->country = $request->input('country', $tenant->country);
-        $tenant->status  = $request->input('status', $tenant->status);
-        $tenant->note    = $request->input('note', $tenant->note);
+    public function updateTenantPassword(Request $request, $id)
+    {
+        $tenant = Tenants::findOrFail($id);
 
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $tenant->password = Hash::make($request->password);
         $tenant->save();
 
-        // flash 'profile' supaya tenant-profile.js menampilkan toast yang sama
-        return redirect()->back()->with('success', 'profile');
-
-    } catch (\Throwable $e) {
-        Log::error('updateTenantProfile error: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Gagal memperbarui profil tenant.');
+        return redirect()
+            ->route('viewProfileTenant', $tenant->id)
+            ->with('success', 'Password berhasil diperbarui.');
     }
-}
 
     public function index()
     {
@@ -170,94 +172,91 @@ public function updateTenantProfile(Request $request, $id = null)
         }
     }
 
-public function store(Request $request)
-{
-    try {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:tenants,email',
-            'password' => 'required|string|min:6',
-            'note' => 'nullable|string|max:1000',
-            'status' => 'required|in:Active,Inactive',
-            'country' => 'required|string|max:100'
-        ]);
+    public function store(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:tenants,email',
+                'password' => 'required|string|min:6',
+                'note' => 'nullable|string|max:1000',
+                'status' => 'required|in:Active,Inactive',
+                'country' => 'required|string|max:100'
+            ]);
 
-        if ($validator->fails()) {
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $data = $validator->validated();
+            $data['password'] = Hash::make($data['password']);
+
+            $authUserId = Auth::id();
+            $userId = null;
+
+            if ($authUserId && User::where('id', $authUserId)->exists()) {
+                $userId = $authUserId;
+            } else {
+                $systemUser = $this->ensureDefaultUser();
+                $userId = $systemUser->id;
+            }
+
+            $data['user_id'] = $userId;
+            $data['avatar'] = '/assets/images/user-list/user-list1.png';
+
+            DB::beginTransaction();
+
+            $tenant = Tenants::create($data);
+            $tenant->load('user');
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tenant created successfully',
+                'tenant' => $tenant
+            ], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollback();
+            Log::error('Database error creating tenant: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            if (strpos($e->getMessage(), 'user_id') !== false || strpos($e->getMessage(), 'foreign') !== false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User reference error. Please contact administrator.',
+                    'debug' => config('app.debug') ? $e->getMessage() : null
+                ], 500);
+            }
+
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'UNIQUE') !== false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists'
+                ], 422);
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
+                'message' => 'Database error occurred',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Error creating tenant: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
 
-        $data = $validator->validated();
-        $data['password'] = Hash::make($data['password']);
-
-        // ===== Simplified and safe user resolution =====
-        $authUserId = Auth::id();
-        $userId = null;
-
-        if ($authUserId && User::where('id', $authUserId)->exists()) {
-            $userId = $authUserId;
-        } else {
-            // ensureDefaultUser() will return an existing first user or create one
-            $systemUser = $this->ensureDefaultUser();
-            $userId = $systemUser->id;
-        }
-        // ===============================================
-
-        $data['user_id'] = $userId;
-        $data['avatar'] = '/assets/images/user-list/user-list1.png';
-
-        DB::beginTransaction();
-
-        $tenant = Tenants::create($data);
-        $tenant->load('user');
-
-        DB::commit();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Tenant created successfully',
-            'tenant' => $tenant
-        ], 201);
-    } catch (\Illuminate\Database\QueryException $e) {
-        DB::rollback();
-        Log::error('Database error creating tenant: ' . $e->getMessage());
-        Log::error('Stack trace: ' . $e->getTraceAsString());
-
-        if (strpos($e->getMessage(), 'user_id') !== false || strpos($e->getMessage(), 'foreign') !== false) {
             return response()->json([
                 'success' => false,
-                'message' => 'User reference error. Please contact administrator.',
-                'debug' => config('app.debug') ? $e->getMessage() : null
+                'message' => 'Failed to create tenant',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
             ], 500);
         }
-
-        if (strpos($e->getMessage(), 'Duplicate entry') !== false || strpos($e->getMessage(), 'UNIQUE') !== false) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email address already exists'
-            ], 422);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Database error occurred',
-            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-        ], 500);
-    } catch (\Exception $e) {
-        DB::rollback();
-        Log::error('Error creating tenant: ' . $e->getMessage());
-        Log::error('Stack trace: ' . $e->getTraceAsString());
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to create tenant',
-            'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
-        ], 500);
     }
-}
 
     public function show($id)
     {
@@ -280,43 +279,32 @@ public function store(Request $request)
         }
     }
 
-    /**
- * Show tenant profile view (for admin or tenant self).
- *
- * @param int|null $id
- * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
- */
-public function viewProfileTenant($id = null)
-{
-    try {
-        // Jika id dikirim (admin mengklik profil tenant), pakai itu
-        if ($id) {
-            $tenant = Tenants::with('user')->findOrFail($id);
-        } else {
-            // Jika tidak ada id, coba ambil tenant berdasarkan guard tenant yang login
-            if (Auth::guard('tenant')->check()) {
-                $authTenantId = Auth::guard('tenant')->id();
-                // asumsi: model Tenants menyimpan record tenant yang terkait dengan guard tenant
-                $tenant = Tenants::with('user')->findOrFail($authTenantId);
+    public function viewProfileTenant($id = null)
+    {
+        try {
+            if ($id) {
+                $tenant = Tenants::with('user')->findOrFail($id);
             } else {
-                // fallback: jika user web (admin) mengakses tanpa id, coba cari tenant berdasarkan user_id
-                if (Auth::check()) {
-                    $tenant = Tenants::with('user')->where('user_id', Auth::id())->firstOrFail();
+                if (Auth::guard('tenant')->check()) {
+                    $authTenantId = Auth::guard('tenant')->id();
+                    $tenant = Tenants::with('user')->findOrFail($authTenantId);
                 } else {
-                    abort(403, 'Unauthorized');
+                    if (Auth::check()) {
+                        $tenant = Tenants::with('user')->where('user_id', Auth::id())->firstOrFail();
+                    } else {
+                        abort(403, 'Unauthorized');
+                    }
                 }
             }
+
+            return view('users.viewProfileTenant', compact('tenant'));
+        } catch (\Exception $e) {
+            Log::error('Error loading tenant profile: ' . $e->getMessage());
+            Log::error('Trace: ' . $e->getTraceAsString());
+
+            return redirect()->back()->with('error', 'Gagal memuat profil tenant.');
         }
-
-        return view('users.viewProfileTenant', compact('tenant'));
-    } catch (\Exception $e) {
-        Log::error('Error loading tenant profile: ' . $e->getMessage());
-        Log::error('Trace: ' . $e->getTraceAsString());
-
-        return redirect()->back()->with('error', 'Gagal memuat profil tenant.');
     }
-}
-
 
     public function update(Request $request, $id)
     {
@@ -423,11 +411,6 @@ public function viewProfileTenant($id = null)
         }
     }
 
-    /**
-     * Check and create default user if needed
-     * 
-     * @return User
-     */
     private function ensureDefaultUser()
     {
         $userCount = User::count();

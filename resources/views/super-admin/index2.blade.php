@@ -129,9 +129,9 @@
 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Tenant Name
+                        <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Business Name
                             *</label>
-                        <input id="formName" type="text" required placeholder="Enter tenant name"
+                        <input id="formName" type="text" required placeholder="Enter business name"
                             class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
                     </div>
 

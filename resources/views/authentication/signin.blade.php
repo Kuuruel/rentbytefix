@@ -70,7 +70,7 @@
 
                     <button type="submit" class="btn btn-primary justify-center text-sm btn-sm px-3 py-4 w-full rounded-xl mt-8"> Sign In</button>
 
-                    {{-- <div class="mt-8 center-border-horizontal text-center relative before:absolute before:w-full before:h-[1px] before:top-1/2 before:-translate-y-1/2 before:bg-neutral-300 before:start-0">
+                    <div class="mt-8 center-border-horizontal text-center relative before:absolute before:w-full before:h-[1px] before:top-1/2 before:-translate-y-1/2 before:bg-neutral-300 before:start-0">
                         <span class="bg-white dark:bg-dark-2 z-[2] relative px-4">Or sign in with</span>
                     </div>
                     <div class="mt-8 flex items-center gap-3">
@@ -85,7 +85,7 @@
                     </div>
                     <div class="mt-8 text-center text-sm">
                         <p class="mb-0">Don't have an account? <a href="{{ route('signup') }}" class="text-primary-600 font-semibold hover:underline">Sign Up</a></p>
-                    </div> --}}
+                    </div>
 
                 </form>
             </div>

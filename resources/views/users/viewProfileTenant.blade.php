@@ -9,7 +9,6 @@
     <div class="container mx-8 px-2 max-w-7xl">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-            <!-- Profile Card -->
             <div class="col-span-12 lg:col-span-4">
                 <div class="relative group h-full">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
@@ -20,7 +19,6 @@
 
                         <div class="relative p-8 pt-8">
                             <div class="text-center">
-                                <!-- Avatar -->
                                 <div class="relative inline-block mb-6 p-6">
                                     <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-md opacity-50 animate-pulse"></div>
                                     <div id="profileCardAvatar" class="relative w-52 h-52 mx-auto rounded-full overflow-hidden border-4 border-white dark:border-gray-700 shadow-2xl bg-white dark:bg-gray-800 transform transition-all duration-300 hover:scale-110" style="min-width: 208px; min-height: 208px; max-width: 208px; max-height: 208px;">
@@ -41,11 +39,9 @@
                                     </div>
                                 </div>
 
-                                <!-- Name and Email -->
                                 <h2 class="text-2xl font-bold mb-3 text-gray-800 dark:text-white tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ $tenant->name }}</h2>
                                 <p class="text-gray-600 dark:text-gray-300 mb-4 break-words max-w-xs mx-auto leading-relaxed font-medium">{{ $tenant->email }}</p>
 
-                                <!-- Country Badge -->
                                 <div class="mb-4">
                                     <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,10 +51,9 @@
                                     </div>
                                 </div>
 
-                                <!-- Status Badge -->
                                 <div class="inline-flex items-center px-6 py-3 rounded-full text-sm font-semibold shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl
                                     @if($tenant->status === 'Active')
-                                        bg-gradient-to-r from-green-500 to-emerald-600 text-white
+                                        bg-gradient-to-r from-green-500 to-emerald-600 dark:text-white text-black
                                     @else
                                         bg-gradient-to-r from-gray-400 to-gray-600 text-white
                                     @endif">
@@ -73,7 +68,6 @@
                 </div>
             </div>
 
-            <!-- Edit Forms -->
             <div class="col-span-12 lg:col-span-8">
                 <div class="relative group">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
@@ -82,7 +76,6 @@
                         <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-1">
                             <div class="bg-white dark:bg-gray-800 rounded-t-2xl">
                                 <div class="p-8">
-                                    <!-- Tabs -->
                                     <div class="flex border-b-2 border-gray-200 dark:border-gray-700 mb-8" id="profile-tabs" role="tablist">
                                         <button class="tab-button flex-1 px-6 py-4 text-sm font-semibold border-b-3 border-transparent text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300 rounded-t-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 relative overflow-hidden group" data-tab="edit-profile" role="tab" aria-controls="edit-profile" aria-selected="true">
                                             <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -104,9 +97,7 @@
                                         </button>
                                     </div>
 
-                                    <!-- Edit Profile Tab -->
                                     <div id="edit-profile" class="tab-content" role="tabpanel" aria-labelledby="edit-profile-tab">
-                                        <!-- Avatar Upload Section -->
                                         <div class="mb-6">
                                             <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4 flex items-center">
                                                 <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl mr-3 p-1">
@@ -154,20 +145,18 @@
                                             <input type="file" id="avatar" name="avatar" accept=".png,.jpg,.jpeg,.gif" class="hidden" disabled>
                                             
                                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <!-- Name Field -->
                                                 <div class="space-y-2">
                                                     <label for="name" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                                         <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                                         </svg>
-                                                        Full Name <span class="text-red-500 ml-1">*</span>
+                                                        Business Name <span class="text-red-500 ml-1">*</span>
                                                     </label>
                                                     <input type="text" id="name" name="name" value="{{ old('name', $tenant->name) }}" 
                                                            class="w-full mt-2 px-4 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed font-medium placeholder-gray-400 dark:placeholder-gray-500" 
-                                                           placeholder="Enter your full name" required readonly disabled>
+                                                           placeholder="Enter your business name" required readonly disabled>
                                                 </div>
 
-                                                <!-- Email Field -->
                                                 <div class="space-y-2">
                                                     <label for="email" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                                         <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +169,6 @@
                                                            placeholder="Enter your email address" required readonly disabled>
                                                 </div>
 
-                                                <!-- Country Field -->
                                                 <div class="space-y-2">
                                                     <label for="country" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                                         <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +181,6 @@
                                                            placeholder="Enter your country" required readonly disabled>
                                                 </div>
 
-                                                <!-- Status Field -->
                                                 <div class="space-y-2">
                                                     <label for="status" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                                         <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +198,6 @@
 
                                             </div>
 
-                                            <!-- Form Buttons -->
                                             <div id="form-buttons" class="flex flex-col sm:flex-row items-center justify-end space-y-4 sm:space-y-0 sm:space-x-4 mt-10 hidden">
                                                 <button type="button" id="cancel-edit" 
                                                         class="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 font-semibold transform hover:scale-105">
@@ -221,7 +207,7 @@
                                                     Cancel
                                                 </button>
                                                 <button type="submit" 
-                                                        class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
+                                                        class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:text-white text-black rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
                                                     <span class="submit-text flex items-center">
                                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -239,10 +225,9 @@
                                             </div>
                                         </form>
 
-                                        <!-- Edit Button -->
                                         <div id="edit-button-container" class="flex justify-end mt-10">
                                             <button type="button" id="enable-edit" 
-                                                    class="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 relative overflow-hidden group">
+                                                    class="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:text-white text-black rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 relative overflow-hidden group">
                                                 <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                                 <span class="relative flex items-center">
                                                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +239,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Change Password Tab -->
                                     <div id="change-password" class="tab-content hidden" role="tabpanel" aria-labelledby="change-password-tab">
                                         <div class="mx-auto">
                                             <div class="text-center mb-10">
@@ -271,7 +255,6 @@
                                             <form id="password-form" action="{{ route('tenant.updatePassword', $tenant->id) }}" method="POST">
                                                 @csrf
                                                 <div class="space-y-8 px-10">
-                                                    <!-- New Password -->
                                                     <div class="space-y-2">
                                                         <label for="password" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                                             <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,7 +274,6 @@
                                                         </div>
                                                     </div>
 
-                                                    <!-- Confirm Password -->
                                                     <div class="space-y-2">
                                                         <label for="password_confirmation" class="block text-sm font-bold text-gray-700 dark:text-gray-300">
                                                             <svg class="w-4 h-4 inline-block mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,7 +294,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Password Form Buttons -->
                                                 <div id="password-buttons" class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-10 hidden">
                                                     <button type="button" id="cancel-password" 
                                                             class="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transition-all duration-300 font-semibold transform hover:scale-105">
@@ -322,7 +303,7 @@
                                                         Cancel
                                                     </button>
                                                     <button type="submit" 
-                                                            class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
+                                                            class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:text-white text-black rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center justify-center">
                                                         <span class="submit-text flex items-center">
                                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
@@ -340,10 +321,9 @@
                                                 </div>
                                             </form>
 
-                                            <!-- Change Password Button -->
                                             <div id="password-button-container" class="flex justify-center mt-6 mb-6">
                                                 <button type="button" id="enable-password-edit" 
-                                                        class="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 relative overflow-hidden group">
+                                                        class="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:text-white text-black rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 relative overflow-hidden group">
                                                     <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                                     <span class="relative flex items-center">
                                                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -521,4 +501,3 @@
 </style>
 
 @endsection
-
