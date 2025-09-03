@@ -397,7 +397,7 @@
                     <button id="bulkDeleteConfirm"
                         class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition-colors">
                         <span class="bulk-delete-text">Yes, Delete</span>
-                        <span class="bulk-delete-loading hidden flex items-center gap-2">
+                        <span class="bulk-delete-loading hidden items-center gap-2">
                             <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -477,15 +477,14 @@
                         <p id="detailPrice" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
                     </div>
 
-                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                </div>
+                  <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 mt-3">
                         <div class="flex items-center gap-2 mb-2">
                             <iconify-icon icon="ph:calendar" class="text-blue-600 dark:text-blue-400"></iconify-icon>
                             <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Rent Type</span>
                         </div>
                         <p id="detailRentType" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
                     </div>
-
-                </div>
 
             </div>
 
@@ -494,7 +493,7 @@
                 <button id="closeDetailsFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
                     Close
                 </button>
-                <button onclick="rentNowFromDetails()" class="px-6 py-2  rounded-lg  text-sm bg-info-600 hover:bg-info-700 text-white  transition-colors">
+                <button onclick="rentNowFromDetails()" id="rentNowBtn" class="px-6 py-2  rounded-lg  text-sm bg-info-600 hover:bg-info-700 text-white  transition-colors">
                     Rent Now
                 </button>
             </div>
@@ -524,4 +523,99 @@
     </div>
 </div>
 
+<!-- Renter Details Modal -->
+<div id="renterDetailsModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
+         style="width: 40rem !important; max-width: 90vw !important;">
+        
+        <!-- Header -->
+        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-neutral-800 dark:to-neutral-700">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
+                    <iconify-icon icon="ph:user-circle" class="text-2xl text-green-600 dark:text-green-400"></iconify-icon>
+                    Renter Details
+                </h3>
+                <button id="closeRenterDetailsBtn" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="px-6 py-6">
+            <!-- Property Name -->
+            <div class="text-center mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-600">
+                <h4 id="renterDetailPropertyName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
+                <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">Property currently rented by</p>
+            </div>
+
+            <!-- Renter Information Grid -->
+            <div class="space-y-4">
+                <!-- Personal Info Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:user" class="text-blue-600 dark:text-blue-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Full Name</span>
+                        </div>
+                        <p id="renterDetailName" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:phone" class="text-green-600 dark:text-green-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Phone Number</span>
+                        </div>
+                        <p id="renterDetailPhone" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+                </div>
+
+                <!-- Contact Info Row -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:envelope" class="text-red-600 dark:text-red-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Email Address</span>
+                        </div>
+                        <p id="renterDetailEmail" class="text-sm font-semibold text-neutral-900 dark:text-white break-all"></p>
+                    </div>
+
+                    <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:map-pin" class="text-purple-600 dark:text-purple-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Address</span>
+                        </div>
+                        <p id="renterDetailAddress" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+                </div>
+
+                <!-- Rental Period Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:calendar-check" class="text-blue-600 dark:text-blue-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Start Date</span>
+                        </div>
+                        <p id="renterDetailStartDate" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <iconify-icon icon="ph:calendar-x" class="text-orange-600 dark:text-orange-400"></iconify-icon>
+                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">End Date</span>
+                        </div>
+                        <p id="renterDetailEndDate" class="text-sm font-semibold text-neutral-900 dark:text-white"></p>
+                    </div>
+                </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6">
+                <button id="closeRenterDetailsFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
 @endsection
