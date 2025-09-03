@@ -11,9 +11,11 @@ class Renter extends Model
 
     protected $fillable = [
         'tenant_id',  // Milik tenant mana (pemilik properti)
+        'property_id',
         'name',
         'phone', 
         'email',
+        'address',
         'unit_id',      // Dari struktur database
         'start_date',   // Dari struktur database
         'end_date'      // Dari struktur database
@@ -102,4 +104,11 @@ class Renter extends Model
                    ->where('status', 'paid')
                    ->orderBy('created_at', 'desc');
     }
+
+    public function property()
+{
+    return $this->belongsTo(Property::class);
+}
+
+
 }

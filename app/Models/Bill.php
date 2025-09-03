@@ -12,6 +12,7 @@ class Bill extends Model
     protected $fillable = [
         'tenant_id',
         'renter_id', 
+        'order_id',
         'property_id',
         'amount',
         'due_date',
@@ -107,5 +108,26 @@ class Bill extends Model
     public function successfulTransaction()
     {
         return $this->hasOne(Transaction::class)->where('status', Transaction::STATUS_SUCCESS);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($bill) {
+            if (empty($bill->order_id)) {
+                $bill->order_id = 'BILL-' . uniqid();
+            }
+        });
+    }
+
+    public static function getTransactionsByTenant($tenantId)
+    {
+        return Transaction::with(['bill.renter', 'bill.property'])
+            ->whereHas('bill', function ($q) use ($tenantId) {
+                $q->where('tenant_id', auth()->user()->tenant_id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 }

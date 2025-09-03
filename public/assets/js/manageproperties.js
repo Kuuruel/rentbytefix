@@ -19,7 +19,8 @@
         DATA: '/landlord/properties/data',
         BULK_DELETE: '/landlord/properties/bulk-delete',
         RENTALS: '/landlord/rentals',
-        PAYMENT_STATUS: (billId) => `/landlord/rentals/${billId}/payment-status`
+        PAYMENT_STATUS: (billId) => `/landlord/rentals/${billId}/payment-status`,
+        RENTER_DETAILS: (propertyId) => `/landlord/properties/${propertyId}/renter-details`,
     };
 
     const DOM = {
@@ -104,6 +105,17 @@
         copyPaymentLink: document.getElementById('copyPaymentLink'),
         shareViaWhatsapp: document.getElementById('shareViaWhatsapp'),
         generateAnotherLink: document.getElementById('generateAnotherLink'),
+
+        renterDetailsModal: document.getElementById('renterDetailsModal'),
+        closeRenterDetailsBtn: document.getElementById('closeRenterDetailsBtn'),
+        closeRenterDetailsFooterBtn: document.getElementById('closeRenterDetailsFooterBtn'),
+        renterDetailPropertyName: document.getElementById('renterDetailPropertyName'),
+        renterDetailName: document.getElementById('renterDetailName'),
+        renterDetailPhone: document.getElementById('renterDetailPhone'),
+        renterDetailEmail: document.getElementById('renterDetailEmail'),
+        renterDetailAddress: document.getElementById('renterDetailAddress'),
+        renterDetailStartDate: document.getElementById('renterDetailStartDate'),
+        renterDetailEndDate: document.getElementById('renterDetailEndDate'),
     };
 
     async function apiRequest(url, options = {}) {
@@ -848,104 +860,134 @@
         }
     }
 
-    function renderTable(properties) {
-        if (!DOM.tableBody) return;
+function renderTable(properties) {
+    if (!DOM.tableBody) return;
 
-        DOM.tableBody.innerHTML = '';
+    DOM.tableBody.innerHTML = '';
 
-        if (properties.length === 0) {
-            DOM.tableBody.innerHTML = `
-                <tr>
-                    <td colspan="8" class="text-center py-4 text-neutral-500">
-                        <div class="flex flex-col items-center gap-4">
-                            <div class="text-center">
-                                <p class="text-lg font-medium">No properties found</p>
-                                <p class="text-sm text-neutral-400">Try changing your search or filters</p>
-                            </div>
-                        </div>
-                    </td>
-                </tr>`;
-            return;
-        }
-
-        properties.forEach(property => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>
-                    <div class="flex items-center gap-0">
-                        <div class="form-check style-check flex items-center">
-                            <input class="form-check-input rounded border input-form-dark property-checkbox" type="checkbox" value="${property.id}">
+    if (properties.length === 0) {
+        DOM.tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4 text-neutral-500">
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="text-center">
+                            <p class="text-lg font-medium">No properties found</p>
+                            <p class="text-sm text-neutral-400">Try changing your search or filters</p>
                         </div>
                     </div>
                 </td>
-                <td>
-                    <div class="flex items-center gap-3">
-                        <div>
-                            <h6 class="text-base mb-0 fw-medium text-primary-bold">${escapeHtml(property.name)}</h6>
-                        </div> 
-                    </div>
-                </td>
-                <td>
-                    <span class="px-5 py-1 rounded-full text-sm font-medium">
-                        ${escapeHtml(property.type)}
-                    </span>
-                </td>
-               <td>
-                    <span class="text-sm text-secondary-light truncate block" style="max-width: 200px;">
-                        ${escapeHtml(property.address)}
-                    </span>
-                </td>
-                <td>
-                    <span class="text-sm font-medium text-neutral-900 dark:text-white">
-                        Rp ${formatNumber(property.price)}
-                    </span>
-                </td>
-                <td>
-                    <span class="bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400 px-3 py-1 rounded-full text-xs font-medium">
-                        ${escapeHtml(property.rent_type)}
-                    </span>
-                </td>
-                <td class="text-center">
-                    <span class="${getStatusClass(property.status)} px-5 py-1 rounded-full text-sm font-medium">
-                        ${escapeHtml(property.status)}
-                    </span>
-                </td>
-               <td class="text-center">
-    <div class="flex items-center justify-center gap-2">
-        <button onclick="viewProperty(${property.id})" class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center">
-           <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
-        </button>
-        
-                ${property.status === 'Available' ? `
-                    <button onclick="editProperty(${property.id})" class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center">
-                        <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
-                    </button>
-                    <button onclick="confirmDelete(${property.id})" class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center">
-                        <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
-                    </button>
-                ` : `
-                    <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot edit ${property.status.toLowerCase()} property">
-                        <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
-                    </button>
-                    <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot delete ${property.status.toLowerCase()} property">
-                        <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
-                    </button>
-                `}
-            </div>
-        </td>
-            `;
-            DOM.tableBody.appendChild(row);
-        });
+            </tr>`;
+        return;
     }
+
+    properties.forEach(property => {
+        const row = document.createElement('tr');
+        
+        // Determine action buttons based on status
+        let actionButtons = '';
+        
+        // Button view (selalu ada)
+        const viewButton = `
+            <button onclick="viewProperty(${property.id})" class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center">
+               <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
+            </button>
+        `;
+        
+        // Button rent/detail renter berdasarkan status
+        let rentButton = '';
+        if (property.status === 'Rented') {
+            rentButton = `
+                <button onclick="showRenterDetails(${property.id})" class="w-8 h-8 bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400 rounded-full inline-flex items-center justify-center" title="View Renter Details">
+                    <iconify-icon icon="ph:user-circle" class="text-sm"></iconify-icon>
+                </button>
+            `;
+        }
+        // Hapus rent button untuk status Available dan Processing
+        
+        // Button edit dan delete (hanya untuk Available)
+        let editDeleteButtons = '';
+        if (property.status === 'Available') {
+            editDeleteButtons = `
+                <button onclick="editProperty(${property.id})" class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center">
+                    <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
+                </button>
+                <button onclick="confirmDelete(${property.id})" class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center">
+                    <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
+                </button>
+            `;
+        } else {
+            // Untuk status selain Available, disable edit dan delete
+            editDeleteButtons = `
+                <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot edit ${property.status.toLowerCase()} property">
+                    <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
+                </button>
+                <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot delete ${property.status.toLowerCase()} property">
+                    <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
+                </button>
+            `;
+        }
+        
+        actionButtons = viewButton + rentButton + editDeleteButtons;
+
+        row.innerHTML = `
+            <td>
+                <div class="flex items-center gap-0">
+                    <div class="form-check style-check flex items-center">
+                        <input class="form-check-input rounded border input-form-dark property-checkbox" type="checkbox" value="${property.id}">
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="flex items-center justify-center gap-3">
+                    <div>
+                        <h6 class="text-base mb-0 fw-medium text-primary-bold">${escapeHtml(property.name)}</h6>
+                    </div> 
+                </div>
+            </td>
+            <td>
+                <span class="px-5 py-1 rounded-full text-sm font-medium">
+                    ${escapeHtml(property.type)}
+                </span>
+            </td>
+           <td>
+                <span class="text-sm text-secondary-light truncate block" style="max-width: 200px;">
+                    ${escapeHtml(property.address)}
+                </span>
+            </td>
+            <td>
+                <span class="text-sm font-medium text-neutral-900 dark:text-white">
+                    Rp ${formatNumber(property.price)}
+                </span>
+            </td>
+            <td>
+                <span class="bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400 px-3 py-1 rounded-full text-xs font-medium">
+                    ${escapeHtml(property.rent_type)}
+                </span>
+            </td>
+            <td class="text-center">
+                <span class="${getStatusClass(property.status)} px-5 py-1 rounded-full text-sm font-medium">
+                    ${escapeHtml(property.status)}
+                </span>
+            </td>
+           <td class="text-center">
+                <div class="flex items-center justify-center gap-2">
+                    ${actionButtons}
+                </div>
+            </td>
+        `;
+        DOM.tableBody.appendChild(row);
+    });
+}
+
 
     function getStatusClass(status) {
     switch(status) {
         case 'Available':
             return 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400';
         case 'Processing':
-            return 'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400';
-        case 'Rented':
             return 'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400';
+        case 'Rented':
+            return 'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400';
         default:
             return 'bg-neutral-100 dark:bg-neutral-600/25 text-neutral-600 dark:text-neutral-400';
     }
@@ -1264,34 +1306,170 @@
         }
     }
 
-    window.viewProperty = function(id) {
-        const property = properties.find(p => p.id === id);
-        if (!property) return;
+   window.viewProperty = function(id) {
+    const property = properties.find(p => p.id === id);
+    if (!property) return;
 
-        const status = property.status || 'Available';
+    const status = property.status || 'Available';
 
-        if (DOM.detailName) DOM.detailName.textContent = property.name || '-';
-        
-        if (DOM.detailStatus) {
-            DOM.detailStatus.innerHTML = `
-                <span class="${status === 'Available' ? 
-                    'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400' : 
-                    'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400'
-                } px-5 py-1 rounded-full text-xs font-semibold">
-                    ${status.toUpperCase()}
-                </span>
-            `;
+    if (DOM.detailName) DOM.detailName.textContent = property.name || '-';
+    
+    if (DOM.detailStatus) {
+        DOM.detailStatus.innerHTML = `
+            <span class="${status === 'Available' ? 
+                'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400' : 
+                status === 'Processing' ? 
+                'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400' : 
+                'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400'
+            } px-5 py-1 rounded-full text-xs font-semibold">
+                ${status.toUpperCase()}
+            </span>
+        `;
+    }
+
+    if (DOM.detailId) DOM.detailId.textContent = `#${property.id}`;
+    if (DOM.detailType) DOM.detailType.textContent = property.type || '-';
+    if (DOM.detailAddress) DOM.detailAddress.textContent = property.address || '-';
+    if (DOM.detailPrice) DOM.detailPrice.textContent = `Rp ${formatNumber(property.price)}`;
+    if (DOM.detailRentType) DOM.detailRentType.textContent = property.rent_type || '-';
+    if (DOM.detailCreatedAt) DOM.detailCreatedAt.textContent = formatDate(property.created_at);
+
+    // Update button based on status
+    const rentNowBtn = document.getElementById('rentNowBtn');
+    const renterDetailBtn = document.getElementById('renterDetailBtn');
+    
+    if (status === 'Rented') {
+        if (rentNowBtn) rentNowBtn.classList.add('hidden');
+        if (renterDetailBtn) {
+            renterDetailBtn.classList.remove('hidden');
+            renterDetailBtn.onclick = () => {
+                closeDetailsModal();
+                setTimeout(() => showRenterDetails(id), 100);
+            };
+        }
+    } else if (status === 'Processing') {
+        if (rentNowBtn) rentNowBtn.classList.add('hidden');
+        if (renterDetailBtn) renterDetailBtn.classList.add('hidden');
+    } else {
+        if (rentNowBtn) rentNowBtn.classList.remove('hidden');
+        if (renterDetailBtn) renterDetailBtn.classList.add('hidden');
+    }
+
+    showDetailsModal(true);
+};
+
+
+    function showRenterDetailsModal(visible) {
+    if (!DOM.renterDetailsModal) return;
+    
+    if (visible) {
+        DOM.renterDetailsModal.classList.remove('hidden');
+        DOM.renterDetailsModal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    } else {
+        DOM.renterDetailsModal.classList.add('hidden');
+        DOM.renterDetailsModal.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+}
+
+function closeRenterDetailsModal() {
+    showRenterDetailsModal(false);
+}
+
+window.showRenterDetails = async function(propertyId) {
+    try {
+        const property = properties.find(p => p.id === propertyId);
+        if (!property) {
+            showNotification('Property not found', 'error');
+            return;
         }
 
-        if (DOM.detailId) DOM.detailId.textContent = `#${property.id}`;
-        if (DOM.detailType) DOM.detailType.textContent = property.type || '-';
-        if (DOM.detailAddress) DOM.detailAddress.textContent = property.address || '-';
-        if (DOM.detailPrice) DOM.detailPrice.textContent = `Rp ${formatNumber(property.price)}`;
-        if (DOM.detailRentType) DOM.detailRentType.textContent = property.rent_type || '-';
-        if (DOM.detailCreatedAt) DOM.detailCreatedAt.textContent = formatDate(property.created_at);
+        // Set property name
+        if (DOM.renterDetailPropertyName) {
+            DOM.renterDetailPropertyName.textContent = property.name;
+        }
 
-        showDetailsModal(true);
-    };
+        // Show loading in modal
+        if (DOM.renterDetailName) DOM.renterDetailName.textContent = 'Loading...';
+        if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = 'Loading...';
+        if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = 'Loading...';
+        if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = 'Loading...';
+        if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = 'Loading...';
+        if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = 'Loading...';
+
+        showRenterDetailsModal(true);
+
+        // Debug: Log the API endpoint being called
+        console.log('Fetching renter details from:', API_ENDPOINTS.RENTER_DETAILS(propertyId));
+
+        // Fetch renter details from server
+        const { data } = await apiRequest(API_ENDPOINTS.RENTER_DETAILS(propertyId));
+        
+        // Debug: Log the response data
+        console.log('Renter details response:', data);
+        
+        if (data.success && data.data) {
+            const renterData = data.data;
+            
+            // Debug: Log the renter data structure
+            console.log('Renter data structure:', renterData);
+            
+            // Populate modal with renter data - with better error handling
+            if (DOM.renterDetailName) {
+                DOM.renterDetailName.textContent = renterData.renter_name || renterData.name || 'No name provided';
+            }
+            if (DOM.renterDetailPhone) {
+                DOM.renterDetailPhone.textContent = renterData.renter_phone || renterData.phone || 'No phone provided';
+            }
+            if (DOM.renterDetailEmail) {
+                DOM.renterDetailEmail.textContent = renterData.renter_email || renterData.email || 'No email provided';
+            }
+            if (DOM.renterDetailAddress) {
+                DOM.renterDetailAddress.textContent = renterData.renter_address || renterData.address || 'No address provided';
+            }
+            if (DOM.renterDetailStartDate) {
+                const startDate = renterData.start_date || renterData.rental_start || renterData.created_at;
+                DOM.renterDetailStartDate.textContent = startDate ? formatDate(startDate) : 'No start date';
+            }
+            if (DOM.renterDetailEndDate) {
+                const endDate = renterData.end_date || renterData.rental_end;
+                DOM.renterDetailEndDate.textContent = endDate ? formatDate(endDate) : 'No end date';
+            }
+        } else {
+            // Handle case where API returns success but no data
+            console.error('API returned success but no renter data:', data);
+            
+            // Check if the data structure is different
+            if (data.renter) {
+                // Alternative data structure
+                const renterData = data.renter;
+                console.log('Using alternative data structure:', renterData);
+                
+                if (DOM.renterDetailName) DOM.renterDetailName.textContent = renterData.name || 'No name provided';
+                if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = renterData.phone || 'No phone provided';
+                if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = renterData.email || 'No email provided';
+                if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = renterData.address || 'No address provided';
+                if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = renterData.start_date ? formatDate(renterData.start_date) : 'No start date';
+                if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = renterData.end_date ? formatDate(renterData.end_date) : 'No end date';
+            } else {
+                throw new Error(data.message || 'No renter data found for this property');
+            }
+        }
+    } catch (error) {
+        console.error('Error loading renter details:', error);
+        showNotification('Error loading renter details: ' + error.message, 'error');
+        
+        // Show error in modal
+        const errorMsg = 'Error loading data';
+        if (DOM.renterDetailName) DOM.renterDetailName.textContent = errorMsg;
+        if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = errorMsg;
+        if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = errorMsg;
+        if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = errorMsg;
+        if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = errorMsg;
+        if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = errorMsg;
+    }
+};
 
     window.editProperty = async function(id) {
         try {
@@ -1394,6 +1572,12 @@
             if (e.target === DOM.paymentLinkModal) closePaymentLinkModal();
         });
 
+        DOM.closeRenterDetailsBtn?.addEventListener('click', closeRenterDetailsModal);
+        DOM.closeRenterDetailsFooterBtn?.addEventListener('click', closeRenterDetailsModal);
+        DOM.renterDetailsModal?.addEventListener('click', (e) => {
+            if (e.target === DOM.renterDetailsModal) closeRenterDetailsModal();
+        });
+
         // Search and filter events
         DOM.searchInput?.addEventListener('input', debounce(() => {
             state.query = DOM.searchInput.value;
@@ -1423,6 +1607,7 @@
                 closeBulkDeleteModal();
                 closePaymentLinkModal();
                 closePaymentModal();
+                closeRenterDetailsModal();
             }
         });
 

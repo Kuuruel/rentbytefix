@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use App\Models\Renter;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
@@ -159,4 +160,41 @@ class PropertyController extends Controller
             ], 500);
         }
     }
+
+       public function getRenterDetails($propertyId)
+{
+    try {
+        // Cari renter yang aktif untuk property ini
+        $rental = \App\Models\Renter::where('property_id', $propertyId)
+                                    ->latest()
+                                    ->first();
+        
+        if (!$rental) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'No renter found for this property'
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'renter_name' => $rental->name,
+                'renter_phone' => $rental->phone,
+                'renter_email' => $rental->email,
+                'renter_address' => $rental->address,
+                'start_date' => $rental->start_date,
+                'end_date' => $rental->end_date,
+                'property_id' => $rental->property_id,
+                'created_at' => $rental->created_at,
+            ]
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error retrieving renter details: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }
