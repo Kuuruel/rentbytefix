@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class PropertyController extends Controller
 {
@@ -15,11 +16,43 @@ class PropertyController extends Controller
         return view('landlord.index3');
     }
 
+    /**
+     * Get current tenant ID based on authentication
+     */
+    private function getCurrentTenantId()
+    {
+        if (Auth::guard('tenant')->check()) {
+            return Auth::guard('tenant')->id();
+        }
+
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
+            if ($user->tenant_id) {
+                return $user->tenant_id;
+            }
+            if ($user->role === 'admin') {
+                return null;
+            }
+            if ($user->role === 'tenant') {
+                return $user->id;
+            }
+        }
+        
+        return null;
+    }
+
     public function data(Request $request): JsonResponse
     {
         try {
             Log::info('Properties data method called', ['request' => $request->all()]);
+            
+            $tenantId = $this->getCurrentTenantId();
+
             $query = Property::query();
+
+            if ($tenantId !== null) {
+                $query->where('tenant_id', $tenantId);
+            }
 
             if ($request->filled('search')) {
                 $searchTerm = $request->search;
@@ -41,6 +74,7 @@ class PropertyController extends Controller
                 'success' => true,
                 'data' => $properties
             ]);
+            
         } catch (\Exception $e) {
             Log::error('Properties data error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
@@ -66,7 +100,16 @@ class PropertyController extends Controller
                 'status' => ['required', Rule::in(['Available', 'Rented'])]
             ]);
 
-            $validated['tenant_id'] = 2;
+            $tenantId = $this->getCurrentTenantId();
+            
+            if ($tenantId === null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to determine tenant. Please ensure you are properly logged in.'
+                ], 403);
+            }
+
+            $validated['tenant_id'] = $tenantId;
 
             $property = Property::create($validated);
 
@@ -83,6 +126,7 @@ class PropertyController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
+            Log::error('Property store error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create property: ' . $e->getMessage()
@@ -93,6 +137,15 @@ class PropertyController extends Controller
     public function show(Property $property): JsonResponse
     {
         try {
+            $tenantId = $this->getCurrentTenantId();
+            
+            if ($tenantId !== null && $property->tenant_id !== $tenantId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized access to this property.'
+                ], 403);
+            }
+            
             return response()->json([
                 'success' => true,
                 'data' => $property
@@ -108,6 +161,15 @@ class PropertyController extends Controller
     public function update(Request $request, Property $property): JsonResponse
     {
         try {
+            $tenantId = $this->getCurrentTenantId();
+            
+            if ($tenantId !== null && $property->tenant_id !== $tenantId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to update this property.'
+                ], 403);
+            }
+            
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'type' => 'required|string|max:255',
@@ -142,6 +204,16 @@ class PropertyController extends Controller
     public function destroy(Property $property): JsonResponse
     {
         try {
+
+            $tenantId = $this->getCurrentTenantId();
+            
+            if ($tenantId !== null && $property->tenant_id !== $tenantId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to delete this property.'
+                ], 403);
+            }
+            
             $propertyName = $property->name;
             $property->delete();
 
