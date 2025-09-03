@@ -8,7 +8,6 @@ use App\Models\Property;
 use App\Models\Renter;
 use App\Models\Tenants;
 use App\Models\Bill;
-use App\Models\Transaction;
 use App\Services\MidtransService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;

@@ -243,12 +243,12 @@ Route::middleware(['auth:web,tenant'])->group(function () {
     Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
     Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
-Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
-Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+    Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
+    Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
+    Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+    Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
- Route::prefix('landlord')->group(function () {
+    Route::prefix('landlord')->group(function () {
         Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
             ->name('landlord.transactions.data');
             
@@ -258,3 +258,4 @@ Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class
         Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
             ->name('landlord.rentals.payment-status');
     });
+});
