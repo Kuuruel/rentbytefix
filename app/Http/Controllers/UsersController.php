@@ -127,7 +127,7 @@ public function update(Request $request, $id)
         return view('users.users-list', compact('users'));
     }
 
-    public function viewProfile($id = null)
+    public function viewProfileAdmin($id = null)
     {
         if ($id === null) {
             $user = Auth::user();
@@ -141,7 +141,7 @@ public function update(Request $request, $id)
             $user = User::findOrFail($id);
         }
         
-        return view('users.viewProfile', compact('user'));
+        return view('users.viewProfileAdmin', compact('user'));
     }
 
     private function handleImageUpload($file)

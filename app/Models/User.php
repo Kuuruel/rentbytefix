@@ -16,6 +16,7 @@ class User extends Authenticatable
         'password',
         'role',
         'img',
+        'tenant_id',
     ];
 
     protected $hidden = [
@@ -29,5 +30,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenants::class, 'tenant_id');
+    }
+
+    public function isTenant()
+    {
+        return $this->role === 'tenant';
     }
 }

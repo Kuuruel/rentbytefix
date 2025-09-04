@@ -1,4 +1,3 @@
-<!-- meta tags and other links -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,15 +20,34 @@
                     <h4 class="mb-1">Sign In to your Account</h4>
                     <p class="mb-8 text-secondary-light text-lg">Welcome back! Please enter your detail</p>
                 </div>
+
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{route('signin')}}" method="POST">
-                        @csrf
+                    @csrf
+                    
                     <div class="icon-field mb-4 relative">
                         <span class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
                             <iconify-icon icon="mage:email"></iconify-icon>
                         </span>
-                        <input type="email" name="email" class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl" placeholder="Email" required>
+                        <input type="email" name="email" value="{{ old('email') }}" class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl" placeholder="Email" required>
                     </div>
-                    <div class="relative mb-5">
+                        @if ($errors->any())
+                            <div style="color: red; margin-bottom: 10px;">
+                                @foreach ($errors->all() as $error)
+                                    <p>{{ $error }}</p>
+                                @endforeach
+                            </div>
+                        @endif
+                    <div class="relative mb-5 mt-4">
                         <div class="icon-field">
                             <span class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
                                 <iconify-icon icon="solar:lock-password-outline"></iconify-icon>
@@ -38,13 +56,14 @@
                         </div>
                         <span class="toggle-password ri-eye-line cursor-pointer absolute end-0 top-1/2 -translate-y-1/2 me-4 text-secondary-light" data-toggle="#your-password"></span>
                     </div>
+                    
                     <div class="mt-7">
                         <div class="flex justify-between gap-2">
                             <div class="flex items-center">
-                                <input class="form-check-input border border-neutral-300" type="checkbox" value="" id="remeber">
-                                <label class="ps-2" for="remeber">Remember me </label>
+                                <input class="form-check-input border border-neutral-300" type="checkbox" name="remember" value="1" id="remember">
+                                <label class="ps-2" for="remember">Remember me </label>
                             </div>
-                            <a href="javascript:void(0)" class="text-primary-600 font-medium hover:underline">Forgot Password?</a>
+                            <a href="{{ route('forgotPassword') }}" class="text-primary-600 font-medium hover:underline">Forgot Password?</a>
                         </div>
                     </div>
 
@@ -56,7 +75,7 @@
                     <div class="mt-8 flex items-center gap-3">
                         <button type="button" class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
                             <iconify-icon icon="ic:baseline-facebook" class="text-primary-600 text-xl line-height-1"></iconify-icon>
-                            Google
+                            Facebook
                         </button>
                         <button type="button" class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
                             <iconify-icon icon="logos:google-icon" class="text-primary-600 text-xl line-height-1"></iconify-icon>
@@ -73,25 +92,22 @@
     </section>
 
 <script>
-  // ================== Password Show Hide Js Start ==========
-  function initializePasswordToggle(toggleSelector) {
-    const toggles = document.querySelectorAll(toggleSelector);
+    function initializePasswordToggle(toggleSelector) {
+        const toggles = document.querySelectorAll(toggleSelector);
 
     toggles.forEach(function (toggle) {
-      toggle.addEventListener("click", function () {
-        this.classList.toggle("ri-eye-off-line");
-        const input = document.querySelector(this.getAttribute("data-toggle"));
+        toggle.addEventListener("click", function () {
+            this.classList.toggle("ri-eye-off-line");
+            const input = document.querySelector(this.getAttribute("data-toggle"));
 
         if (input) {
-          input.type = input.type === "password" ? "text" : "password";
+            input.type = input.type === "password" ? "text" : "password";
         }
-      });
     });
-  }
+});
+}
 
-  // Call the function
   initializePasswordToggle(".toggle-password");
-  // ========================= Password Show Hide Js End ===========================
 </script>
                     
     <x-script />

@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/SuperAdminController.php
 
 namespace App\Http\Controllers;
 

@@ -10,7 +10,6 @@
 @section('content')
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 3xl:grid-cols-5 gap-6">
 
-        {{-- CARD-TOTAL-TENANTS --}}
         <div
             class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-cyan-600/10 to-bg-white">
             <div class="card-body p-5">
@@ -48,7 +47,7 @@
                     Last 30 days
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
         <div
             class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white">
             <div class="card-body p-5">
@@ -69,7 +68,7 @@
                     Last 30
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
         <div
             class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-success-600/10 to-bg-white">
             <div class="card-body p-5">
@@ -88,13 +87,12 @@
                     30 days income
                 </p>
             </div>
-        </div><!-- card end -->
-
+        </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
 
-        <div class="xl:col-span-8 2xl:col-span-10"> <!-- Lebar lebih besar -->
+        <div class="xl:col-span-8 2xl:col-span-10">
             <div class="card h-full p-0 border-0 overflow-hidden">
                 <div
                     class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
@@ -106,24 +104,14 @@
             </div>
         </div>
 
-        <div class="xl:col-span-4 2xl:col-span-2 max-w-md"> <!-- ~448px -->
+        <div class="xl:col-span-4 2xl:col-span-2 max-w-md">
 
 
             <div class="card h-full rounded-lg border-0 overflow-hidden">
                 <div class="card-body   ">
                     <div class="flex items-center flex-wrap gap-2 justify-between">
                         <h6 class="mb-4 font-bold text-lg">Owner Distribution</h6>
-                        {{-- <div class="">
-                            <select
-                                class="form-select form-select-sm w-auto bg-white dark:bg-neutral-700 border text-secondary-light">
-                                <option>Today</option>
-                                <option>Weekly</option>
-                                <option>Monthly</option>
-                                <option>Yearly</option>
-                            </select>
-                        </div> --}}
                     </div>
-
 
                     <div id="userOverviewDonutChart" class="apexcharts-tooltip-z-none"></div>
 
@@ -267,7 +255,7 @@
                             </table>
                         </div>
                     </div>
-                </div><!-- card end -->
+                </div>
             </div>
         </div>
         <div class="xl:col-span-4 2xl:col-span-3 ">
@@ -361,8 +349,5 @@
                 </div>
             </div>
         </div>
-
-
-    </div>
     </div>
 @endsection

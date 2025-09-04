@@ -13,12 +13,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('note')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->string('avatar')->nullable();
             $table->string('country', 100);
             $table->unsignedBigInteger('user_id');
+            $table->rememberToken();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -27,6 +29,7 @@ return new class extends Migration
             $table->index(['created_at']);
             $table->index(['name']);
             $table->index(['country']);
+            $table->index(['email']);
         });
     }
 

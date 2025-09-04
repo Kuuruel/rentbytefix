@@ -1,4 +1,3 @@
-<!-- meta tags and other links -->
 <!DOCTYPE html>
 <html lang="en">
 

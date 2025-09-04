@@ -1,5 +1,3 @@
-//tenantList.js
-
 (function () {
     'use strict';
 
@@ -86,12 +84,18 @@
 
             const headers = { ...defaultHeaders, ...options.headers };
 
+            console.log('Making API request:', { url, method: options.method || 'GET', headers });
+
             const response = await fetch(url, {
                 ...options,
                 headers
             });
 
+            console.log('Response status:', response.status, response.statusText);
+
             const contentType = response.headers.get('content-type');
+            console.log('Response content-type:', contentType);
+
             if (contentType && contentType.includes('text/html')) {
                 console.error('Received HTML response instead of JSON:', response.url);
  
@@ -101,14 +105,31 @@
                 if (htmlText.includes('<!DOCTYPE') || htmlText.includes('<html')) {
                     throw new Error('Server returned an error page instead of JSON. Please check the server logs.');
                 }
-                
+
                 throw new Error('Unexpected response format. Expected JSON but received HTML.');
             }
 
-            const data = await response.json();
+            let data;
+            try {
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                data = responseText ? JSON.parse(responseText) : {};
+            } catch (parseError) {
+                console.error('Failed to parse JSON response:', parseError);
+                throw new Error(`Invalid JSON response from server: ${parseError.message}`);
+            }
 
             if (!response.ok) {
-                throw new Error(data.message || `HTTP Error: ${response.status} ${response.statusText}`);
+                console.error('API Error Response:', data);
+                const errorMessage = data.message || `HTTP Error: ${response.status} ${response.statusText}`;
+
+                if (data.errors) {
+                    const error = new Error(errorMessage);
+                    error.validationErrors = data.errors;
+                    throw error;
+                }
+                
+                throw new Error(errorMessage);
             }
 
             return { response, data };
@@ -117,10 +138,11 @@
                 url,
                 method: options.method || 'GET',
                 error: error.message,
+                validationErrors: error.validationErrors,
                 stack: error.stack
             });
 
-            throw new Error(`API Request Failed: ${error.message}`);
+            throw error;
         }
     }
 
@@ -138,7 +160,7 @@
 
     function showNotification(message, type = 'success') {
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
-        
+
         const notification = document.createElement('div');
         notification.className = 'notification-toast';
         notification.style.cssText = `
@@ -153,7 +175,7 @@
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             pointer-events: auto;
         `;
-        
+
         const colors = {
             success: {
                 bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -171,9 +193,9 @@
                 icon: 'ph:warning-circle-fill'
             }
         };
-        
+
         const config = colors[type] || colors.success;
-        
+
         notification.innerHTML = `
             <div style="
                 background: ${config.bg};
@@ -247,7 +269,7 @@
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(notification);
         console.log('Notification added to DOM:', notification);
 
@@ -279,10 +301,10 @@
 
     function showErrors(errors) {
         if (!DOM.errorMessages) return;
-        
+
         const errorContainer = DOM.errorMessages;
         let errorHtml = '<div class="text-sm"><strong>Please fix the following errors:</strong><ul class="list-disc list-inside mt-2">';
-        
+
         if (typeof errors === 'object') {
             Object.values(errors).forEach(errorArray => {
                 if (Array.isArray(errorArray)) {
@@ -296,7 +318,7 @@
         } else {
             errorHtml += `<li>${escapeHtml(errors)}</li>`;
         }
-        
+
         errorHtml += '</ul></div>';
         errorContainer.innerHTML = errorHtml;
         errorContainer.classList.remove('hidden');
@@ -358,7 +380,7 @@
         const endIndex = Math.min(start + state.perPage, filtered.length);
         const showingStart = filtered.length === 0 ? 0 : start + 1;
         const showingEnd = filtered.length === 0 ? 0 : endIndex;
-        
+
         if (DOM.paginationInfo) {
             DOM.paginationInfo.textContent = `Showing ${showingStart} to ${showingEnd} of ${filtered.length} entries`;
         }
@@ -368,7 +390,7 @@
             DOM.prevBtn.classList.toggle('opacity-50', state.page <= 1);
             DOM.prevBtn.classList.toggle('cursor-not-allowed', state.page <= 1);
         }
-        
+
         if (DOM.nextBtn) {
             DOM.nextBtn.disabled = state.page >= totalPages;
             DOM.nextBtn.classList.toggle('opacity-50', state.page >= totalPages);
@@ -397,7 +419,7 @@
                 const country = t.country || '-';
                 const ownerText = t.user ? `Added by: ${t.user.name}` : '';
                 const checkboxId = `tenant-cb-${t.id}`;
-                
+
                 return `
                 <tr class="transition-all duration-200">
                     <td class="px-4 py-4 align-middle">
@@ -424,41 +446,42 @@
                     <td class="px-4 py-4 align-middle">
                         <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
                     </td>
-                    <td class="px-4 py-4 text-center align-middle">
-                        <span class="${status === 'Active' ? 
-                            'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
-                            'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
-                        } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
-                            ${status}
-                        </span>
-                    </td>
-                    <td class="px-4 py-4 text-center align-middle">
+               <td class="px-4 py-4 text-center align-middle">
+    <span class="${status === 'Active'
+                        ? 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm'
+                        : 'bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-8 py-1.5 rounded-full font-medium text-sm'
+                    }">
+        ${status}
+    </span>
+</td>
+
+                    <td class="px-4 py-4 text-center align-middle"> 
                         <div class="flex items-center gap-1.5 justify-center">
                             <button type="button" title="View Details" 
-                                    class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                   class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center"
                                     onclick="viewTenant(${t.id})">
-                                <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
                             </button>
                             <button type="button" title="Edit Tenant" 
-                                    class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                    class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center"
                                     onclick="editTenant(${t.id})">
                                 <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
                             </button>
                             <button type="button" title="Delete Tenant" 
-                                    class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                     class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center"
                                     onclick="confirmDelete(${t.id})">
-                                <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
                             </button>
                         </div>
                     </td>
-                </tr>`; 
+                </tr>`;
             }).join('');
         }
     }
 
     function renderPageNumbers(totalPages) {
         if (!DOM.pageNumbers) return;
-        
+
         if (totalPages <= 1) {
             DOM.pageNumbers.innerHTML = '';
             return;
@@ -467,15 +490,15 @@
         const delta = 2;
         const rangeStart = Math.max(1, state.page - delta);
         const rangeEnd = Math.min(totalPages, state.page + delta);
-        
+
         let pageHTML = '';
 
         pageHTML += `
             <li class="page-item">
-                <button class="page-link ${state.page <= 1 ? 
-                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
-                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                <button class="page-link ${state.page <= 1 ?
+                'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' :
+                'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+            } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
                 ${state.page <= 1 ? 'disabled' : ''} title="First page">
                     &laquo;&laquo;
                 </button>
@@ -484,10 +507,10 @@
 
         pageHTML += `
             <li class="page-item">
-                <button class="page-link ${state.page <= 1 ? 
-                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
-                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                <button class="page-link ${state.page <= 1 ?
+                'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' :
+                'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+            } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
                 ${state.page <= 1 ? 'disabled' : ''} title="Previous page">
                     &laquo;
                 </button>
@@ -523,10 +546,10 @@
             const isActive = i === state.page;
             pageHTML += `
                 <li class="page-item">
-                    <button class="page-link ${isActive ? 
-                        'bg-primary-600 text-white border border-primary-600' : 
-                        'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                    } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                    <button class="page-link ${isActive ?
+                    'bg-primary-600 text-white border border-primary-600' :
+                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
                     ${isActive ? 'disabled' : ''} data-page="${i}">
                         ${i}
                     </button>
@@ -563,10 +586,10 @@
 
         pageHTML += `
             <li class="page-item">
-                <button class="page-link ${state.page >= totalPages ? 
-                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
-                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                <button class="page-link ${state.page >= totalPages ?
+                'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' :
+                'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+            } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
                 ${state.page >= totalPages ? 'disabled' : ''} title="Next page" id="nextPageBtn">
                     &raquo;
                 </button>
@@ -575,20 +598,19 @@
 
         pageHTML += `
             <li class="page-item">
-                <button class="page-link ${state.page >= totalPages ? 
-                    'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' : 
-                    'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
-                } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
+                <button class="page-link ${state.page >= totalPages ?
+                'bg-neutral-200 dark:bg-neutral-600 text-neutral-400 dark:text-neutral-500 cursor-not-allowed' :
+                'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600'
+            } font-medium rounded flex items-center justify-center h-8 w-8 text-sm transition-colors" 
                 ${state.page >= totalPages ? 'disabled' : ''} title="Last page" id="lastPageBtn">
                     &raquo;&raquo;
                 </button>
             </li>
         `;
-        
-        DOM.pageNumbers.innerHTML = pageHTML;
-        
-        addPaginationEventListeners(totalPages);
 
+        DOM.pageNumbers.innerHTML = pageHTML;
+
+        addPaginationEventListeners(totalPages);
     }
 
     function addPaginationEventListeners(totalPages) {
@@ -621,78 +643,6 @@
         }
     }
 
-    function initEventListeners() {
-        DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
-
-        DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
-        DOM.statusFilter?.addEventListener('change', updateFilters);
-        DOM.perPageSelect?.addEventListener('change', updatePerPage);
-
-        DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
-        DOM.formCancel?.addEventListener('click', closeModal);
-        DOM.closeModalBtn?.addEventListener('click', closeModal);
-        DOM.modalBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.modalBackdrop) closeModal();
-        });
-
-        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
-        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
-        DOM.detailsBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
-        });
-
-        DOM.deleteConfirm?.addEventListener('click', deleteTenant);
-        DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
-        DOM.deleteBackdrop?.addEventListener('click', (e) => {
-            if (e.target === DOM.deleteBackdrop) closeDeleteModal();
-        });
-
-        initSelectEventListeners();
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeDetailsModal();
-                closeDeleteModal();
-            }
-        });
-
-        document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
-        document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
-        document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
-        });
-
-        document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
-        document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
-        document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                hideBulkDeleteModal();
-                hideBulkStatusModal();
-            }
-        });
-    }
-
-    function goToPage(page) {
-        const filtered = getFiltered();
-        const totalPages = getTotalPages(filtered);
-        
-        if (isNaN(page) || page < 1 || page > totalPages) {
-            const input = document.querySelector('#pageNumbers input[type="number"]');
-            if (input) input.value = state.page;
-            return;
-        }
-        
-        if (page >= 1 && page <= totalPages) {
-            state.page = page;
-            render();
-        }
-    }
-
     function openCreateModal() {
         state.isEditing = false;
         if (DOM.modalTitle) DOM.modalTitle.textContent = 'Add New Tenant';
@@ -707,7 +657,7 @@
 
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Create Tenant';
-        
+
         hideErrors();
         showModal(true);
 
@@ -717,7 +667,7 @@
     function editTenant(id) {
         const tenant = tenants.find(t => t.id === id);
         if (!tenant) return;
-        
+
         state.isEditing = true;
         if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Tenant';
 
@@ -736,57 +686,57 @@
 
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Update Tenant';
-        
+
         hideErrors();
         showModal(true);
-        
+
         setTimeout(() => DOM.formName?.focus(), 100);
     }
 
     function viewTenant(id) {
         const tenant = tenants.find(t => t.id === id);
         if (!tenant) return;
-        
+
         const avatar = tenant.avatar || '/assets/images/user-list/user-list1.png';
         const status = tenant.status || 'Active';
         const country = tenant.country || '-';
-        const ownerInfo = tenant.user ? 
-            `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` : 
+        const ownerInfo = tenant.user ?
+            `<div class="font-medium">${tenant.user.name}</div><div class="text-xs opacity-75">${tenant.user.email}</div>` :
             '<div class="text-neutral-500 dark:text-neutral-400">No creator information available</div>';
 
         if (DOM.detailAvatar) DOM.detailAvatar.src = avatar;
         if (DOM.detailName) DOM.detailName.textContent = tenant.name || '-';
         if (DOM.detailEmail) DOM.detailEmail.textContent = tenant.email || '-';
-        
+
         if (DOM.detailStatus) {
             DOM.detailStatus.innerHTML = `
-                <span class="${status === 'Active' ? 
-                    'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
-                    'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
-                } px-2 py-1 rounded-full text-xs font-semibold">
-                    ${status}
-                </span>
+              <span class="${status === 'Active'
+                    ? 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm'
+                    : 'bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-8 py-1.5 rounded-full font-medium text-sm'
+                }">
+        ${status}
+    </span>
             `;
         }
-        
+
         if (DOM.detailJoinDate) DOM.detailJoinDate.textContent = formatDate(tenant.created_at);
         if (DOM.detailId) DOM.detailId.textContent = `#${tenant.id}`;
         if (DOM.detailCountry) DOM.detailCountry.textContent = country;
         if (DOM.detailCreator) DOM.detailCreator.innerHTML = ownerInfo;
-        
+
         if (tenant.note && tenant.note.trim()) {
             if (DOM.detailNotes) DOM.detailNotes.textContent = tenant.note;
             if (DOM.detailNotesSection) DOM.detailNotesSection.classList.remove('hidden');
         } else {
             if (DOM.detailNotesSection) DOM.detailNotesSection.classList.add('hidden');
         }
-        
+
         showDetailsModal(true);
     }
 
     function showModal(visible) {
         if (!DOM.modalBackdrop) return;
-        
+
         if (visible) {
             DOM.modalBackdrop.classList.remove('hidden');
             DOM.modalBackdrop.classList.add('flex');
@@ -801,7 +751,7 @@
 
     function showDetailsModal(visible) {
         if (!DOM.detailsBackdrop) return;
-        
+
         if (visible) {
             DOM.detailsBackdrop.classList.remove('hidden');
             DOM.detailsBackdrop.classList.add('flex');
@@ -825,7 +775,7 @@
     function confirmDelete(id) {
         const tenant = tenants.find(t => t.id === id);
         if (!tenant) return;
-        
+
         state.selectedToDelete = tenant;
         if (DOM.deleteName) DOM.deleteName.textContent = tenant.name;
         if (DOM.deleteBackdrop) {
@@ -844,11 +794,11 @@
 
     async function deleteTenant() {
         if (!state.selectedToDelete) return;
-        
+
         const deleteBtn = DOM.deleteConfirm;
         const deleteText = deleteBtn?.querySelector('.delete-text');
         const deleteLoading = deleteBtn?.querySelector('.delete-loading');
-        
+
         try {
             if (deleteText) deleteText.classList.add('hidden');
             if (deleteLoading) deleteLoading.classList.remove('hidden');
@@ -862,13 +812,13 @@
                 const tenantName = state.selectedToDelete.name;
                 const index = tenants.findIndex(t => t.id === state.selectedToDelete.id);
                 if (index > -1) tenants.splice(index, 1);
-                
+
                 closeDeleteModal();
 
                 const filtered = getFiltered();
                 const totalPages = getTotalPages(filtered);
                 if (state.page > totalPages) state.page = totalPages;
-                
+
                 render();
                 showNotification(`${tenantName} has been permanently removed from the system`, 'delete');
             } else {
@@ -909,6 +859,8 @@
                 formData.password = DOM.formPassword.value;
             }
 
+            console.log('Form data to be sent:', formData);
+
             const isEdit = state.isEditing;
             const method = isEdit ? 'PUT' : 'POST';
             const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
@@ -918,9 +870,11 @@
                 body: JSON.stringify(formData)
             });
 
+            console.log('Server response:', data);
+
             if (data.success) {
                 const tenantName = formData.name;
-                
+
                 if (isEdit) {
                     const index = tenants.findIndex(t => t.id === parseInt(DOM.formId?.value));
                     if (index > -1) {
@@ -945,15 +899,26 @@
         } catch (error) {
             console.error('Form submit error:', error);
 
+            if (error.validationErrors) {
+                showErrors(error.validationErrors);
+                return;
+            }
+
             try {
-                const errorData = JSON.parse(error.message);
-                if (errorData.errors) {
-                    showErrors(errorData.errors);
-                    return;
+                const errorMessage = error.message;
+                if (errorMessage.includes('{') && errorMessage.includes('errors')) {
+                    const startIndex = errorMessage.indexOf('{');
+                    const jsonPart = errorMessage.substring(startIndex);
+                    const errorData = JSON.parse(jsonPart);
+                    if (errorData.errors) {
+                        showErrors(errorData.errors);
+                        return;
+                    }
                 }
             } catch (parseError) {
+                console.log('Could not parse error as JSON, showing generic error');
             }
-            
+
             showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
         } finally {
             if (submitText) submitText.classList.remove('hidden');
@@ -999,7 +964,6 @@
         render();
     }
 
-
     function toggleSelectAll() {
         const checkboxes = document.querySelectorAll('.tbody-checkbox');
         const isChecked = DOM.selectAll?.checked || false;
@@ -1012,7 +976,7 @@
     function updateSelectAll() {
         const checkboxes = document.querySelectorAll('.tbody-checkbox');
         const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
-        
+
         if (DOM.selectAll) {
             if (checkboxes.length === 0) {
                 DOM.selectAll.checked = false;
@@ -1031,18 +995,18 @@
         updateSelectActions();
     }
 
-function updateSelectActions() {
-    const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
-    const selectedCount = checkedBoxes.length;
-    
-    let bulkActionsContainer = document.getElementById('bulkActionsContainer');
-    
-    if (selectedCount > 0) {
-        if (!bulkActionsContainer) {
-            bulkActionsContainer = document.createElement('div');
-            bulkActionsContainer.id = 'bulkActionsContainer';
-            bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
-            bulkActionsContainer.innerHTML = `
+    function updateSelectActions() {
+        const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
+        const selectedCount = checkedBoxes.length;
+
+        let bulkActionsContainer = document.getElementById('bulkActionsContainer');
+
+        if (selectedCount > 0) {
+            if (!bulkActionsContainer) {
+                bulkActionsContainer = document.createElement('div');
+                bulkActionsContainer.id = 'bulkActionsContainer';
+                bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
+                bulkActionsContainer.innerHTML = `
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
@@ -1066,29 +1030,29 @@ function updateSelectActions() {
                     </div>
                 </div>
             `;
-            
-            const tableContainer = document.querySelector('.table-responsive');
-            if (tableContainer) {
-                tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
+
+                const tableContainer = document.querySelector('.table-responsive');
+                if (tableContainer) {
+                    tableContainer.parentNode.insertBefore(bulkActionsContainer, tableContainer);
+                }
+            } else {
+                document.getElementById('selectedCount').textContent = selectedCount;
             }
+
+            const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+            const bulkStatusBtn = document.getElementById('bulkStatusBtn');
+            const clearSelectionBtn = document.getElementById('clearSelection');
+
+            bulkDeleteBtn.onclick = showBulkDeleteModal;
+            bulkStatusBtn.onclick = showBulkStatusModal;
+            clearSelectionBtn.onclick = clearAllSelections;
+
         } else {
-            document.getElementById('selectedCount').textContent = selectedCount;
-        }
-        
-        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
-        const bulkStatusBtn = document.getElementById('bulkStatusBtn');
-        const clearSelectionBtn = document.getElementById('clearSelection');
-        
-        bulkDeleteBtn.onclick = showBulkDeleteModal;
-        bulkStatusBtn.onclick = showBulkStatusModal;
-        clearSelectionBtn.onclick = clearAllSelections;
-        
-    } else {
-        if (bulkActionsContainer) {
-            bulkActionsContainer.remove();
+            if (bulkActionsContainer) {
+                bulkActionsContainer.remove();
+            }
         }
     }
-}
 
     function getSelectedTenantIds() {
         const checkedBoxes = document.querySelectorAll('.tbody-checkbox:checked');
@@ -1108,7 +1072,7 @@ function updateSelectActions() {
     function showBulkDeleteModal() {
         const selectedIds = getSelectedTenantIds();
         if (selectedIds.length === 0) return;
-        
+
         document.getElementById('bulkDeleteCount').textContent = selectedIds.length;
         document.getElementById('bulkDeleteModal').classList.remove('hidden');
         document.getElementById('bulkDeleteModal').classList.add('flex');
@@ -1124,19 +1088,19 @@ function updateSelectActions() {
     function showBulkStatusModal() {
         const selectedIds = getSelectedTenantIds();
         if (selectedIds.length === 0) return;
-        
+
         const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
         const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
         const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
-        
+
         document.getElementById('bulkStatusCount').textContent = selectedIds.length;
         document.getElementById('bulkNewStatus').textContent = newStatus;
-        
-        const description = newStatus === 'Active' 
+
+        const description = newStatus === 'Active'
             ? 'Selected tenants will be activated and gain access to the system.'
             : 'Selected tenants will be deactivated and lose access to the system.';
         document.getElementById('statusChangeDescription').textContent = description;
-        
+
         document.getElementById('bulkStatusModal').classList.remove('hidden');
         document.getElementById('bulkStatusModal').classList.add('flex');
         document.body.style.overflow = 'hidden';
@@ -1151,11 +1115,11 @@ function updateSelectActions() {
     async function bulkDeleteTenants() {
         const selectedIds = getSelectedTenantIds();
         if (selectedIds.length === 0) return;
-        
+
         const deleteBtn = document.getElementById('bulkDeleteConfirm');
         const deleteText = deleteBtn?.querySelector('.bulk-delete-text');
         const deleteLoading = deleteBtn?.querySelector('.bulk-delete-loading');
-        
+
         try {
             if (deleteText) deleteText.classList.add('hidden');
             if (deleteLoading) deleteLoading.classList.remove('hidden');
@@ -1170,31 +1134,31 @@ function updateSelectActions() {
                     return { id, success: false, error: error.message };
                 }
             });
-            
+
             const results = await Promise.all(deletePromises);
             const successful = results.filter(r => r.success);
             const failed = results.filter(r => !r.success);
-            
+
             successful.forEach(result => {
                 const index = tenants.findIndex(t => t.id === result.id);
                 if (index > -1) tenants.splice(index, 1);
             });
-            
+
             hideBulkDeleteModal();
             clearAllSelections();
-            
+
             const filtered = getFiltered();
             const totalPages = getTotalPages(filtered);
             if (state.page > totalPages) state.page = totalPages;
-            
+
             render();
-            
+
             if (failed.length === 0) {
                 showNotification(`Successfully deleted ${successful.length} tenant(s)`, 'delete');
             } else {
                 showNotification(`Deleted ${successful.length} tenant(s), ${failed.length} failed`, 'error');
             }
-            
+
         } catch (error) {
             console.error('Bulk delete error:', error);
             showNotification('Failed to delete selected tenants', 'error');
@@ -1208,15 +1172,15 @@ function updateSelectActions() {
     async function bulkToggleStatus() {
         const selectedIds = getSelectedTenantIds();
         if (selectedIds.length === 0) return;
-        
+
         const selectedTenants = tenants.filter(t => selectedIds.includes(t.id));
         const activeCount = selectedTenants.filter(t => t.status === 'Active').length;
         const newStatus = activeCount >= selectedIds.length / 2 ? 'Inactive' : 'Active';
-        
+
         const statusBtn = document.getElementById('bulkStatusConfirm');
         const statusText = statusBtn?.querySelector('.bulk-status-text');
         const statusLoading = statusBtn?.querySelector('.bulk-status-loading');
-        
+
         try {
             if (statusText) statusText.classList.add('hidden');
             if (statusLoading) statusLoading.classList.remove('hidden');
@@ -1245,28 +1209,28 @@ function updateSelectActions() {
                     return { id, success: false, error: error.message };
                 }
             });
-            
+
             const results = await Promise.all(updatePromises);
             const successful = results.filter(r => r.success);
             const failed = results.filter(r => !r.success);
-            
+
             successful.forEach(result => {
                 const tenantIndex = tenants.findIndex(t => t.id === result.id);
                 if (tenantIndex > -1) {
                     tenants[tenantIndex].status = newStatus;
                 }
             });
-            
+
             hideBulkStatusModal();
             clearAllSelections();
             render();
-            
+
             if (failed.length === 0) {
                 showNotification(`Successfully updated status for ${successful.length} tenant(s)`, 'success');
             } else {
                 showNotification(`Updated ${successful.length} tenant(s), ${failed.length} failed`, 'error');
             }
-            
+
         } catch (error) {
             console.error('Bulk status update error:', error);
             showNotification('Failed to update selected tenants', 'error');
@@ -1279,7 +1243,7 @@ function updateSelectActions() {
 
     function initSelectEventListeners() {
         DOM.selectAll?.addEventListener('change', toggleSelectAll);
-        
+
         document.addEventListener('change', (e) => {
             if (e.target.classList.contains('tbody-checkbox')) {
                 updateSelectAll();
@@ -1323,6 +1287,8 @@ function updateSelectActions() {
                 closeModal();
                 closeDetailsModal();
                 closeDeleteModal();
+                hideBulkDeleteModal();
+                hideBulkStatusModal();
             }
         });
 
@@ -1336,13 +1302,6 @@ function updateSelectActions() {
         document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
         document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                hideBulkDeleteModal();
-                hideBulkStatusModal();
-            }
         });
     }
 
@@ -1366,11 +1325,11 @@ function updateSelectActions() {
     function init() {
         console.log('Initializing Tenant List...');
         console.log('Initial tenants data:', tenants);
-        
+
         initEventListeners();
         hideLoading();
         render();
-        
+
         console.log('Tenant List initialized successfully');
     }
 

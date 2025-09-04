@@ -1,13 +1,19 @@
-<!-- meta tags and other links -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 
 <x-head />
 <meta name="csrf-token" content="{{ csrf_token() }}">
+
+
+
 <body class="dark:bg-neutral-800 bg-neutral-100 dark:text-white">
 
     <!-- ..::  header area start ::.. -->
+    @if(Auth::guard('web')->check())
     <x-sidebar-admin />
+@else
+    <x-sidebar-landlord />
+@endif
     <!-- ..::  header area end ::.. -->
 
     <main class="dashboard-main">

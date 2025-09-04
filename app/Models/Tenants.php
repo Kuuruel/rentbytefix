@@ -1,14 +1,13 @@
 <?php
-// app/Models/Tenants.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Tenants extends Model
+class Tenants extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -17,7 +16,8 @@ class Tenants extends Model
         'note',
         'status',
         'avatar',
-        'country', // Added missing country field
+        'country',
+        'country',
         'user_id'
     ];
 
@@ -27,6 +27,8 @@ class Tenants extends Model
     ];
 
     protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'email_verified_at' => 'datetime',
@@ -60,7 +62,61 @@ class Tenants extends Model
     {
         return $query->where(function ($q) use ($term) {
             $q->where('name', 'like', '%' . $term . '%')
-              ->orWhere('email', 'like', '%' . $term . '%');
+                ->orWhere('email', 'like', '%' . $term . '%');
         });
+    }
+
+    public function isActive()
+    {
+        return $this->status === 'Active';
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
+
+    public function getRememberToken()
+    {
+        return $this->{$this->getRememberTokenName()};
+    }
+
+    public function setRememberToken($value)
+    {
+        $this->{$this->getRememberTokenName()} = $value;
+    }
+
+    public function getRememberTokenName()
+    {
+        return 'remember_token';
+    }
+
+    public function scopeByCountry($query, $country)
+    {
+        return $query->where('country', $country);
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return $this->status === 'Active' ? 'Aktif' : 'Tidak Aktif';
+    }
+
+    public static function getCountByStatus()
+    {
+        return [
+            'active' => self::active()->count(),
+            'inactive' => self::inactive()->count(),
+            'total' => self::count()
+        ];
     }
 }
