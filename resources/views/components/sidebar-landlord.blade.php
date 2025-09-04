@@ -18,16 +18,16 @@
                 </a>
                 <ul class="sidebar-submenu">
                     <li>
-                        <a href="{{ route('landlord.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> AI</a>
+                        <a href="{{ route('landlord.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Statistic</a>
                     </li>
                     <li>
                         <a href="{{ route('landlord.index2') }}"><i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i> CRM</a>
                     </li>
                     <li>
-                        <a href="{{ route('landlord.index3') }}"><i class="ri-circle-fill circle-icon text-info-600 w-auto"></i> eCommerce</a>
+                        <a href="{{ route('landlord.index3') }}"><i class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Properties Management</a>
                     </li>
                     <li>
-                        <a href="{{ route('landlord.index4') }}"><i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
+                        <a href="{{ route('landlord.index4') }}"><i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Transaction History</a>
                     </li>
                     <li>
                         <a href="{{ route('landlord.index5') }}"><i class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Investment</a>

@@ -105,8 +105,7 @@ class MidtransService
 
         $params = [
             'transaction_details' => [
-                // FIX: PASTIKAN CONSISTENT! Gunakan bill->id, bukan bill->order_id
-                'order_id' => 'BILL-' . $bill->id,  // ← PERBAIKAN INI!
+                'order_id' => 'BILL-' . $bill->id,
                 'gross_amount' => $bill->amount,
             ],
             'customer_details' => [
@@ -133,7 +132,7 @@ class MidtransService
             $snapToken = \Midtrans\Snap::getSnapToken($params);
             Log::info('Snap token created successfully', [
                 'bill_id' => $bill->id,
-                'order_id' => 'BILL-' . $bill->id  // ← FIX LOG JUGA
+                'order_id' => 'BILL-' . $bill->id
             ]);
             return $snapToken;
         } catch (\Exception $e) {

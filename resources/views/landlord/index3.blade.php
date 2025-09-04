@@ -96,7 +96,6 @@
     </div>
 </div>
 
-<!-- Property Modal -->
 <div id="modalBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
@@ -177,13 +176,11 @@
     </div>
 </div>
 
-<!-- Rent Now Modal -->
 <div id="rentNow" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
          style="width: 36rem !important; max-width: 90vw !important;">
-        
-        <!-- Header -->
+
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-neutral-800 dark:to-neutral-700">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -194,10 +191,8 @@
             </div>
         </div>
 
-        <!-- Body -->
         <div class="px-6 py-6">
             <form id="rentForm">
-                <!-- Property Information -->
                 <div class="flex items-center gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-600">
                     <div>
                         <h4 id="rentPropertyName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
@@ -205,10 +200,8 @@
                     </div>
                 </div>
 
-                <!-- Hidden property ID -->
                 <input type="hidden" id="rentPropertyId" name="property_id">
 
-                <!-- Renter Information -->
                 <h6 class="text-2xl mb-4 mt-6 text-center">Renter Information</h6>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -240,7 +233,6 @@
                     </div>
                 </div>
 
-                <!-- Rental Period -->
                 <div class=" gap-4 mt-4">
                     <div>
                         <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium" for="startDate">Start Date *</label>
@@ -255,7 +247,6 @@
                     </div>
                 </div>
 
-                <!-- Footer -->
                 <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6 gap-3">
                     <button type="button" id="closeRentFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
                         Close
@@ -276,13 +267,11 @@
     </div>
 </div>
 
-<!-- Payment Link Modal -->
 <div id="paymentLinkModal" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
          style="width: 40rem !important; max-width: 90vw !important;">
-        
-        <!-- Header -->
+
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -293,9 +282,7 @@
             </div>
         </div>
 
-        <!-- Body -->
         <div class="px-6 py-6">
-            <!-- Success Message -->
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-green-100 dark:bg-green-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
                     <iconify-icon icon="ph:check-circle" class="text-green-600 dark:text-green-400 text-3xl"></iconify-icon>
@@ -306,7 +293,6 @@
                 </p>
             </div>
 
-            <!-- Payment Details -->
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 mb-6">
                 <h5 class="font-semibold text-neutral-900 dark:text-white mb-3">Payment Details</h5>
                 <div class="grid grid-cols-2 gap-3 text-sm">
@@ -329,7 +315,6 @@
                 </div>
             </div>
 
-            <!-- Payment Link -->
             <div class="space-y-3">
                 <label class="block text-sm font-medium text-neutral-600 dark:text-neutral-400">Payment Link</label>
                 <div class="flex gap-2">
@@ -346,7 +331,6 @@
                 </p>
             </div>
 
-            <!-- Actions -->
             <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6">
                 <div class="flex gap-3">
                     <button id="closePaymentLinkFooterBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors">
@@ -358,7 +342,6 @@
     </div>
 </div>
 
-<!-- Bulk Delete Modal -->
  <div id="bulkDeleteModal" class="fixed inset-0 z-50 hidden items-center justify-center">
         <div class="absolute inset-0 bg-black/60"></div>
         <div
@@ -413,13 +396,11 @@
         </div>
     </div>
 
-<!-- Property Details Modal -->
 <div id="detailsBackdrop" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
          style="width: 36rem !important; max-width: 90vw !important;">
-        
-        <!-- Header -->
+
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-neutral-800 dark:to-neutral-700">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -430,11 +411,9 @@
             </div>
         </div>
 
-        <!-- Body -->
         <div class="px-6 py-6">
             <div id="propertyDetails" class="space-y-6">
-                
-                <!-- Nama + Status -->
+
                 <div class="flex items-center gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-600">
                     <div>
                         <h4 id="detailName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
@@ -442,7 +421,6 @@
                     </div>
                 </div>
 
-                <!-- Info Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
 
                     <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
@@ -488,7 +466,6 @@
 
             </div>
 
-            <!-- Footer -->
             <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6 gap-3">
                 <button id="closeDetailsFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
                     Close
@@ -501,7 +478,6 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
 <div id="deleteBackdrop" class="fixed inset-0 z-40 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl w-96 max-w-[90vw] mx-4 shadow-lg z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600">
@@ -523,13 +499,11 @@
     </div>
 </div>
 
-<!-- Renter Details Modal -->
 <div id="renterDetailsModal" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div class="absolute inset-0 bg-black/60"></div>
     <div class="bg-white dark:bg-neutral-700 rounded-xl mx-4 shadow-xl z-10 overflow-hidden border border-neutral-200 dark:border-neutral-600" 
          style="width: 40rem !important; max-width: 90vw !important;">
-        
-        <!-- Header -->
+
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-neutral-800 dark:to-neutral-700">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
@@ -540,17 +514,13 @@
             </div>
         </div>
 
-        <!-- Body -->
         <div class="px-6 py-6">
-            <!-- Property Name -->
             <div class="text-center mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-600">
                 <h4 id="renterDetailPropertyName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
                 <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">Property currently rented by</p>
             </div>
 
-            <!-- Renter Information Grid -->
             <div class="space-y-4">
-                <!-- Personal Info Row -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
                         <div class="flex items-center gap-2 mb-2">
@@ -569,7 +539,6 @@
                     </div>
                 </div>
 
-                <!-- Contact Info Row -->
                 <div class="grid grid-cols-1 gap-4">
                     <div class="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
                         <div class="flex items-center gap-2 mb-2">
@@ -588,7 +557,6 @@
                     </div>
                 </div>
 
-                <!-- Rental Period Row -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4">
                         <div class="flex items-center gap-2 mb-2">
@@ -607,7 +575,6 @@
                     </div>
                 </div>
 
-            <!-- Footer -->
             <div class="flex justify-end pt-6 border-t border-neutral-200 dark:border-neutral-600 mt-6">
                 <button id="closeRenterDetailsFooterBtn" class="px-6 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-600 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-300 dark:hover:bg-neutral-500 transition-colors">
                     Close

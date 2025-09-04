@@ -1,4 +1,3 @@
-{{-- resources/views/super-admin/index2.blade.php --}}
 @extends('layout.layout')
 
 @php
@@ -483,12 +482,10 @@
             const editId = urlParams.get('edit');
 
             if (editId) {
-                // Tunggu sampai window.editTenant tersedia
                 const checkFunction = setInterval(() => {
                     if (typeof window.editTenant === 'function') {
                         window.editTenant(parseInt(editId));
                         clearInterval(checkFunction);
-                        // Hapus parameter dari URL setelah modal dibuka
                         window.history.replaceState({}, document.title, window.location.pathname);
                     }
                 }, 100);

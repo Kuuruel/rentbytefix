@@ -35,9 +35,9 @@ class Property extends Model
     }
 
     public function renters()
-{
-    return $this->hasMany(Renter::class);
-}
+    {
+        return $this->hasMany(Renter::class);
+    }
 
     public function getStatusAttribute($value)
     {
@@ -59,7 +59,7 @@ class Property extends Model
     }
 
     public function tenants()
-{
+    {
     return $this->belongsTo(Tenants::class);
-}
+    }
 }

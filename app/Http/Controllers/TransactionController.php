@@ -12,8 +12,7 @@ class TransactionController extends Controller
     {
         try {
             $perPage = (int) $request->input('per_page', 10);
-            
-            // Debug: Log the incoming request
+
             Log::info('Transaction data request', [
                 'per_page' => $perPage,
                 'status' => $request->status,
@@ -26,22 +25,18 @@ class TransactionController extends Controller
             $query = Transaction::with(['bill.renter', 'bill.property'])
                 ->orderBy('created_at', 'desc');
 
-            // Apply status filter
             if ($request->filled('status')) {
                 $query->where('status', $request->status);
             }
 
-            // Apply month filter
             if ($request->filled('month')) {
                 $query->whereMonth('created_at', $request->month);
             }
 
-            // Apply year filter
             if ($request->filled('year')) {
                 $query->whereYear('created_at', $request->year);
             }
 
-            // Apply search filter
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
@@ -56,17 +51,14 @@ class TransactionController extends Controller
                 });
             }
 
-            // Get total revenue for current filters (only for successful transactions)
             $totalRevenue = (clone $query)->where('status', 'success')->sum('amount');
             $totalSuccessTransactions = (clone $query)->where('status', 'success')->count();
 
-            // Debug: Log the total count before pagination
             $totalCount = $query->count();
             Log::info('Total transactions found', ['count' => $totalCount]);
 
             $items = $query->paginate($perPage);
-            
-            // Debug: Log the actual items
+
             Log::info('Paginated transactions', [
                 'items_count' => $items->count(),
                 'first_item' => $items->first() ? $items->first()->toArray() : null
@@ -78,7 +70,7 @@ class TransactionController extends Controller
                     'bill_id'     => $tx->bill_id,
                     'order_id'    => $tx->order_id,
                     'renter_name' => $tx->bill?->renter?->name ?? 'Unknown',
-                    'reciept_name' => $tx->bill?->renter?->name ?? 'Unknown', // Added for compatibility
+                    'reciept_name' => $tx->bill?->renter?->name ?? 'Unknown',
                     'amount'      => $tx->amount,
                     'formatted_amount' => 'Rp ' . number_format($tx->amount, 0, ',', '.'),
                     'status'      => $tx->status,
@@ -108,7 +100,6 @@ class TransactionController extends Controller
                 ]
             ];
 
-            // Debug: Log the response
             Log::info('Transaction API response', [
                 'success' => $response['success'],
                 'total' => $response['data']['total'],
@@ -145,9 +136,6 @@ class TransactionController extends Controller
         }
     }
 
-    /**
-     * Get monthly revenue data
-     */
     public function monthlyRevenue(Request $request)
     {
         try {
@@ -166,7 +154,6 @@ class TransactionController extends Controller
                 ->orderBy('month')
                 ->get();
 
-            // Format data untuk chart
             $formattedData = [];
             $monthNames = [
                 1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
@@ -205,9 +192,6 @@ class TransactionController extends Controller
         }
     }
 
-    /**
-     * Get revenue summary for dashboard
-     */
     public function revenueSummary(Request $request)
     {
         try {
@@ -216,24 +200,20 @@ class TransactionController extends Controller
             $previousMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
             $previousYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
 
-            // Revenue bulan ini
             $thisMonthRevenue = Transaction::where('status', 'success')
                 ->whereMonth('paid_at', $currentMonth)
                 ->whereYear('paid_at', $currentYear)
                 ->sum('amount');
 
-            // Revenue bulan lalu
             $lastMonthRevenue = Transaction::where('status', 'success')
                 ->whereMonth('paid_at', $previousMonth)
                 ->whereYear('paid_at', $previousYear)
                 ->sum('amount');
 
-            // Revenue tahun ini
             $thisYearRevenue = Transaction::where('status', 'success')
                 ->whereYear('paid_at', $currentYear)
                 ->sum('amount');
 
-            // Hitung persentase perubahan
             $percentageChange = 0;
             if ($lastMonthRevenue > 0) {
                 $percentageChange = (($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100;
@@ -288,9 +268,6 @@ class TransactionController extends Controller
         }
     }
 
-    /**
-     * Helper method to get status badge class
-     */
     private function getStatusBadgeClass($status)
     {
         return match(strtolower($status)) {

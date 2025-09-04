@@ -1,4 +1,3 @@
-<!-- resources\views\authentication\signin.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -64,7 +63,7 @@
                                 <input class="form-check-input border border-neutral-300" type="checkbox" name="remember" value="1" id="remember">
                                 <label class="ps-2" for="remember">Remember me </label>
                             </div>
-                            <a href="javascript:void(0)" class="text-primary-600 font-medium hover:underline">Forgot Password?</a>
+                            <a href="{{ route('forgotPassword') }}" class="text-primary-600 font-medium hover:underline">Forgot Password?</a>
                         </div>
                     </div>
 
@@ -93,25 +92,22 @@
     </section>
 
 <script>
-  // ================== Password Show Hide Js Start ==========
-  function initializePasswordToggle(toggleSelector) {
-    const toggles = document.querySelectorAll(toggleSelector);
+    function initializePasswordToggle(toggleSelector) {
+        const toggles = document.querySelectorAll(toggleSelector);
 
     toggles.forEach(function (toggle) {
-      toggle.addEventListener("click", function () {
-        this.classList.toggle("ri-eye-off-line");
-        const input = document.querySelector(this.getAttribute("data-toggle"));
+        toggle.addEventListener("click", function () {
+            this.classList.toggle("ri-eye-off-line");
+            const input = document.querySelector(this.getAttribute("data-toggle"));
 
         if (input) {
-          input.type = input.type === "password" ? "text" : "password";
+            input.type = input.type === "password" ? "text" : "password";
         }
-      });
     });
-  }
+});
+}
 
-  // Call the function
   initializePasswordToggle(".toggle-password");
-  // ========================= Password Show Hide Js End ===========================
 </script>
                     
     <x-script />

@@ -93,7 +93,6 @@
         rentForm: document.getElementById('rentForm'),
         generatePaymentBtn: document.getElementById('generatePaymentBtn'),
 
-        // Payment Link Modal Elements
         paymentLinkModal: document.getElementById('paymentLinkModal'),
         closePaymentLinkBtn: document.getElementById('closePaymentLinkBtn'),
         closePaymentLinkFooterBtn: document.getElementById('closePaymentLinkFooterBtn'),
@@ -409,7 +408,6 @@
         }
     }
 
-    // Payment Link Modal Functions
     function showPaymentLinkModal(data) {
         if (DOM.paymentPropertyName) DOM.paymentPropertyName.textContent = data.property_name;
         if (DOM.paymentRenterName) DOM.paymentRenterName.textContent = data.renter_name;
@@ -432,7 +430,6 @@
         }
     }
 
-    // Payment functions
     function handleCopyPaymentLink() {
         const linkInput = DOM.generatedPaymentLink;
         const copyText = DOM.copyPaymentLink?.querySelector('.copy-text');
@@ -473,7 +470,6 @@
         showRentModal(true);
     }
 
-    // Payment Status Modal
     function showPaymentModal(paymentData) {
         const existingModal = document.getElementById('paymentModal');
         if (existingModal) {
@@ -546,8 +542,7 @@
         
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
-        
-        // Event listeners for close
+
         document.getElementById('closePaymentModal').onclick = closePaymentModal;
         document.getElementById('closePaymentModalBtn').onclick = closePaymentModal;
         modal.onclick = (e) => {
@@ -807,12 +802,10 @@
             
             if (data.success) {
                 closeRentModal();
-                
-                // Show payment link modal if payment_link is available
+
                 if (data.data.payment_link) {
                     showPaymentLinkModal(data.data);
                 } else {
-                    // Fallback to payment modal if no payment_link
                     showPaymentModal(data.data);
                 }
                 
@@ -882,18 +875,15 @@ function renderTable(properties) {
 
     properties.forEach(property => {
         const row = document.createElement('tr');
-        
-        // Determine action buttons based on status
+
         let actionButtons = '';
-        
-        // Button view (selalu ada)
+
         const viewButton = `
             <button onclick="viewProperty(${property.id})" class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center">
                <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
             </button>
         `;
-        
-        // Button rent/detail renter berdasarkan status
+
         let rentButton = '';
         if (property.status === 'Rented') {
             rentButton = `
@@ -902,9 +892,7 @@ function renderTable(properties) {
                 </button>
             `;
         }
-        // Hapus rent button untuk status Available dan Processing
-        
-        // Button edit dan delete (hanya untuk Available)
+
         let editDeleteButtons = '';
         if (property.status === 'Available') {
             editDeleteButtons = `
@@ -916,7 +904,6 @@ function renderTable(properties) {
                 </button>
             `;
         } else {
-            // Untuk status selain Available, disable edit dan delete
             editDeleteButtons = `
                 <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot edit ${property.status.toLowerCase()} property">
                     <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
@@ -1334,7 +1321,6 @@ function renderTable(properties) {
     if (DOM.detailRentType) DOM.detailRentType.textContent = property.rent_type || '-';
     if (DOM.detailCreatedAt) DOM.detailCreatedAt.textContent = formatDate(property.created_at);
 
-    // Update button based on status
     const rentNowBtn = document.getElementById('rentNowBtn');
     const renterDetailBtn = document.getElementById('renterDetailBtn');
     
@@ -1385,12 +1371,10 @@ window.showRenterDetails = async function(propertyId) {
             return;
         }
 
-        // Set property name
         if (DOM.renterDetailPropertyName) {
             DOM.renterDetailPropertyName.textContent = property.name;
         }
 
-        // Show loading in modal
         if (DOM.renterDetailName) DOM.renterDetailName.textContent = 'Loading...';
         if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = 'Loading...';
         if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = 'Loading...';
@@ -1400,22 +1384,17 @@ window.showRenterDetails = async function(propertyId) {
 
         showRenterDetailsModal(true);
 
-        // Debug: Log the API endpoint being called
         console.log('Fetching renter details from:', API_ENDPOINTS.RENTER_DETAILS(propertyId));
 
-        // Fetch renter details from server
         const { data } = await apiRequest(API_ENDPOINTS.RENTER_DETAILS(propertyId));
-        
-        // Debug: Log the response data
+
         console.log('Renter details response:', data);
         
         if (data.success && data.data) {
             const renterData = data.data;
-            
-            // Debug: Log the renter data structure
+
             console.log('Renter data structure:', renterData);
-            
-            // Populate modal with renter data - with better error handling
+
             if (DOM.renterDetailName) {
                 DOM.renterDetailName.textContent = renterData.renter_name || renterData.name || 'No name provided';
             }
@@ -1437,12 +1416,9 @@ window.showRenterDetails = async function(propertyId) {
                 DOM.renterDetailEndDate.textContent = endDate ? formatDate(endDate) : 'No end date';
             }
         } else {
-            // Handle case where API returns success but no data
             console.error('API returned success but no renter data:', data);
-            
-            // Check if the data structure is different
+
             if (data.renter) {
-                // Alternative data structure
                 const renterData = data.renter;
                 console.log('Using alternative data structure:', renterData);
                 
@@ -1459,8 +1435,7 @@ window.showRenterDetails = async function(propertyId) {
     } catch (error) {
         console.error('Error loading renter details:', error);
         showNotification('Error loading renter details: ' + error.message, 'error');
-        
-        // Show error in modal
+
         const errorMsg = 'Error loading data';
         if (DOM.renterDetailName) DOM.renterDetailName.textContent = errorMsg;
         if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = errorMsg;
@@ -1522,7 +1497,6 @@ window.showRenterDetails = async function(propertyId) {
     }
 
     function initEventListeners() {
-        // Property form events
         DOM.propertyForm?.addEventListener('submit', handleFormSubmit);
         DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
         DOM.formCancel?.addEventListener('click', closeModal);
@@ -1531,28 +1505,24 @@ window.showRenterDetails = async function(propertyId) {
             if (e.target === DOM.modalBackdrop) closeModal();
         });
 
-        // Details modal events
         DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
         DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
         DOM.detailsBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.detailsBackdrop) closeDetailsModal();
         });
 
-        // Delete modal events
         DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
         DOM.deleteConfirm?.addEventListener('click', handleDelete);
         DOM.deleteBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.deleteBackdrop) closeDeleteModal();
         });
 
-        // Bulk delete modal events
         DOM.bulkDeleteCancel?.addEventListener('click', closeBulkDeleteModal);
         DOM.bulkDeleteConfirm?.addEventListener('click', handleBulkDelete);
         DOM.bulkDeleteModal?.addEventListener('click', (e) => {
             if (e.target === DOM.bulkDeleteModal) closeBulkDeleteModal();
         });
 
-        // Rent modal events
         DOM.closeRentBtn?.addEventListener('click', closeRentModal);
         DOM.closeRentFooterBtn?.addEventListener('click', closeRentModal);
         DOM.rentBackdrop?.addEventListener('click', (e) => {
@@ -1562,7 +1532,6 @@ window.showRenterDetails = async function(propertyId) {
         DOM.rentForm?.addEventListener('submit', handleRentSubmit);
         DOM.startDate?.addEventListener('change', calculateEndDate);
 
-        // Payment Link Modal Events
         DOM.closePaymentLinkBtn?.addEventListener('click', closePaymentLinkModal);
         DOM.closePaymentLinkFooterBtn?.addEventListener('click', closePaymentLinkModal);
         DOM.copyPaymentLink?.addEventListener('click', handleCopyPaymentLink);
@@ -1578,7 +1547,6 @@ window.showRenterDetails = async function(propertyId) {
             if (e.target === DOM.renterDetailsModal) closeRenterDetailsModal();
         });
 
-        // Search and filter events
         DOM.searchInput?.addEventListener('input', debounce(() => {
             state.query = DOM.searchInput.value;
             state.page = 1;
@@ -1597,7 +1565,6 @@ window.showRenterDetails = async function(propertyId) {
             loadProperties();
         });
 
-        // Global keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeModal();
@@ -1611,10 +1578,8 @@ window.showRenterDetails = async function(propertyId) {
             }
         });
 
-        // Initialize select all functionality
         initSelectEventListeners();
 
-        // Set today as minimum date for start date
         const today = new Date().toISOString().split('T')[0];
         if (DOM.startDate) {
             DOM.startDate.setAttribute("min", today);
@@ -1635,7 +1600,6 @@ window.showRenterDetails = async function(propertyId) {
         `;
     }
 
-    // Expose functions to global scope for use in HTML onclick attributes
     window.propertyManager = {
         checkPaymentStatus: checkPaymentStatus,
         rentNow: window.rentNow,

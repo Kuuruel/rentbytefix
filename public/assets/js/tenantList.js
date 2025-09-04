@@ -1,5 +1,3 @@
-//tenantList.js - Fixed Version
-
 (function () {
     'use strict';
 
@@ -124,8 +122,7 @@
             if (!response.ok) {
                 console.error('API Error Response:', data);
                 const errorMessage = data.message || `HTTP Error: ${response.status} ${response.statusText}`;
-                
-                // If there are validation errors, include them
+
                 if (data.errors) {
                     const error = new Error(errorMessage);
                     error.validationErrors = data.errors;
@@ -145,7 +142,7 @@
                 stack: error.stack
             });
 
-            throw error; // Re-throw the original error to preserve validation errors
+            throw error;
         }
     }
 
@@ -902,13 +899,11 @@
         } catch (error) {
             console.error('Form submit error:', error);
 
-            // Handle validation errors
             if (error.validationErrors) {
                 showErrors(error.validationErrors);
                 return;
             }
 
-            // Try to parse error message for validation errors
             try {
                 const errorMessage = error.message;
                 if (errorMessage.includes('{') && errorMessage.includes('errors')) {
@@ -1297,7 +1292,6 @@
             }
         });
 
-        // Bulk action event listeners
         document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
         document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
         document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
@@ -1323,7 +1317,6 @@
         };
     }
 
-    // Global function exports
     window.viewTenant = viewTenant;
     window.editTenant = editTenant;
     window.confirmDelete = confirmDelete;

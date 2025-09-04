@@ -11,7 +11,6 @@
     </div>
     <div class="sidebar-menu-area">
         <ul class="sidebar-menu" id="sidebar-menu">
-            <!-- Home selalu active, Dashboard tidak pernah active -->
             <style>
                 .sidebar-menu li.active>a,
                 .sidebar-menu li.active>a .menu-icon,

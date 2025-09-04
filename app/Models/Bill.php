@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Bill extends Model
 {
@@ -112,7 +113,7 @@ class Bill extends Model
     {
         return Transaction::with(['bill.renter', 'bill.property'])
             ->whereHas('bill', function ($q) use ($tenantId) {
-                $q->where('tenant_id', auth()->user()->tenant_id);
+                $q->where('tenant_id', Auth::user()->tenant_id);
             })
             ->orderBy('created_at', 'desc')
             ->get();

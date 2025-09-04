@@ -19,8 +19,7 @@
                         <option value="15">15</option>
                         <option value="20">20</option>
                     </select>
-                    
-                    <!-- Month Filter -->
+
                     <select id="monthFilter" class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
                         <option value="">All Months</option>
                         @php
@@ -37,12 +36,11 @@
                             </option>
                         @endforeach
                     </select>
-                    
-                    <!-- Year Filter -->
+
                     <select id="yearFilter" class="form-select form-select-sm w-auto dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
                         @php
                             $currentYear = date('Y');
-                            $startYear = $currentYear - 3; // Show last 3 years
+                            $startYear = $currentYear - 3;
                         @endphp
                         @for($year = $currentYear; $year >= $startYear; $year--)
                             <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
@@ -63,8 +61,7 @@
                         <option value="failed">Failed</option>
                     </select>
                 </div>
-                
-                <!-- Revenue Summary for current filter -->
+
                 <div class="flex items-center gap-4">
                     <div id="revenueSummary" class="hidden bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg border border-blue-200 dark:border-blue-800">
                         <span class="text-sm text-blue-700 dark:text-blue-300">
@@ -124,7 +121,6 @@
                     </table>
                 </div>
 
-                <!-- Empty State -->
                 <div id="emptyState" class="hidden text-center py-8">
                     <h3 class="text-lg font-medium text-neutral-900 dark:text-white mb-2">No transactions found</h3>
                     <p class="text-neutral-500 dark:text-neutral-400">Try adjusting your filters or search terms.</p>

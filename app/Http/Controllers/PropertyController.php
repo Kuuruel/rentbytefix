@@ -17,9 +17,6 @@ class PropertyController extends Controller
         return view('landlord.index3');
     }
 
-    /**
-     * Get current tenant ID based on authentication
-     */
     private function getCurrentTenantId()
     {
         if (Auth::guard('tenant')->check()) {
@@ -231,40 +228,39 @@ class PropertyController extends Controller
         }
     }
 
-       public function getRenterDetails($propertyId)
-{
-    try {
-        // Cari renter yang aktif untuk property ini
-        $rental = \App\Models\Renter::where('property_id', $propertyId)
-                                    ->latest()
-                                    ->first();
-        
-        if (!$rental) {
+    public function getRenterDetails($propertyId)
+    {
+        try {
+            $rental = \App\Models\Renter::where('property_id', $propertyId)
+                                        ->latest()
+                                        ->first();
+            
+            if (!$rental) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'No renter found for this property'
+                ], 404);
+            }
+            
             return response()->json([
-                'success' => false, 
-                'message' => 'No renter found for this property'
-            ], 404);
+                'success' => true,
+                'data' => [
+                    'renter_name' => $rental->name,
+                    'renter_phone' => $rental->phone,
+                    'renter_email' => $rental->email,
+                    'renter_address' => $rental->address,
+                    'start_date' => $rental->start_date,
+                    'end_date' => $rental->end_date,
+                    'property_id' => $rental->property_id,
+                    'created_at' => $rental->created_at,
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving renter details: ' . $e->getMessage()
+            ], 500);
         }
-        
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'renter_name' => $rental->name,
-                'renter_phone' => $rental->phone,
-                'renter_email' => $rental->email,
-                'renter_address' => $rental->address,
-                'start_date' => $rental->start_date,
-                'end_date' => $rental->end_date,
-                'property_id' => $rental->property_id,
-                'created_at' => $rental->created_at,
-            ]
-        ]);
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Error retrieving renter details: ' . $e->getMessage()
-        ], 500);
     }
-}
 }

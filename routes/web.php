@@ -96,22 +96,22 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    Route::controller(HomeController::class)->group(function () {
-        Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
-        Route::get('chatempty', 'chatempty')->name('chatempty');
-        Route::get('chat-message', 'chatMessage')->name('chatMessage');
-        Route::get('chat-profile', 'chatProfile')->name('chatProfile');
-        Route::get('email', 'email')->name('email');
-        Route::get('faq', 'faq')->name('faq');
-        Route::get('gallery', 'gallery')->name('gallery');
-        Route::get('image-upload', 'imageUpload')->name('imageUpload');
-        Route::get('kanban', 'kanban')->name('kanban');
-        Route::get('page-error', 'pageError')->name('pageError');
-        Route::get('pricing', 'pricing')->name('pricing');
-        Route::get('starred', 'starred')->name('starred');
-        Route::get('terms-condition', 'termsCondition')->name('termsCondition');
-        Route::get('veiw-details', 'veiwDetails')->name('veiwDetails');
-        Route::get('widgets', 'widgets')->name('widgets');
+        Route::controller(HomeController::class)->group(function () {
+            Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
+            Route::get('chatempty', 'chatempty')->name('chatempty');
+            Route::get('chat-message', 'chatMessage')->name('chatMessage');
+            Route::get('chat-profile', 'chatProfile')->name('chatProfile');
+            Route::get('email', 'email')->name('email');
+            Route::get('faq', 'faq')->name('faq');
+            Route::get('gallery', 'gallery')->name('gallery');
+            Route::get('image-upload', 'imageUpload')->name('imageUpload');
+            Route::get('kanban', 'kanban')->name('kanban');
+            Route::get('page-error', 'pageError')->name('pageError');
+            Route::get('pricing', 'pricing')->name('pricing');
+            Route::get('starred', 'starred')->name('starred');
+            Route::get('terms-condition', 'termsCondition')->name('termsCondition');
+            Route::get('veiw-details', 'veiwDetails')->name('veiwDetails');
+            Route::get('widgets', 'widgets')->name('widgets');
     });
 
     Route::prefix('aiapplication')->group(function () {
@@ -227,35 +227,35 @@ Route::middleware(['auth:web,tenant'])->group(function () {
     Route::resource('tenants', TenantController::class);
 
     Route::prefix('tenants')->name('tenants.')->group(function () {
-        Route::get('/', [TenantController::class, 'index'])->name('index');
-        Route::post('/', [TenantController::class, 'store'])->name('store');
-        Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
-        Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
-        Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
+            Route::get('/', [TenantController::class, 'index'])->name('index');
+            Route::post('/', [TenantController::class, 'store'])->name('store');
+            Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
+            Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
+            Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
     });
 
-    Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
-    Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
-    Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
-    Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
-    Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
+            Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
+            Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
+            Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
+            Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
+            Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
 
-    Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-    Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+            Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+            Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
-Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
-Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+            Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
+            Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
+            Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+            Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
- Route::prefix('landlord')->group(function () {
-        Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
-            ->name('landlord.transactions.data');
+    Route::prefix('landlord')->group(function () {
+            Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
+                ->name('landlord.transactions.data');
             
-        Route::get('/transactions/{billId}/print', [App\Http\Controllers\TransactionController::class, 'printTransaction'])
-            ->name('landlord.transactions.print');
+            Route::get('/transactions/{billId}/print', [App\Http\Controllers\TransactionController::class, 'printTransaction'])
+                ->name('landlord.transactions.print');
             
-        Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
-            ->name('landlord.rentals.payment-status');
+            Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
+                ->name('landlord.rentals.payment-status');
     });
 });

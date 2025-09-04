@@ -132,7 +132,7 @@
                             <h6 class="text-lg text-neutral-900 font-semibold mb-0">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</h6>
                             <span class="text-neutral-500">{{ Auth::check() ? ucfirst(Auth::user()->role) : 'User' }}</span>
                         </div>
-                        <button type="button" class="hover:text-danger-600">
+                        <button id="closeProfileDropdown" type="button" class="hover:text-danger-600" aria-label="Tutup">
                             <iconify-icon icon="radix-icons:cross-1" class="icon text-xl"></iconify-icon>
                         </button>
                     </div>
@@ -232,6 +232,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelButton = document.getElementById('cancelButton');
     const confirmLogout = document.getElementById('confirmLogout');
     const logoutForm = document.getElementById('logoutForm');
+    const dropdownProfile = document.getElementById('dropdownProfile');
+    const closeProfileBtn = document.getElementById('closeProfileDropdown');
+    const profileToggleBtn = document.querySelector('[data-dropdown-toggle="dropdownProfile"]');
 
     function openModal() {
         logoutModal.classList.remove('hidden');
@@ -254,6 +257,23 @@ document.addEventListener('DOMContentLoaded', function() {
             logoutModal.classList.add('hidden');
         }, 300);
     }
+
+    if (closeProfileBtn && dropdownProfile) {
+        closeProfileBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdownProfile.classList.add('hidden');
+        if (profileToggleBtn) profileToggleBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!dropdownProfile.classList.contains('hidden')) {
+        if (!dropdownProfile.contains(e.target) && !profileToggleBtn.contains(e.target)) {
+            dropdownProfile.classList.add('hidden');
+            if (profileToggleBtn) profileToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+        }
+    });
 
     if (logoutButton) {
         logoutButton.addEventListener('click', function(e) {
@@ -290,23 +310,23 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-.transition-opacity {
-    transition-property: opacity;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .transition-opacity {
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-.transition-transform {
-    transition-property: transform;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
+    .transition-transform {
+        transition-property: transform;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-.transition-colors {
-    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
-}
+    .transition-colors {
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+    }
 
-.duration-300 {
-    transition-duration: 300ms;
-}
+    .duration-300 {
+        transition-duration: 300ms;
+    }
 </style>

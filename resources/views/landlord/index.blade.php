@@ -1,10 +1,8 @@
-<!-- resources\views\landlord\index.blade.php -->
-
 @extends('layout.layout')
 
 @php
     $title='Dashboard';
-    $subTitle = 'AI';
+    $subTitle = 'Statistic';
     $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 
@@ -27,7 +25,7 @@
                     Last 30 days users
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
         <div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-purple-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -44,7 +42,7 @@
                     Last 30 days subscription
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
         <div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -61,7 +59,7 @@
                     Last 30 days users
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
         <div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-success-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -78,7 +76,7 @@
                     Last 30 days income
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
         <div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-red-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -95,7 +93,7 @@
                     Last 30 days expense
                 </p>
             </div>
-        </div><!-- card end -->
+        </div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">

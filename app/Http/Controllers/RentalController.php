@@ -14,14 +14,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\Transaction;
+use Illuminate\Routing\Controller as BaseController;
 
-class RentalController extends Controller
+class RentalController extends BaseController
 {
     protected $midtransService;
 
     public function __construct(MidtransService $midtransService)
     {
         $this->midtransService = $midtransService;
+        $this->middleware('auth:tenant');
     }
 
     public function store(Request $request)
@@ -39,14 +41,34 @@ class RentalController extends Controller
         try {
             DB::beginTransaction();
 
+            $currentTenant = Auth::guard('tenant')->user();
+            
+            if (!$currentTenant) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized - Please login first'
+                ], 401);
+            }
+
+            Log::info('Rental request by tenant', [
+                'tenant_id' => $currentTenant->id,
+                'tenant_name' => $currentTenant->name,
+                'property_id' => $request->property_id
+            ]);
+
             $property = Property::where('id', $request->property_id)
                 ->where('status', 'Available')
-                ->where('tenant_id', 2)
+                ->where('tenant_id', $currentTenant->id)
                 ->lockForUpdate()
                 ->first();
 
             if (!$property) {
                 DB::rollBack();
+                Log::warning('Property not available for tenant', [
+                    'property_id' => $request->property_id,
+                    'tenant_id' => $currentTenant->id
+                ]);
+                
                 return response()->json([
                     'success' => false,
                     'message' => 'Properti tidak tersedia, sedang dalam proses penyewaan, atau bukan milik Anda'
@@ -61,16 +83,15 @@ class RentalController extends Controller
                     'name' => $request->renter_name,
                     'phone' => $request->renter_phone,
                     'address' => $request->renter_address,
-                    'tenant_id' => 2,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'property_id' => $property->id,
+                    'tenant_id' => $currentTenant->id,
+                    'start_date' => $request->start_date, 
+                    'end_date' => $request->end_date, 
                 ]
             );
 
             $startDate = \Carbon\Carbon::parse($request->start_date);
             $endDate = \Carbon\Carbon::parse($request->end_date);
-
+            
             if ($property->rent_type === 'Monthly') {
                 $months = $startDate->diffInMonths($endDate);
                 $amount = $property->price * max(1, $months);
@@ -80,17 +101,13 @@ class RentalController extends Controller
             }
 
             $bill = Bill::create([
-                'tenant_id' => 2,
+                'tenant_id' => $currentTenant->id,
                 'renter_id' => $renter->id,
                 'property_id' => $property->id,
                 'amount' => $amount,
                 'due_date' => $startDate->copy()->addDays(3),
                 'status' => 'pending',
-                'order_id' => 'BILL-' . uniqid(),
             ]);
-
-            $orderId = 'BILL-' . $bill->id . '-' . Str::random(6);
-            $bill->update(['order_id' => $orderId]);
 
             $snapToken = $this->midtransService->createPayment($bill);
             $paymentLink = "https://app.sandbox.midtrans.com/snap/v2/vtweb/{$snapToken}";
@@ -100,18 +117,16 @@ class RentalController extends Controller
                 'snap_token' => $snapToken
             ]);
 
-            $transaction = Transaction::create([
-                'bill_id' => $bill->id,
-                'order_id' => $orderId,
-                'amount'   => $bill->amount,
-                'status'   => Transaction::STATUS_PENDING,
-                'midtrans_response' => [
-                    'snap_token'   => $snapToken,
-                    'payment_link' => $paymentLink
-                ],
-            ]);
-
             DB::commit();
+
+            Log::info('Rental created successfully', [
+                'tenant_id' => $currentTenant->id,
+                'tenant_name' => $currentTenant->name,
+                'property_id' => $property->id,
+                'bill_id' => $bill->id,
+                'amount' => $amount,
+                'status_changed' => 'Available -> Processing'
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -119,19 +134,23 @@ class RentalController extends Controller
                 'data' => [
                     'bill_id' => $bill->id,
                     'payment_link' => $paymentLink,
-                    'snap_token' => $snapToken,
-                    'transaction' => $transaction,
-                    'amount' => $bill->formatted_amount ?? $bill->amount,
+                    'amount' => $bill->formatted_amount,
                     'property_name' => $property->name,
                     'renter_name' => $renter->name,
                     'due_date' => $bill->due_date->format('d M Y H:i'),
+                    'tenant_name' => $currentTenant->name,
                 ]
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating rental: ' . $e->getMessage());
-
+            Log::error('Error creating rental', [
+                'tenant_id' => $currentTenant->id ?? 'unknown',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
@@ -139,235 +158,288 @@ class RentalController extends Controller
         }
     }
 
+    public function getMyProperties(Request $request)
+    {
+        try {
+            $currentTenant = Auth::guard('tenant')->user();
+            
+            if (!$currentTenant) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+
+            $properties = Property::where('tenant_id', $currentTenant->id)
+                ->with(['renter', 'bills'])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $properties
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching tenant properties: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching properties'
+            ], 500);
+        }
+    }
+
+    public function getStatistics(Request $request)
+    {
+        try {
+            $currentTenant = Auth::guard('tenant')->user();
+            
+            if (!$currentTenant) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+
+            $stats = [
+                'total_properties' => Property::where('tenant_id', $currentTenant->id)->count(),
+                'available_properties' => Property::where('tenant_id', $currentTenant->id)
+                    ->where('status', 'Available')->count(),
+                'rented_properties' => Property::where('tenant_id', $currentTenant->id)
+                    ->where('status', 'Rented')->count(),
+                'processing_properties' => Property::where('tenant_id', $currentTenant->id)
+                    ->where('status', 'Processing')->count(),
+                'total_income' => Bill::where('tenant_id', $currentTenant->id)
+                    ->where('status', 'paid')->sum('amount'),
+                'pending_bills' => Bill::where('tenant_id', $currentTenant->id)
+                    ->where('status', 'pending')->count(),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $stats
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching statistics: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching statistics'
+            ], 500);
+        }
+    }
+
     public function webhook(Request $request)
     {
         try {
-            Log::info('=== WEBHOOK START ===', [
+            Log::info('=== WEBHOOK RECEIVED ===', [
                 'order_id' => $request->order_id,
                 'transaction_status' => $request->transaction_status,
-                'all_data' => $request->all()
+                'gross_amount' => $request->gross_amount,
+                'payment_type' => $request->payment_type
             ]);
-
-            $bill = Bill::with('property', 'renter')
-                ->where('order_id', $request->order_id)
-                ->first();
-
+            
+            $serverKey = config('midtrans.server_key');
+            $hashed = hash('sha512', 
+                $request->order_id . 
+                $request->status_code . 
+                $request->gross_amount . 
+                $serverKey
+            );
+            
+            if ($hashed !== $request->signature_key) {
+                Log::error('WEBHOOK SIGNATURE INVALID', [
+                    'order_id' => $request->order_id
+                ]);
+                return response()->json(['message' => 'Invalid signature'], 400);
+            }
+            
+            $orderId = $request->order_id;
+            $transactionStatus = $request->transaction_status;
+            
+            $bill = Bill::with(['property', 'renter', 'tenant'])->find($orderId);
+            
             if (!$bill) {
-                Log::error('BILL NOT FOUND', ['order_id' => $request->order_id]);
+                Log::error('BILL NOT FOUND', ['order_id' => $orderId]);
                 return response()->json(['message' => 'Bill not found'], 404);
             }
-
-            Log::info('BEFORE UPDATE', [
+            
+            Log::info('BILL FOUND', [
                 'bill_id' => $bill->id,
-                'bill_status' => $bill->status,
-                'property_id' => $bill->property_id,
-                'property_status' => $bill->property->status
+                'tenant_id' => $bill->tenant_id,
+                'tenant_name' => $bill->tenant->name ?? 'N/A',
+                'current_bill_status' => $bill->status,
+                'current_property_status' => $bill->property->status
             ]);
-
+            
             DB::beginTransaction();
-
-            $transactionStatus = $request->transaction_status;
-
+            
+            $transactionData = [
+                'bill_id' => $bill->id,
+                'midtrans_response' => $request->all(),
+            ];
+            
+            Log::info('PROCESSING TRANSACTION STATUS', [
+                'transaction_status' => $transactionStatus,
+                'tenant_id' => $bill->tenant_id
+            ]);
+            
             switch ($transactionStatus) {
                 case 'capture':
                 case 'settlement':
-                    Log::info('PROCESSING SETTLEMENT.');
-
-                    $billUpdated = $bill->update([
+                    Log::info('PAYMENT SUCCESS - UPDATING TO PAID/RENTED', [
+                        'tenant_id' => $bill->tenant_id,
+                        'property_id' => $bill->property_id
+                    ]);
+                    
+                    $transactionData['status'] = Transaction::STATUS_SUCCESS;
+                    $transactionData['paid_at'] = now();
+                    
+                    $bill->update([
                         'status' => 'paid',
                         'payment_date' => now()
                     ]);
-
-                    $propertyUpdateResult = Property::where('id', $bill->property_id)
-                        ->update(['status' => 'Rented']);
-
-                    $property = Property::find($bill->property_id);
-                    if ($property) {
-                        $property->status = 'Rented';
-                        $property->save();
-                    }
-
-                    Transaction::updateOrCreate(
-                        ['bill_id' => $bill->id],
-                        [
-                            'bill_id' => $bill->id,
-                            'status' => 'success',
-                            'paid_at' => now(),
-                            'midtrans_response' => $request->all()
-                        ]
-                    );
-
-                    Log::info('SETTLEMENT COMPLETED');
+                    
+                    $bill->property->update(['status' => 'Rented']);
+                    
+                    Log::info('SUCCESS UPDATES COMPLETED', [
+                        'new_bill_status' => 'paid',
+                        'new_property_status' => 'Rented',
+                        'bill_id' => $bill->id,
+                        'property_id' => $bill->property_id,
+                        'tenant_id' => $bill->tenant_id
+                    ]);
                     break;
-
+                    
                 case 'pending':
-                    Log::info('PROCESSING PENDING.');
+                    Log::info('PAYMENT PENDING - MAINTAINING PROCESSING');
+                    
+                    $transactionData['status'] = Transaction::STATUS_PENDING;
                     $bill->update(['status' => 'pending']);
                     break;
-
+                    
                 case 'deny':
                 case 'cancel':
                 case 'expire':
                 case 'failure':
-                    Log::info('PROCESSING FAILED PAYMENT.');
-
+                    Log::info('PAYMENT FAILED - REVERTING TO AVAILABLE', [
+                        'transaction_status' => $transactionStatus,
+                        'tenant_id' => $bill->tenant_id
+                    ]);
+                    
+                    $transactionData['status'] = Transaction::STATUS_FAILED;
+                    
                     $bill->update(['status' => 'failed']);
-
-                    Property::where('id', $bill->property_id)
-                        ->update(['status' => 'Available']);
-
-                    Log::info('PROPERTY STATUS RESET TO AVAILABLE');
+                    $bill->property->update(['status' => 'Available']);
                     break;
-
+                    
                 default:
-                    Log::warning('UNKNOWN TRANSACTION STATUS', ['status' => $transactionStatus]);
+                    Log::warning('UNKNOWN TRANSACTION STATUS', [
+                        'status' => $transactionStatus,
+                        'tenant_id' => $bill->tenant_id
+                    ]);
+                    $transactionData['status'] = Transaction::STATUS_PENDING;
                     break;
             }
-
+            
+            $transaction = Transaction::updateOrCreate(
+                ['bill_id' => $bill->id],
+                $transactionData
+            );
+            
+            Log::info('TRANSACTION RECORD SAVED', [
+                'transaction_id' => $transaction->id,
+                'status' => $transaction->status,
+                'tenant_id' => $bill->tenant_id
+            ]);
+            
             DB::commit();
-
-            $finalBill = Bill::find($bill->id);
-            $finalProperty = Property::find($bill->property_id);
-
-            Log::info('=== FINAL VERIFICATION ===', [
-                'bill_id' => $finalBill->id,
-                'bill_status' => $finalBill->status,
-                'property_id' => $finalProperty->id,
-                'property_status' => $finalProperty->status,
+            
+            $updatedBill = $bill->fresh();
+            $updatedProperty = $bill->property->fresh();
+            
+            Log::info('=== WEBHOOK COMPLETED SUCCESSFULLY ===', [
+                'bill_id' => $updatedBill->id,
+                'tenant_id' => $updatedBill->tenant_id,
+                'final_bill_status' => $updatedBill->status,
+                'final_property_status' => $updatedProperty->status,
                 'transaction_status' => $transactionStatus
             ]);
-
-            if (in_array($transactionStatus, ['capture', 'settlement'])) {
-                if ($finalBill->status === 'paid' && $finalProperty->status === 'Rented') {
-                    Log::info('✅ SUCCESS: Bill paid and Property rented');
-                } else {
-                    Log::error('❌ FAILURE: Status mismatch', [
-                        'expected_bill_status' => 'paid',
-                        'actual_bill_status' => $finalBill->status,
-                        'expected_property_status' => 'Rented',
-                        'actual_property_status' => $finalProperty->status
-                    ]);
-                }
-            }
-
+            
             return response()->json(['status' => 'success']);
-
+            
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('WEBHOOK ERROR', [
+            Log::error('=== WEBHOOK ERROR ===', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile()
             ]);
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
-    }
-
-    public function getPaymentStatus($billId)
-    {
-        try {
-            $bill = Bill::with(['property', 'renter', 'transaction'])
-                ->find($billId);
-
-            if (!$bill) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Bill not found'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'bill' => [
-                        'id' => $bill->id,
-                        'status' => $bill->status,
-                        'amount' => $bill->amount,
-                        'due_date' => $bill->due_date,
-                        'payment_date' => $bill->payment_date,
-                    ],
-                    'property' => [
-                        'id' => $bill->property->id,
-                        'name' => $bill->property->name,
-                        'status' => $bill->property->status,
-                    ],
-                    'transaction' => $bill->transaction
-                ]
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Error checking payment status: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error checking payment status'
-            ], 500);
+            return response()->json(['status' => 'error'], 500);
         }
     }
 
     public function testWebhookSettlement($billId)
     {
         try {
-            $bill = Bill::with('property')->find($billId);
-
+            $bill = Bill::with(['property', 'tenant'])->find($billId);
+            
             if (!$bill) {
                 return response()->json(['error' => 'Bill not found'], 404);
             }
-
+            
             Log::info('MANUAL TEST - Before Settlement', [
                 'bill_id' => $bill->id,
+                'tenant_id' => $bill->tenant_id,
                 'bill_status' => $bill->status,
-                'property_id' => $bill->property_id,
                 'property_status' => $bill->property->status
             ]);
-
+            
             DB::beginTransaction();
-
+            
             $bill->update([
                 'status' => 'paid',
                 'payment_date' => now()
             ]);
-
-            $propertyUpdateCount = Property::where('id', $bill->property_id)
-                ->update(['status' => 'Rented']);
-
+            
+            $bill->property->update(['status' => 'Rented']);
+            
             Transaction::create([
                 'bill_id' => $bill->id,
-                'status' => 'success',
+                'status' => Transaction::STATUS_SUCCESS,
                 'paid_at' => now(),
                 'midtrans_response' => [
                     'transaction_status' => 'settlement',
-                    'order_id' => $bill->order_id,
+                    'order_id' => $bill->id,
                     'gross_amount' => $bill->amount,
                     'payment_type' => 'bank_transfer',
                     'settlement_time' => now()->toISOString(),
                     'test_mode' => true
                 ]
             ]);
-
+            
             DB::commit();
-
+            
             $updatedBill = $bill->fresh();
-            $updatedProperty = Property::find($bill->property_id);
-
+            $updatedProperty = $bill->property->fresh();
+            
             Log::info('MANUAL TEST - After Settlement', [
                 'bill_id' => $updatedBill->id,
+                'tenant_id' => $updatedBill->tenant_id,
                 'bill_status' => $updatedBill->status,
-                'property_id' => $updatedProperty->id,
                 'property_status' => $updatedProperty->status
             ]);
-
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Settlement simulation completed',
                 'data' => [
                     'bill_id' => $updatedBill->id,
+                    'tenant_id' => $updatedBill->tenant_id,
                     'bill_status' => $updatedBill->status,
-                    'property_id' => $updatedProperty->id,
                     'property_status' => $updatedProperty->status
                 ]
             ]);
-
+            
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Manual settlement test error: ' . $e->getMessage());

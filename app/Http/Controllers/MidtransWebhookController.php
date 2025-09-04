@@ -12,14 +12,12 @@ class MidtransWebhookController extends Controller
 {
     public function handle(Request $request)
     {
-        // Log incoming request untuk debugging
         Log::info('Midtrans Webhook Raw Request', [
             'headers' => $request->headers->all(),
             'body' => $request->getContent(),
             'all' => $request->all()
         ]);
 
-        // Ambil raw payload
         $payload = json_decode($request->getContent(), true);
         if (!$payload || !is_array($payload)) {
             $payload = $request->all();
@@ -27,19 +25,15 @@ class MidtransWebhookController extends Controller
 
         Log::info('Midtrans Webhook Received', $payload);
 
-        // Validasi data yang dibutuhkan
         if (!isset($payload['order_id'], $payload['status_code'], $payload['gross_amount'])) {
             Log::error('Missing required webhook data', $payload);
             return response()->json(['error' => 'Invalid webhook data'], 400);
         }
 
-        // Validate signature - FIX: Pastikan semua data ada
         $serverKey = config('midtrans.server_key');
         $orderId = $payload['order_id'];
         $statusCode = $payload['status_code'];
         $grossAmount = $payload['gross_amount'];
-        
-        // FIX: Signature validation yang benar
         $signatureKey = $payload['signature_key'] ?? '';
         $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
@@ -52,7 +46,6 @@ class MidtransWebhookController extends Controller
             return response()->json(['error' => 'Invalid signature'], 403);
         }
 
-        // Cari bill by order_id - FIX: Handle format yang berbeda
         $billId = str_replace(['BILL-', 'ORDER-'], '', $payload['order_id']);
         $bill = Bill::find($billId);
 
@@ -68,17 +61,14 @@ class MidtransWebhookController extends Controller
         try {
             DB::beginTransaction();
 
-            // Map statuses
             $transactionStatus = $payload['transaction_status'];
             $fraudStatus = $payload['fraud_status'] ?? null;
             
             $billStatus = $this->mapBillStatus($transactionStatus, $fraudStatus);
             $mappedTransactionStatus = $this->mapTransactionStatus($transactionStatus, $fraudStatus);
 
-            // Update bill status
             $bill->update(['status' => $billStatus]);
 
-            // Create / update transaction
             Transaction::updateOrCreate(
                 ['bill_id' => $bill->id],
                 [
@@ -92,7 +82,6 @@ class MidtransWebhookController extends Controller
                 ]
             );
 
-            // Handle successful payment
             if (in_array($transactionStatus, ['settlement']) || 
                 ($transactionStatus === 'capture' && $fraudStatus === 'accept')) {
                 
@@ -101,7 +90,6 @@ class MidtransWebhookController extends Controller
                     'payment_date' => now()
                 ]);
 
-                // Update property status
                 if ($bill->property) {
                     $bill->property->update(['status' => 'Rented']);
                     
@@ -132,14 +120,12 @@ class MidtransWebhookController extends Controller
         }
     }
 
-    // Test endpoint untuk manual testing
     public function test(Request $request)
     {
         Log::info('Manual webhook test called', $request->all());
         return response()->json(['message' => 'Webhook endpoint is working']);
     }
 
-    // Mapping untuk Bills table
     private function mapBillStatus($transactionStatus, $fraudStatus = null)
     {
         switch ($transactionStatus) {
@@ -159,7 +145,6 @@ class MidtransWebhookController extends Controller
         }
     }
 
-    // Mapping untuk Transactions table
     private function mapTransactionStatus($transactionStatus, $fraudStatus = null)
     {
         switch ($transactionStatus) {
@@ -179,9 +164,6 @@ class MidtransWebhookController extends Controller
         }
     }
 
-    /**
-     * Manual test endpoint untuk settlement
-     */
     public function testSettlement(Request $request, $billId)
     {
         try {
@@ -191,7 +173,6 @@ class MidtransWebhookController extends Controller
                 return response()->json(['error' => 'Bill not found'], 404);
             }
 
-            // Simulate Midtrans webhook data
             $webhookData = [
                 'order_id' => 'BILL-' . $bill->id,
                 'transaction_status' => 'settlement',
@@ -204,7 +185,6 @@ class MidtransWebhookController extends Controller
                 'transaction_id' => 'TEST-' . time()
             ];
 
-            // Add signature
             $serverKey = config('midtrans.server_key');
             $hashed = hash('sha512', 
                 $webhookData['order_id'] . 
@@ -219,7 +199,6 @@ class MidtransWebhookController extends Controller
                 'webhook_data' => $webhookData
             ]);
 
-            // Create request dan process
             $testRequest = new Request();
             $testRequest->replace($webhookData);
 

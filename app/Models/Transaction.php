@@ -35,41 +35,26 @@ class Transaction extends Model
         'updated_at'
     ];
 
-    /**
-     * Relationship to Bill
-     */
     public function bill(): BelongsTo
     {
         return $this->belongsTo(Bill::class);
     }
 
-    /**
-     * Get renter through bill relationship
-     */
     public function getRenterAttribute()
     {
         return $this->bill?->renter;
     }
 
-    /**
-     * Get property through bill relationship  
-     */
     public function getPropertyAttribute()
     {
         return $this->bill?->property;
     }
 
-    /**
-     * Format amount as currency
-     */
     public function getFormattedAmountAttribute()
     {
         return 'Rp ' . number_format($this->amount, 0, ',', '.');
     }
 
-    /**
-     * Get status badge class
-     */
     public function getStatusBadgeClassAttribute()
     {
         return match($this->status) {
@@ -81,7 +66,7 @@ class Transaction extends Model
     }
 
     public function renter()
-{
-    return $this->hasOneThrough(Renter::class, Bill::class, 'id', 'id', 'bill_id', 'renter_id');
-}
+    {
+        return $this->hasOneThrough(Renter::class, Bill::class, 'id', 'id', 'bill_id', 'renter_id');
+    }
 }
