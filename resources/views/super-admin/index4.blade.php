@@ -36,15 +36,15 @@
 
         <div class="card-body p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-6" id="tenantGrid">
-                @if (isset($tenants) && count($tenants) > 0)
-                    @foreach ($tenants as $tenant)
+                @if ($tenantsWithStats->count() > 0)
+                    @foreach ($tenantsWithStats as $tenant)
                         <div class="user-grid-card">
                             <div
                                 class="relative border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden">
                                 {{-- Tenant info --}}
                                 <div class="pe-6 pb-4 ps-6 text-center mt--50 pt-5">
                                     <img src="{{ asset('assets/images/user-grid/user-grid-img1.png') }}" alt=""
-                                        class="border br-white border-width-8-px w-[120px] h-[120px] ms-auto me-auto -mt-[0px] rounded-full object-fit-cover">
+                                        class="border br-white border-width-8-px w-[120px] h-[120px] ms-auto me-auto rounded-full object-fit-cover">
 
                                     <h6 class="text-lg mb-1 mt-2">{{ $tenant->name }}</h6>
                                     <div class="text-center w-full mb-4">
@@ -61,69 +61,87 @@
                                         @endif
                                     </div>
 
-                                    {{-- Chart Cards --}}
-                                    @if (strtolower($tenant->status) == 'active')
-                                        {{-- Active User Charts - Semua Hijau --}}
-                                        <div
-                                            class="center-border relative shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-l from-success-600/10 to-bg-white p-3 flex items-center gap-4">
-                                            <div class="text-center w-1/2">
-                                                <h6 class="text-bold mb-0">{{ rand(60, 95) }}%</h6>
-                                                <p class="text-sm mb-0"><span
-                                                        class="bg-success-100 dark:bg-success-600/25 px-1 py-px rounded font-medium text-success-600 dark:text-success-400 text-sm">+{{ rand(10, 30) }}</span>
-                                                    this week</p>
+                                    {{-- Statistik dari $tenantsWithStats --}}
+                                    <div class="p-4">
+                                        @if (strtolower($tenant->status) == 'active')
+                                            <div
+                                                class="center-border relative shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-l from-success-600/10 to-bg-white p-3 flex items-center gap-4">
+                                                <div class="text-center w-1/2">
+                                                    <h6 class="text-bold mb-0">{{ $tenant->payment_success_rate }}%</h6>
+                                                    <p class="text-sm mb-0">
+                                                        <span
+                                                            class="bg-{{ $tenant->weekly_change >= 0 ? 'success' : 'danger' }}-100 dark:bg-{{ $tenant->weekly_change >= 0 ? 'success' : 'danger' }}-600/25 px-1 py-px rounded font-medium text-{{ $tenant->weekly_change >= 0 ? 'success' : 'danger' }}-600 dark:text-{{ $tenant->weekly_change >= 0 ? 'success' : 'danger' }}-400 text-sm">
+                                                            {{ $tenant->weekly_change >= 0 ? '+' : '' }}{{ $tenant->weekly_change }}%
+                                                        </span>
+                                                        this week
+                                                    </p>
+                                                </div>
+                                                <div id="active-user-chart-{{ $tenant->id }}"
+                                                    class="remove-tooltip-title rounded-tooltip-value w-1/2"></div>
                                             </div>
-                                            <div id="active-user-chart-{{ $tenant->id }}"
-                                                class="remove-tooltip-title rounded-tooltip-value w-1/2">
-                                            </div>
-                                        </div>
-                                    @else
-                                        {{-- Inactive User Charts - Semua Merah --}}
-                                        <div
-                                            class="center-border relative shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-l from-red-600/10 to-bg-white p-3 flex items-center gap-4">
-                                            <div class="text-center w-1/2">
-                                                <h6 class="text-bold mb-0">{{ rand(20, 45) }}%</h6>
-                                                <p class="text-sm mb-0"><span
-                                                        class="bg-danger-100 dark:bg-danger-600/25 px-1 py-px rounded font-medium text-danger-600 dark:text-danger-400 text-sm">-{{ rand(5, 15) }}</span>
-                                                    this week</p>
-                                            </div>
-                                            <div id="inactive-user-chart-{{ $tenant->id }}"
-                                                class="remove-tooltip-title rounded-tooltip-value w-1/2">
-                                            </div>
-                                        </div>
-                                    @endif
 
-                                    <a href="{{ route('super-admin.index8', $tenant->id) }}"
-                                        class="bg-primary-50 hover:bg-primary-600 dark:hover:bg-primary-600 hover:text-white dark:hover:text-white dark:bg-primary-600/25 text-primary-600 dark:text-primary-400 bg-hover-primary-600 hover-text-white p-2.5 text-sm btn-sm px-3 py-3 rounded-lg flex items-center justify-center mt-4 font-medium gap-2 w-full">
-                                        View Statistic
-                                        <iconify-icon icon="solar:alt-arrow-right-linear"
-                                            class="icon text-xl line-height-1"></iconify-icon>
-                                    </a>
+                                            <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                                                <div class="text-center p-2 bg-gray-50 rounded">
+                                                    <div class="font-semibold text-gray-800">
+                                                        {{ number_format($tenant->monthly_revenue) }}</div>
+                                                    <div class="text-gray-500">This Month's Income</div>
+                                                </div>
+                                                <div class="text-center p-2 bg-gray-50 rounded">
+                                                    <div class="font-semibold text-gray-800">{{ $tenant->bills_count }}
+                                                    </div>
+                                                    <div class="text-gray-500">Total Bills</div>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <div
+                                                class="center-border relative shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-l from-red-600/10 to-bg-white p-3 flex items-center gap-4">
+                                                <div class="text-center w-1/2">
+                                                    <h6 class="text-bold mb-0">{{ $tenant->payment_success_rate }}%</h6>
+                                                    <p class="text-sm mb-0">
+                                                        <span
+                                                            class="bg-danger-100 dark:bg-danger-600/25 px-1 py-px rounded font-medium text-danger-600 dark:text-danger-400 text-sm">
+                                                            {{ $tenant->weekly_change >= 0 ? '+' : '' }}{{ $tenant->weekly_change }}%
+                                                        </span>
+                                                        this week
+                                                    </p>
+                                                </div>
+                                                <div id="inactive-user-chart-{{ $tenant->id }}"
+                                                    class="remove-tooltip-title rounded-tooltip-value w-1/2"></div>
+                                            </div>
+
+                                            <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                                                <div class="text-center p-2 bg-gray-50 rounded">
+                                                    <div class="font-semibold text-gray-800">
+                                                        {{ number_format($tenant->monthly_revenue) }}</div>
+                                                    <div class="text-gray-500">This Month's Income</div>
+                                                </div>
+                                                <div class="text-center p-2 bg-gray-50 rounded">
+                                                    <div class="font-semibold text-gray-800">{{ $tenant->bills_count }}
+                                                    </div>
+                                                    <div class="text-gray-500">Total Bills</div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="border-t border-gray-200 dark:border-neutral-600 p-4">
+                                        <a href="{{ route('super-admin.index8', $tenant->id) }}"
+                                            class="btn btn-primary btn-sm w-full justify-center">
+                                            View Details
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 @else
                     <div class="col-span-full text-center py-8">
-                        @if (isset($search) && !empty($search))
-                            <div class="flex flex-col items-center justify-center">
-                                <p class="text-gray-500 dark:text-gray-400 text-lg mb-2">No tenants found</p>
-                                <p class="text-gray-400 dark:text-gray-500 text-sm mb-4">No results for
-                                    "{{ $search }}"</p>
-                                <a href="{{ request()->url() }}?per_page={{ $perPage ?? 10 }}"
-                                    class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                                    Clear Search
-                                </a>
-                            </div>
-                        @else
-                            <div class="flex flex-col items-center justify-center">
-                                <p class="text-gray-500 dark:text-gray-400">Belum ada Landlord yang terdaftar</p>
-                            </div>
-                        @endif
+                        <p class="text-gray-500 dark:text-gray-400">Belum ada Landlord yang terdaftar</p>
                     </div>
                 @endif
             </div>
 
-            <!-- Custom Pagination -->
+            {{-- Pagination pakai $tenants --}}
             <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
                 <span id="paginationInfo">
                     @if ($tenants->total() > 0)
@@ -140,60 +158,39 @@
 
                 @if ($tenants->hasPages())
                     <ul class="pagination flex flex-wrap items-center gap-2 justify-center">
-                        <!-- Previous Button -->
+                        {{-- Previous Button --}}
                         <li class="page-item">
                             @if ($tenants->onFirstPage())
-                                <button disabled
-                                    class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base opacity-50 cursor-not-allowed">
-                                    <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
-                                </button>
+                                <button disabled class="page-link opacity-50 cursor-not-allowed">‹</button>
                             @else
-                                <a href="{{ $tenants->previousPageUrl() }}"
-                                    class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                    <iconify-icon icon="ep:d-arrow-left"></iconify-icon>
-                                </a>
+                                <a href="{{ $tenants->previousPageUrl() }}" class="page-link">‹</a>
                             @endif
                         </li>
 
-                        <!-- Page Numbers -->
-                        <div class="flex gap-1">
-                            @foreach ($tenants->getUrlRange(1, $tenants->lastPage()) as $page => $url)
+                        {{-- Page Numbers --}}
+                        @foreach ($tenants->getUrlRange(1, $tenants->lastPage()) as $page => $url)
+                            <li class="page-item">
                                 @if ($page == $tenants->currentPage())
-                                    <li class="page-item">
-                                        <span
-                                            class="page-link bg-primary-600 text-white rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
-                                            {{ $page }}
-                                        </span>
-                                    </li>
+                                    <span class="page-link bg-primary-600 text-white">{{ $page }}</span>
                                 @else
-                                    <li class="page-item">
-                                        <a href="{{ $url }}"
-                                            class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                            {{ $page }}
-                                        </a>
-                                    </li>
+                                    <a href="{{ $url }}" class="page-link">{{ $page }}</a>
                                 @endif
-                            @endforeach
-                        </div>
+                            </li>
+                        @endforeach
 
-                        <!-- Next Button -->
+                        {{-- Next Button --}}
                         <li class="page-item">
                             @if ($tenants->hasMorePages())
-                                <a href="{{ $tenants->nextPageUrl() }}"
-                                    class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                    <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
-                                </a>
+                                <a href="{{ $tenants->nextPageUrl() }}" class="page-link">›</a>
                             @else
-                                <button disabled
-                                    class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light font-semibold rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base opacity-50 cursor-not-allowed">
-                                    <iconify-icon icon="ep:d-arrow-right"></iconify-icon>
-                                </button>
+                                <button disabled class="page-link opacity-50 cursor-not-allowed">›</button>
                             @endif
                         </li>
                     </ul>
                 @endif
             </div>
         </div>
+
     </div>
 
     {{-- SCRIPT UNTUK CHARTS ONLY (Search removed because it's handled server-side now) --}}

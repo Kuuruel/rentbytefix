@@ -1,103 +1,103 @@
-    // =========================== Default Line Chart Start ===============================
-    var options = {
-        series: [{
-            name: "This month",
-            data: [0, 48, 20, 24, 6, 33, 30, 48, 35, 18, 20, 5]
-        }],
-        chart: {
-            height: 264,
-            type: 'line',
-            toolbar: {
-                show: false
-            },
-            zoom: {
-                enabled: false
-            },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth',
-            colors: ['#487FFF'],
-            width: 4
-        },
-        markers: {
-            size: 0,
-            strokeWidth: 3,
-            hover: {
-                size: 8
-            }
-        },
-        tooltip: {
-            enabled: true,
-            x: {
-                show: true,
-            },
-            y: {
-                show: false,
-            },
-            z: {
-                show: false,
-            }
-        },
-        grid: {
-            row: {
-                colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
-                opacity: 0.5
-            },
-            borderColor: '#D1D5DB',
-            strokeDashArray: 3,
-        },
-        yaxis: {
-            labels: {
-                formatter: function (value) {
-                    return "$" + value + "k";
-                },
-                style: {
-                    fontSize: "14px"
-                }
-            },
-        },
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            tooltip: {
-                enabled: false
-            },
-            labels: {
-                formatter: function (value) {
-                    return value;
-                },
-                style: {
-                    fontSize: "14px"
-                }
-            },
-            axisBorder: {
-                show: false
-            },
-            // crosshairs: {
-            //     show: true,
-            //     width: 20,
-            //     stroke: {
-            //         width: 0
-            //     },
-            //     fill: {
-            //         type: 'solid',
-            //         color: '#487FFF40',
-            //         // gradient: {
-            //         //   colorFrom: '#D8E3F0',
-            //         //   // colorTo: '#BED1E6',
-            //         //   stops: [0, 100],
-            //         //   opacityFrom: 0.4,
-            //         //   opacityTo: 0.5,
-            //         // },
-            //     }
-            // }
-        }
-    };
+    // // =========================== Default Line Chart Start ===============================
+    // var options = {
+    //     series: [{
+    //         name: "This month",
+    //         data: [0, 48, 20, 24, 6, 33, 30, 48, 35, 18, 20, 5]
+    //     }],
+    //     chart: {
+    //         height: 264,
+    //         type: 'line',
+    //         toolbar: {
+    //             show: false
+    //         },
+    //         zoom: {
+    //             enabled: false
+    //         },
+    //     },
+    //     dataLabels: {
+    //         enabled: false
+    //     },
+    //     stroke: {
+    //         curve: 'smooth',
+    //         colors: ['#487FFF'],
+    //         width: 4
+    //     },
+    //     markers: {
+    //         size: 0,
+    //         strokeWidth: 3,
+    //         hover: {
+    //             size: 8
+    //         }
+    //     },
+    //     tooltip: {
+    //         enabled: true,
+    //         x: {
+    //             show: true,
+    //         },
+    //         y: {
+    //             show: false,
+    //         },
+    //         z: {
+    //             show: false,
+    //         }
+    //     },
+    //     grid: {
+    //         row: {
+    //             colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
+    //             opacity: 0.5
+    //         },
+    //         borderColor: '#D1D5DB',
+    //         strokeDashArray: 3,
+    //     },
+    //     yaxis: {
+    //         labels: {
+    //             formatter: function (value) {
+    //                 return "$" + value + "k";
+    //             },
+    //             style: {
+    //                 fontSize: "14px"
+    //             }
+    //         },
+    //     },
+    //     xaxis: {
+    //         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    //         tooltip: {
+    //             enabled: false
+    //         },
+    //         labels: {
+    //             formatter: function (value) {
+    //                 return value;
+    //             },
+    //             style: {
+    //                 fontSize: "14px"
+    //             }
+    //         },
+    //         axisBorder: {
+    //             show: false
+    //         },
+    //         // crosshairs: {
+    //         //     show: true,
+    //         //     width: 20,
+    //         //     stroke: {
+    //         //         width: 0
+    //         //     },
+    //         //     fill: {
+    //         //         type: 'solid',
+    //         //         color: '#487FFF40',
+    //         //         // gradient: {
+    //         //         //   colorFrom: '#D8E3F0',
+    //         //         //   // colorTo: '#BED1E6',
+    //         //         //   stops: [0, 100],
+    //         //         //   opacityFrom: 0.4,
+    //         //         //   opacityTo: 0.5,
+    //         //         // },
+    //         //     }
+    //         // }
+    //     }
+    // };
 
-    var chart = new ApexCharts(document.querySelector("#defaultLineChart"), options);
-    chart.render();
+    // var chart = new ApexCharts(document.querySelector("#defaultLineChart"), options);
+    // chart.render();
   // =========================== Default Line Chart End ===============================
 
   // =========================== Zoom able Line Chart End ===============================

@@ -62,6 +62,7 @@
             </div>
         </div>
         <!-- Card Total Properties -->
+        <!-- Card Monthly Billings -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-purple-600/10 to-bg-white w-full">
@@ -76,9 +77,20 @@
                         </div>
                     </div>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
-                            <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -80
-                        </span>
+                        @if (($billsDecrease ?? 0) < 0)
+                            <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                                <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon>
+                                {{ $billsDecrease ?? 0 }}
+                            </span>
+                        @elseif(($billsDecrease ?? 0) > 0)
+                            <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $billsDecrease ?? 0 }}
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-info-600 dark:text-info-400">
+                                <iconify-icon icon="bxs:minus" class="text-xs"></iconify-icon> {{ $billsDecrease ?? 0 }}
+                            </span>
+                        @endif
                         Last 30 days
                     </p>
                 </div>
@@ -88,6 +100,7 @@
 
 
         <!-- Card Monthly Billings -->
+        <!-- Card Platform Revenue -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-success-600/10 to-bg-white w-full">
@@ -116,12 +129,6 @@
                         @endif
                         30 days income
                     </p>
-                    {{-- <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                            <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +$20
-                        </span>
-                        30 days income
-                    </p> --}}
                 </div>
             </div>
         </div>
@@ -503,9 +510,16 @@
                                 <h5 class="font-semibold mb-0">{{ number_format($totalTransactionsThisWeek ?? 0) }}</h5>
                                 <small class="text-xs text-neutral-500">
                                     @if (($transactionPercentageChange ?? 0) >= 0)
-                                        ↗️ +{{ number_format($transactionPercentageChange ?? 0, 1) }}% from last week
+                                        <span
+                                            class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                                            <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +
+                                            {{ number_format($transactionPercentageChange ?? 0, 1) }}% </span> from last
+                                        week
                                     @else
-                                        ↘️ {{ number_format($transactionPercentageChange ?? 0, 1) }}% from last week
+                                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                                            <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -
+                                            {{ number_format($transactionPercentageChange ?? 0, 1) }}% </span>from last
+                                        week
                                     @endif
                                 </small>
                             </div>
@@ -549,7 +563,7 @@
             </div>
         </div>
 
-        <!-- Recent Activities -->
+        <!-- Recent Activities - Enhanced Version -->
         <div class="col-span-12 lg:col-span-6">
             <div class="card h-full border-0">
                 <div class="card-body">
@@ -563,36 +577,84 @@
                     </div>
 
                     <div class="space-y-4">
-                        @forelse($recentTenants as $tenant)
+                        @forelse($recentActivities as $activity)
                             <div
                                 class="flex items-start justify-between gap-3 py-3 border-b border-neutral-200 dark:border-neutral-600 last:border-b-0">
                                 <div class="flex items-start gap-3 flex-1">
+                                    <!-- Dynamic Icon -->
                                     <div
-                                        class="w-10 h-10 rounded-full bg-success-100 dark:bg-success-600/10 flex items-center justify-center shrink-0">
-                                        <iconify-icon icon="solar:user-plus-bold"
-                                            class="text-success-600 dark:text-success-400 text-lg"></iconify-icon>
+                                        class="w-10 h-10 rounded-full {{ $activity->bg_color }} flex items-center justify-center shrink-0">
+                                        <iconify-icon icon="{{ $activity->icon }}"
+                                            class="{{ $activity->icon_color }} text-lg"></iconify-icon>
                                     </div>
+
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-2 flex-wrap">
-                                            <span
-                                                class="text-sm font-medium text-neutral-700 dark:text-neutral-300">Landloard</span>
-                                            <span
-                                                class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $tenant->name }}</span>
-                                            <span class="text-sm text-neutral-600 dark:text-neutral-400">registered</span>
-                                        </div>
-                                        @if ($tenant->user)
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
-                                                Created by: {{ $tenant->user->name }}
+                                        <!-- Activity Description -->
+                                        @if ($activity->type == 'tenant_registered')
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span
+                                                    class="text-sm font-medium text-neutral-700 dark:text-neutral-300">Landlord</span>
+                                                <span
+                                                    class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $activity->tenant_name }}</span>
+                                                <span
+                                                    class="text-sm text-neutral-600 dark:text-neutral-400">{{ $activity->description }}</span>
+                                            </div>
+                                            @if ($activity->created_by)
+                                                <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
+                                                    Created by: {{ $activity->created_by }}
+                                                </p>
+                                            @endif
+                                        @elseif($activity->type == 'payment_completed')
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span
+                                                    class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $activity->tenant_name }}</span>
+                                                <span
+                                                    class="text-sm text-neutral-600 dark:text-neutral-400">{{ $activity->description }}</span>
+                                            </div>
+                                            <p class="text-xs text-success-600 dark:text-success-400 mt-1 font-medium">
+                                                Amount: Rp{{ number_format($activity->amount, 0, ',', '.') }}
                                             </p>
+                                        @elseif($activity->type == 'bill_created')
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span
+                                                    class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $activity->tenant_name }}</span>
+                                                <span
+                                                    class="text-sm text-neutral-600 dark:text-neutral-400">{{ $activity->description }}</span>
+                                            </div>
+                                            <p class="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
+                                                Amount: Rp{{ number_format($activity->amount, 0, ',', '.') }} • Due:
+                                                {{ $activity->due_date->format('d M Y') }}
+                                            </p>
+                                        @elseif($activity->type == 'payment_failed')
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span
+                                                    class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $activity->tenant_name }}</span>
+                                                <span
+                                                    class="text-sm text-danger-600 dark:text-danger-400">{{ $activity->description }}</span>
+                                            </div>
+                                            <p class="text-xs text-danger-600 dark:text-danger-400 mt-1 font-medium">
+                                                Amount: Rp{{ number_format($activity->amount, 0, ',', '.') }}
+                                            </p>
+                                        @else
+                                            <!-- Fallback for unknown activity types -->
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <span
+                                                    class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $activity->tenant_name ?? 'Unknown' }}</span>
+                                                <span
+                                                    class="text-sm text-neutral-600 dark:text-neutral-400">{{ $activity->description ?? 'activity' }}</span>
+                                            </div>
                                         @endif
                                     </div>
                                 </div>
+
+                                <!-- Timestamp -->
                                 <div class="text-right shrink-0">
                                     <span class="text-xs text-neutral-500 dark:text-neutral-400">
-                                        {{ $tenant->created_at->diffForHumans() }}
+                                        {{ $activity->created_at->diffForHumans() }}
                                     </span>
                                 </div>
                             </div>
+
                         @empty
                             <div class="text-center py-8">
                                 <iconify-icon icon="solar:inbox-line-duotone"

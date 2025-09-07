@@ -421,41 +421,41 @@
 
                         </ul>
                     </div>
-                    {{-- <div class="mt-8">
+                    <div class="mt-8">
                         <h6 class="text-lg mb-4">Billing Summary</h6>
                         <ul>
                             <li class="flex items-center gap-1 mb-3">
 
                                 <span class="w-[30%] text-base font-semibold text-neutral-600 dark:text-neutral-200">
-                                    Pending 
+                                    Pending Bills
                                 </span>
                                 <span class="w-[70%] text-secondary-light font-medium">:
-                                    {{ $tenant->name }}
+                                    {{ number_format($pendingBills ?? 0) }}
                                 </span>
                             </li>
 
                             <li class="flex items-center gap-1 mb-3">
                                 <span class="w-[30%] text-base font-semibold text-neutral-600 dark:text-neutral-200">
-                                    Overdue 
+                                    Overdue Bills
                                 </span>
                                 <span class="w-[70%] text-secondary-light font-medium">:
-                                    {{ $tenant->email }}
+                                    {{ number_format($overdueBills ?? 0) }}
                                 </span>
                             </li>
 
                             <li class="flex items-center gap-1 mb-3">
                                 <span class="w-[30%] text-base font-semibold text-neutral-600 dark:text-neutral-200">
-                                    Paid 
+                                    Paid Bills
                                 </span>
                                 <span class="w-[70%] text-secondary-light font-medium">:
-                                    {{ $tenant->country ?? '-' }}
+                                    {{ number_format($paidBills ?? 0) }}
                                 </span>
                             </li>
 
-                            
+
 
                         </ul>
-                    </div> --}}
+                    </div>
 
                 </div>
             </div>
@@ -467,7 +467,9 @@
                         <h6 class="mb-4">Tenant Statistics</h6>
                         <div class="gap-6 grid grid-cols-1 sm:grid-cols-12">
                             <!-- Dashboard Widget Start -->
-                            <div class="col-span-12 sm:col-span-6 lg:col-span-4 ">
+
+                            <!-- Card 1: Transactions -->
+                            <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-success-600/10 to-bg-white">
                                     <div class="card-body p-0">
@@ -477,16 +479,26 @@
                                                     class="mb-0 w-[44px] h-[44px] bg-success-600 shrink-0 text-white flex justify-center items-center rounded-full h6">
                                                     <iconify-icon icon="solar:wallet-bold" class="icon"></iconify-icon>
                                                 </span>
-                                                <div class="flex-grow-1 ">
-                                                    <h6 class="font-semibold mb-0">24,000</h6>
-                                                    <span class="font-medium text-secondary-light text-base">Transactions
-                                                    </span>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="font-semibold mb-0">
+                                                        {{ number_format($transactionsThisMonth ?? 0) }}</h6>
+                                                    <span
+                                                        class="font-medium text-secondary-light text-base">Transactions</span>
                                                     <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
-                                                        <span
-                                                            class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
-                                                            +12%
-                                                            <i class="ri-arrow-up-line"></i>
-                                                        </span> vs last month
+                                                        @if (($transactionsChange ?? 0) >= 0)
+                                                            <span
+                                                                class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                +{{ number_format($transactionsChange ?? 0, 1) }}%
+                                                                <i class="ri-arrow-up-line"></i>
+                                                            </span>
+                                                        @else
+                                                            <span
+                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                {{ number_format($transactionsChange ?? 0, 1) }}%
+                                                                <i class="ri-arrow-down-line"></i>
+                                                            </span>
+                                                        @endif
+                                                        vs last month
                                                     </p>
                                                 </div>
                                             </div>
@@ -494,8 +506,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Dashboard Widget End -->
-                            <!-- Dashboard Widget Start -->
+                            <!-- Card 2: Total Sales -->
                             <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-warning-600/10 to-bg-white">
@@ -508,15 +519,25 @@
                                                         class="icon"></iconify-icon>
                                                 </span>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="font-semibold mb-0">82,000</h6>
+                                                    <h6 class="font-semibold mb-0">
+                                                        Rp{{ number_format($salesThisMonth ?? 0, 0, ',', '.') }}</h6>
                                                     <span class="font-medium text-secondary-light text-base">Total
                                                         Sales</span>
                                                     <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
-                                                        <span
-                                                            class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
-                                                            +18%
-                                                            <i class="ri-arrow-down-line"></i>
-                                                        </span> vs last month
+                                                        @if (($salesChange ?? 0) >= 0)
+                                                            <span
+                                                                class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                +{{ number_format($salesChange ?? 0, 1) }}%
+                                                                <i class="ri-arrow-up-line"></i>
+                                                            </span>
+                                                        @else
+                                                            <span
+                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                {{ number_format($salesChange ?? 0, 1) }}%
+                                                                <i class="ri-arrow-down-line"></i>
+                                                            </span>
+                                                        @endif
+                                                        vs last month
                                                     </p>
                                                 </div>
                                             </div>
@@ -524,8 +545,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Dashboard Widget End -->
-                            <!-- Dashboard Widget Start -->
+
+                            <!-- Card 3: Average per Transaction -->
                             <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-purple-600/10 to-bg-white">
@@ -538,15 +559,25 @@
                                                         class="icon"></iconify-icon>
                                                 </span>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="font-semibold mb-0">Rp 500,000</h6>
+                                                    <h6 class="font-semibold mb-0">
+                                                        Rp{{ number_format($averagePerTransaction ?? 0, 0, ',', '.') }}
+                                                    </h6>
                                                     <span class="font-medium text-secondary-light text-base">Average per
                                                         Transaction</span>
                                                     <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
-                                                        <span
-                                                            class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
-                                                            +168.001%
-                                                            <i class="ri-arrow-up-line"></i>
-                                                        </span>
+                                                        @if (($avgChange ?? 0) >= 0)
+                                                            <span
+                                                                class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                +{{ number_format($avgChange ?? 0, 1) }}%
+                                                                <i class="ri-arrow-up-line"></i>
+                                                            </span>
+                                                        @else
+                                                            <span
+                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                {{ number_format($avgChange ?? 0, 1) }}%
+                                                                <i class="ri-arrow-down-line"></i>
+                                                            </span>
+                                                        @endif
                                                     </p>
                                                 </div>
                                             </div>
@@ -554,7 +585,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Dashboard Widget End -->
+
                         </div>
                     </div>
                     {{-- Line Chart --}}
@@ -570,36 +601,195 @@
                                 </span>
                                 <span class="text-xs font-medium">vs previous month</span>
                             </div> --}}
+                            <!-- SALES OVERVIEW - Update bagian Income & Expenses -->
                             <div class="mt-4 mb-6 flex flex-wrap">
                                 <div class="me-10">
                                     <span class="text-secondary-light text-sm mb-1">Income</span>
                                     <div class="">
-                                        <h6 class="font-semibold inline-block mb-0">$26,201</h6>
-                                        <span class="!text-success-600 font-bold inline-flex items-center gap-1">10%
-                                            <iconify-icon icon="iconamoon:arrow-up-2-fill" class="icon"></iconify-icon>
+                                        <h6 class="font-semibold inline-block mb-0">
+                                            Rp{{ number_format($income ?? 0, 0, ',', '.') }}</h6>
+                                        <span class="!text-success-600 font-bold inline-flex items-center gap-1">
+                                            {{ number_format(abs($incomeChange ?? 0), 1) }}%
+                                            @if (($incomeChange ?? 0) >= 0)
+                                                <iconify-icon icon="iconamoon:arrow-up-2-fill"
+                                                    class="icon"></iconify-icon>
+                                            @else
+                                                <iconify-icon icon="iconamoon:arrow-down-2-fill"
+                                                    class="icon"></iconify-icon>
+                                            @endif
                                         </span>
                                     </div>
                                 </div>
                                 <div>
                                     <span class="text-secondary-light text-sm mb-1">Expenses</span>
                                     <div class="">
-                                        <h6 class="font-semibold inline-block mb-0">$18,120</h6>
-                                        <span class="!text-danger-600 font-bold inline-flex items-center gap-1">10%
-                                            <iconify-icon icon="iconamoon:arrow-down-2-fill"
-                                                class="icon"></iconify-icon> </span>
+                                        <h6 class="font-semibold inline-block mb-0">
+                                            Rp{{ number_format($expenses ?? 0, 0, ',', '.') }}</h6>
+                                        <span class="!text-danger-600 font-bold inline-flex items-center gap-1">
+                                            {{ number_format(abs($expensesChange ?? 0), 1) }}%
+                                            @if (($expensesChange ?? 0) >= 0)
+                                                <iconify-icon icon="iconamoon:arrow-up-2-fill"
+                                                    class="icon"></iconify-icon>
+                                            @else
+                                                <iconify-icon icon="iconamoon:arrow-down-2-fill"
+                                                    class="icon"></iconify-icon>
+                                            @endif
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body p-6">
+                            <div class="card-body p-2">
                                 <div id="defaultLineChart" class="apexcharts-tooltip-style-1"></div>
+
                             </div>
+
                         </div>
 
-
                     </div>
+
+
                     {{-- end Line Card --}}
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        // =========================== Dynamic Line Chart Start ===============================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get chart data from controller
+            var chartData = @json($chartData ?? ['months' => [], 'data' => []]);
+
+            // Pastikan element chart ada
+            var chartElement = document.querySelector("#defaultLineChart");
+            if (!chartElement) {
+                console.error('Chart element #defaultLineChart not found');
+                return;
+            }
+
+            // Pastikan data valid
+            var chartDataArray = chartData.data && Array.isArray(chartData.data) ?
+                chartData.data :
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+            var chartMonths = chartData.months && Array.isArray(chartData.months) ?
+                chartData.months :
+                ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            console.log('Chart data:', chartDataArray);
+            console.log('Chart months:', chartMonths);
+
+            var options = {
+                series: [{
+                    name: "Revenue",
+                    data: chartDataArray
+                }],
+                chart: {
+                    height: 264,
+                    type: 'line',
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: 'easeinout',
+                        speed: 800
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    colors: ['#487FFF'],
+                    width: 4
+                },
+                markers: {
+                    size: 0,
+                    strokeWidth: 3,
+                    hover: {
+                        size: 8
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    x: {
+                        show: true,
+                    },
+                    y: {
+                        show: true,
+                        formatter: function(value) {
+                            if (value === 0) return "Rp0";
+                            return "Rp" + (value * 1000).toLocaleString('id-ID');
+                        }
+                    },
+                    z: {
+                        show: false,
+                    }
+                },
+                grid: {
+                    show: true,
+                    row: {
+                        colors: ['transparent', 'transparent'],
+                        opacity: 0.5
+                    },
+                    borderColor: '#D1D5DB',
+                    strokeDashArray: 3,
+                },
+                yaxis: {
+                    show: true,
+                    labels: {
+                        formatter: function(value) {
+                            if (value === 0) return "0";
+                            return "Rp" + value ;
+                        },
+                        style: {
+                            fontSize: "14px",
+                            colors: ['#64748b']
+                        }
+                    },
+                },
+                xaxis: {
+                    categories: chartMonths,
+                    tooltip: {
+                        enabled: false
+                    },
+                    labels: {
+                        formatter: function(value) {
+                            return value;
+                        },
+                        style: {
+                            fontSize: "14px",
+                            colors: ['#64748b']
+                        }
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                colors: ['#487FFF'],
+                fill: {
+                    type: 'solid',
+                    opacity: 1
+                }
+            };
+
+            try {
+                var chart = new ApexCharts(chartElement, options);
+                chart.render().then(function() {
+                    console.log('Chart rendered successfully');
+                }).catch(function(error) {
+                    console.error('Error rendering chart:', error);
+                });
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
+        });
+        // =========================== Dynamic Line Chart End ===============================
+    </script>
 @endsection

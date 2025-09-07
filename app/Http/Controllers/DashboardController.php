@@ -18,12 +18,93 @@ class DashboardController extends Controller
         $inactiveTenants = Tenants::where('status', 'Inactive')->count();
         $newTenantsToday = Tenants::whereDate('created_at', today())->count();
 
-        // Recent Activities
+        // ✅ ENHANCED: Recent Activities dengan berbagai jenis aktivitas
+        $recentActivities = collect();
+
+        // 1. Recent Tenant Registrations
         $recentTenants = Tenants::with('user')
             ->select('id', 'name', 'created_at', 'user_id', 'country')
             ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+            ->limit(3)
+            ->get()
+            ->map(function($tenant) {
+                return (object)[
+                    'type' => 'tenant_registered',
+                    'tenant_name' => $tenant->name,
+                    'created_by' => $tenant->user ? $tenant->user->name : null,
+                    'created_at' => $tenant->created_at,
+                    'description' => 'registered as new landlord',
+                    'icon' => 'solar:user-plus-bold',
+                    'bg_color' => 'bg-success-100 dark:bg-success-600/10',
+                    'icon_color' => 'text-success-600 dark:text-success-400'
+                ];
+            });
+
+        // 2. Recent Successful Payments
+        $recentPayments = Transaction::with(['bill.tenant'])
+            ->where('status', Transaction::STATUS_SUCCESS)
+            ->whereNotNull('paid_at')
+            ->orderBy('paid_at', 'desc')
+            ->limit(3)
+            ->get()
+            ->map(function($transaction) {
+                return (object)[
+                    'type' => 'payment_completed',
+                    'tenant_name' => $transaction->bill->tenant->name ?? 'Unknown',
+                    'amount' => $transaction->amount,
+                    'created_at' => $transaction->paid_at,
+                    'description' => 'completed payment',
+                    'icon' => 'solar:wallet-money-bold',
+                    'bg_color' => 'bg-primary-100 dark:bg-primary-600/10',
+                    'icon_color' => 'text-primary-600 dark:text-primary-400'
+                ];
+            });
+
+        // 3. Recent Bill Creations
+        $recentBills = Bill::with('tenant')
+            ->orderBy('created_at', 'desc')
+            ->limit(2)
+            ->get()
+            ->map(function($bill) {
+                return (object)[
+                    'type' => 'bill_created',
+                    'tenant_name' => $bill->tenant->name ?? 'Unknown',
+                    'amount' => $bill->amount,
+                    'due_date' => $bill->due_date,
+                    'created_at' => $bill->created_at,
+                    'description' => 'received new bill',
+                    'icon' => 'solar:document-add-bold',
+                    'bg_color' => 'bg-warning-100 dark:bg-warning-600/10',
+                    'icon_color' => 'text-warning-600 dark:text-warning-400'
+                ];
+            });
+
+        // 4. Recent Failed Payments
+        $recentFailedPayments = Transaction::with(['bill.tenant'])
+            ->where('status', Transaction::STATUS_FAILED)
+            ->orderBy('created_at', 'desc')
+            ->limit(2)
+            ->get()
+            ->map(function($transaction) {
+                return (object)[
+                    'type' => 'payment_failed',
+                    'tenant_name' => $transaction->bill->tenant->name ?? 'Unknown',
+                    'amount' => $transaction->amount,
+                    'created_at' => $transaction->created_at,
+                    'description' => 'payment failed',
+                    'icon' => 'solar:close-circle-bold',
+                    'bg_color' => 'bg-danger-100 dark:bg-danger-600/10',
+                    'icon_color' => 'text-danger-600 dark:text-danger-400'
+                ];
+            });
+
+        // 5. Gabungkan semua aktivitas dan sort by created_at
+        $recentActivities = $recentTenants
+            ->concat($recentPayments)
+            ->concat($recentBills)
+            ->concat($recentFailedPayments)
+            ->sortByDesc('created_at')
+            ->take(5); // Ambil 5 aktivitas terbaru
 
         // Owner Distribution
         $ownerDistribution = Tenants::select('country')
@@ -40,6 +121,15 @@ class DashboardController extends Controller
         $monthlyBillings = Bill::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
             ->count();
+
+        // Data untuk Monthly Billings comparison
+        $billsThisMonth = Bill::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->count();
+        $billsLastMonth = Bill::whereYear('created_at', now()->subMonth()->year)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->count();
+        $billsDecrease = $billsThisMonth - $billsLastMonth;
 
         // 2. Platform Revenue - pakai konstanta STATUS_SUCCESS
         $platformRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
@@ -89,9 +179,10 @@ class DashboardController extends Controller
             'activeTenants',
             'inactiveTenants',
             'newTenantsToday',
-            'recentTenants',
+            'recentActivities', // ✅ Ganti recentTenants dengan recentActivities
             'ownerDistribution',
             'monthlyBillings',
+            'billsDecrease', // ✅ Tambahkan untuk comparison
             'platformRevenue',
             'revenueIncrease',
             'totalTransactionsThisWeek',
@@ -100,7 +191,7 @@ class DashboardController extends Controller
             'averageTransactionPerTenant',
             'successfulTransactions',
             'totalTransactions',
-            'chartData' // NEW: Tambahkan chart data
+            'chartData'
         ));
     }
 
@@ -239,4 +330,5 @@ class DashboardController extends Controller
             'payment' => $paymentData
         ];
     }
+    
 }

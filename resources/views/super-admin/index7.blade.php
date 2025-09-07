@@ -335,13 +335,13 @@
                                                             style="border-radius: 4px; border: 1px solid #d1d5db;">
                                                         <label for="dashboard" style="cursor: pointer;">Dashboard</label>
                                                     </div>
-                                                    <div class="dropdown-item" onclick="toggleOption('email')"
+                                                    {{-- <div class="dropdown-item" onclick="toggleOption('email')"
                                                         style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                                                         <input type="checkbox" id="email" value="Email"
                                                             onchange="updateSelection()"
                                                             style="border-radius: 4px; border: 1px solid #d1d5db;">
                                                         <label for="email" style="cursor: pointer;">Email</label>
-                                                    </div>
+                                                    </div> --}}
                                                     <div class="dropdown-item" onclick="toggleOption('push')"
                                                         style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                                                         <input type="checkbox" id="push" value="Push Notifications"
@@ -776,14 +776,14 @@
                                                     <label for="settings-dashboard"
                                                         style="cursor: pointer;">Dashboard</label>
                                                 </div>
-                                                <div class="dropdown-item"
+                                                {{-- <div class="dropdown-item"
                                                     onclick="toggleSettingsOption('settings-email')"
                                                     style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                                                     <input type="checkbox" id="settings-email" value="Email"
                                                         onchange="updateSettingsSelection()"
                                                         style="border-radius: 4px; border: 1px solid #d1d5db;">
                                                     <label for="settings-email" style="cursor: pointer;">Email</label>
-                                                </div>
+                                                </div> --}}
                                                 <div class="dropdown-item" onclick="toggleSettingsOption('settings-push')"
                                                     style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                                                     <input type="checkbox" id="settings-push" value="Push Notifications"
