@@ -69,7 +69,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Monthly Billings</p>
-                            <h6 class="mb-0 dark:text-white mt-2">400</h6>
+                            <h6 class="mb-0 dark:text-white mt-2">{{ number_format($monthlyBillings ?? 0) }}</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="fa-solid:award" class="text-white text-2xl"></iconify-icon>
@@ -95,33 +95,39 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Platform Revenue</p>
-                            <h6 class="mb-0 dark:text-white mt-2">$42,000</h6>
+                            <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($platformRevenue ?? 0, 0, ',', '.') }}
+                            </h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
+                        @if (($revenueIncrease ?? 0) >= 0)
+                            <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
+                                +Rp{{ number_format(abs($revenueIncrease ?? 0), 0, ',', '.') }}
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                                <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon>
+                                -Rp{{ number_format(abs($revenueIncrease ?? 0), 0, ',', '.') }}
+                            </span>
+                        @endif
+                        30 days income
+                    </p>
+                    {{-- <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
                             <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +$20
                         </span>
                         30 days income
-                    </p>
+                    </p> --}}
                 </div>
             </div>
         </div>
 
         <!-- Billing vs Payment Chart -->
         <div class="col-span-12 lg:col-span-8">
-            {{-- <div class="card h-full p-0 border-0 overflow-hidden">
-                <div
-                    class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
-                    <h6 class="text-lg font-semibold mb-0">Growth Comparison</h6>
-                </div>
-                <div class="card-body p-6">
-                    <div id="doubleLineChart" class="w-full h-[300px] sm:h-[350px] md:h-[400px]"></div>
-                </div>
-            </div> --}}
             <div class="card h-full p-0 border-0 overflow-hidden">
                 <div
                     class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
@@ -132,6 +138,107 @@
                 </div>
             </div>
         </div>
+
+        <!-- Chart Data Script -->
+        <script id="chart-data" type="application/json">
+@if(isset($chartData))
+{!! json_encode($chartData) !!}
+@else
+{
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "billing": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "payment": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+}
+@endif
+</script>
+
+        <script>
+            // =========================== Line Chart With Data labels Start ===============================
+            document.addEventListener('DOMContentLoaded', function() {
+                // Ambil data dari controller
+                const chartData = JSON.parse(document.getElementById('chart-data').textContent);
+
+                var options = {
+                    series: [{
+                        name: "Total Billing",
+                        data: chartData.billing
+                    }],
+                    chart: {
+                        height: 264,
+                        type: 'line',
+                        colors: '#000',
+                        zoom: {
+                            enabled: false
+                        },
+                        toolbar: {
+                            show: false
+                        },
+                    },
+                    colors: ['#487FFF'], // Set the color of the series
+                    dataLabels: {
+                        enabled: true
+                    },
+                    stroke: {
+                        curve: 'straight',
+                        width: 4,
+                        color: "#000"
+                    },
+                    markers: {
+                        size: 0,
+                        strokeWidth: 3,
+                        hover: {
+                            size: 8
+                        }
+                    },
+                    grid: {
+                        show: true,
+                        borderColor: '#D1D5DB',
+                        strokeDashArray: 3,
+                        row: {
+                            colors: ['#f3f3f3', 'transparent'],
+                            opacity: 0,
+                        },
+                    },
+                    // Customize the circle marker color on hover
+                    markers: {
+                        colors: '#487FFF',
+                        strokeWidth: 3,
+                        size: 0,
+                        hover: {
+                            size: 10
+                        }
+                    },
+                    xaxis: {
+                        categories: chartData.months,
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        labels: {
+                            formatter: function(value) {
+                                if (value >= 1000000000) {
+                                    return "Rp " + (value / 1000000000).toFixed(1) + "M";
+                                } else if (value >= 1000000) {
+                                    return "Rp " + (value / 1000000).toFixed(1) + "Jt";
+                                } else if (value >= 1000) {
+                                    return "Rp " + (value / 1000).toFixed(0) + "k";
+                                } else {
+                                    return "Rp " + value;
+                                }
+                            },
+                            style: {
+                                fontSize: "14px"
+                            }
+                        },
+                    },
+                };
+
+                var chart = new ApexCharts(document.querySelector("#lineDataLabel"), options);
+                chart.render();
+            });
+            // =========================== Line Chart With Data labels End ===============================
+        </script>
 
 
         <!-- Owner Distribution - Fully Responsive -->
@@ -393,7 +500,14 @@
                             <div>
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Total Transactions This
                                     Week</span>
-                                <h5 class="font-semibold mb-0">%60</h5>
+                                <h5 class="font-semibold mb-0">{{ number_format($totalTransactionsThisWeek ?? 0) }}</h5>
+                                <small class="text-xs text-neutral-500">
+                                    @if (($transactionPercentageChange ?? 0) >= 0)
+                                        ↗️ +{{ number_format($transactionPercentageChange ?? 0, 1) }}% from last week
+                                    @else
+                                        ↘️ {{ number_format($transactionPercentageChange ?? 0, 1) }}% from last week
+                                    @endif
+                                </small>
                             </div>
                             <div class="relative h-[70px]">
                                 <div id="semiCircleGauge"></div>
@@ -408,7 +522,11 @@
                         <div class="flex items-center gap-1 justify-between mb-11">
                             <div>
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Payment Success Rate</span>
-                                <h5 class="font-semibold mb-0">20k</h5>
+                                <h5 class="font-semibold mb-0">{{ number_format($paymentSuccessRate ?? 0, 1) }}%</h5>
+                                <small class="text-xs text-neutral-500">
+                                    {{ number_format($successfulTransactions ?? 0) }} of
+                                    {{ number_format($totalTransactions ?? 0) }} transactions
+                                </small>
                             </div>
                             <div id="areaChart"></div>
                         </div>
@@ -417,7 +535,11 @@
                             <div>
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Average Transaction per
                                     Tenant</span>
-                                <h5 class="font-semibold mb-0">$5.5k</h5>
+                                <h6 class="font-semibold mb-0">
+                                    Rp{{ number_format(($averageTransactionPerTenant ?? 0) / 1000, 1, ',', '.') }}k</h6>
+                                <small class="text-xs text-neutral-500">
+                                    Based on {{ number_format($totalTenants ?? 0) }} tenants
+                                </small>
                             </div>
                             <div id="dailyIconBarChart"></div>
                         </div>
