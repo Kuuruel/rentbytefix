@@ -94,7 +94,7 @@ class LandlordController extends Controller
             
             $monthlyData[] = [
                 'month' => $month->format('M'),
-                'revenue' => $revenue / 1000 // Convert to thousands for chart
+                'revenue' => $revenue / 1000
             ];
         }
         

@@ -59,7 +59,7 @@ class RentalController extends BaseController
             $property = Property::where('id', $request->property_id)
                 ->where('status', 'Available')
                 ->where('tenant_id', $currentTenant->id)
-                ->where('tenant_id', $currentTenant->id) // Menggunakan ID tenant yang login
+                ->where('tenant_id', $currentTenant->id)
                 ->lockForUpdate()
                 ->first();
 
@@ -81,10 +81,8 @@ class RentalController extends BaseController
                 ], 400);
             }
 
-            // Update status properti
             $property->update(['status' => 'Processing']);
 
-            // Buat atau update renter dengan tenant_id yang sedang login
             $renter = Renter::updateOrCreate(
                 ['email' => $request->renter_email],
                 [
@@ -97,7 +95,6 @@ class RentalController extends BaseController
                 ]
             );
 
-            // Hitung jumlah pembayaran
             $startDate = \Carbon\Carbon::parse($request->start_date);
             $endDate = \Carbon\Carbon::parse($request->end_date);
             
@@ -109,7 +106,6 @@ class RentalController extends BaseController
                 $amount = $property->price * max(1, $years);
             }
 
-            // Buat bill dengan tenant_id yang sedang login
             $bill = Bill::create([
                 'tenant_id' => $currentTenant->id,
                 'renter_id' => $renter->id,
@@ -133,16 +129,7 @@ class RentalController extends BaseController
                 'tenant_id' => $currentTenant->id,
                 'tenant_name' => $currentTenant->name,
                 'property_id' => $property->id,
-            DB::commit();
-
-            Log::info('Rental created successfully', [
-                'tenant_id' => $currentTenant->id,
-                'tenant_name' => $currentTenant->name,
-                'property_id' => $property->id,
                 'bill_id' => $bill->id,
-                'amount' => $amount,
-                'status_changed' => 'Available -> Processing'
-            ]);
                 'amount' => $amount,
                 'status_changed' => 'Available -> Processing'
             ]);
