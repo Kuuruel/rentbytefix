@@ -166,14 +166,45 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-    Route::prefix('forms')->group(function () {
-        Route::controller(FormsController::class)->group(function () {
-            Route::get('/form', 'form')->name('form');
-            Route::get('/form-layout', 'formLayout')->name('formLayout');
-            Route::get('/form-validation', 'formValidation')->name('formValidation');
-            Route::get('/wizard', 'wizard')->name('wizard');
-        });
+Route::prefix('super-admin')->group(function () {
+    Route::controller(SuperAdminController::class)->group(function () {
+        Route::get('/', 'index')->name('super-admin.index');
+        Route::get('/index2', 'index2')->name('super-admin.index2');
+        Route::get('/index3', 'index3')->name('super-admin.index3');
+        Route::get('/index4', 'index4')->name('super-admin.index4');
+        Route::get('/index5', 'index5')->name('super-admin.index5');
+        Route::get('/index6', 'index6')->name('super-admin.index6');
+        Route::get('/index7', 'index7')->name('super-admin.index7');
+        Route::get('/index8', 'index8')->name('super-admin.index8');
+        Route::get('/index9', 'index9')->name('super-admin.index9');
+        // ✅ Tambahkan route untuk activities (opsional)
+        Route::get('/activities', 'activities')->name('super-admin.activities');
     });
+});
+
+Route::prefix('landlord')->group(function () {
+    Route::controller(LandlordController::class)->group(function () {
+        Route::get('/', 'index')->name('landlord.index');
+        Route::get('/index2', 'index2')->name('landlord.index2');
+        Route::get('/index3', 'index3')->name('landlord.index3');
+        Route::get('/index4', 'index4')->name('landlord.index4');
+        Route::get('/index5', 'index5')->name('landlord.index5');
+        Route::get('/index6', 'index6')->name('landlord.index6');
+        Route::get('/index7', 'index7')->name('landlord.index7');
+        Route::get('/index8', 'index8')->name('landlord.index8');
+        Route::get('/index9', 'index9')->name('landlord.index9');
+    });
+});
+
+// Forms
+Route::prefix('forms')->group(function () {
+    Route::controller(FormsController::class)->group(function () {
+        Route::get('/form', 'form')->name('form');
+        Route::get('/form-layout', 'formLayout')->name('formLayout');
+        Route::get('/form-validation', 'formValidation')->name('formValidation');
+        Route::get('/wizard', 'wizard')->name('wizard');
+    });
+});
 
     Route::prefix('invoice')->group(function () {
         Route::controller(InvoiceController::class)->group(function () {
@@ -232,9 +263,7 @@ Route::middleware(['auth:web,tenant'])->group(function () {
             Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
             Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
             Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
-    });
-
-            Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
+    });            Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
             Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
             Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
             Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
