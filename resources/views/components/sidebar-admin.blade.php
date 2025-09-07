@@ -358,10 +358,10 @@
                         <a href="{{ route('addUser') }}"><i
                                 class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Add User</a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="{{ route('viewProfile') }}"><i
                                 class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> View Profile</a>
-                    </li>
+                    </li> --}}
                 </ul>
             </li>
             <li class="sidebar-menu-group-title">Application</li>
