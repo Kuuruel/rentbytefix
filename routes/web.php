@@ -240,13 +240,13 @@ Route::middleware(['auth:web,tenant'])->group(function () {
             Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
             Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
 
-            Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-            Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+    Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+    Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
-            Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
-            Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
-            Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-            Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
+    Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
+    Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
+    Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
+    Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
     Route::prefix('landlord')->group(function () {
             Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
