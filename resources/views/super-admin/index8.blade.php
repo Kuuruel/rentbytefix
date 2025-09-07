@@ -392,14 +392,14 @@
                                 </span>
                             </li>
 
-                            <li class="flex items-center gap-1 mb-3">
+                            {{-- <li class="flex items-center gap-1 mb-3">
                                 <span class="w-[30%] text-base font-semibold text-neutral-600 dark:text-neutral-200">
                                     Email
                                 </span>
                                 <span class="w-[70%] text-secondary-light font-medium">:
                                     {{ $tenant->email }}
                                 </span>
-                            </li>
+                            </li> --}}
 
                             <li class="flex items-center gap-1 mb-3">
                                 <span class="w-[30%] text-base font-semibold text-neutral-600 dark:text-neutral-200">

@@ -4,8 +4,9 @@
     </button>
     <div>
         <a href="{{ route('super-admin.index') }}" class="sidebar-logo">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo">
+            Rentbyte
+            {{-- <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
+            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo"> --}}
             <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon">
         </a>
     </div>
@@ -22,6 +23,7 @@
                     /* bg-blue-800 */
 
                     /* bg-blue-700 */
+                    
 
                     color: #ffffff !important;
                     font-weight: 600;
@@ -35,6 +37,7 @@
                 .sidebar-menu li.active>a span {
                     margin-left: 0px !important;
                 }
+                
 
                 /* Dark mode */
                 .dark .sidebar-menu li.active>a,

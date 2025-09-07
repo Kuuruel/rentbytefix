@@ -1,6 +1,7 @@
 @extends('layout.layout')
 
 @php
+
     $title = 'Global Notifications';
     $metaTags = '<meta name="csrf-token" content="' . csrf_token() . '">';
     $subTitle = 'Global Notifications';
@@ -38,9 +39,12 @@
         initializePasswordToggle(".toggle-password");
         // ========================= Password Show Hide Js End ===========================
     </script>';
+
 @endphp
 
 @section('content')
+    <script src="{{ asset('assets/js/tenantList.js') }}"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="col-span-12 lg:col-span-12">
             <div class="card h-full border-0">
@@ -487,11 +491,12 @@
                                                                         <iconify-icon icon="ion:search-outline"
                                                                             class="icon"></iconify-icon>
                                                                     </form>
-                                                                    <select id="targetFilter"
+                                                                    <select id="statusFilter"
                                                                         class="form-select form-select-sm w-auto">
-                                                                        <option value="">Filter by Target</option>
-                                                                        <option value="all">All Tenants</option>
-                                                                        <option value="specific">Specific Tenants</option>
+                                                                        <option value="">Filter by Priority</option>
+                                                                        <option value="Normal">Normal</option>
+                                                                        <option value="Important">Important</option>
+                                                                        <option value="Critical">Critical</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -500,7 +505,7 @@
                                                                 <div id="loadingSpinner" class="hidden text-center py-4">
                                                                     <div
                                                                         class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500">
-                                                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-yellow-500"
                                                                             xmlns="http://www.w3.org/2000/svg"
                                                                             fill="none" viewBox="0 0 24 24">
                                                                             <circle class="opacity-25" cx="12"
@@ -518,7 +523,7 @@
                                                                 <div class="table-responsive scroll-sm overflow-x-auto">
                                                                     <table
                                                                         class="table bordered-table sm-table mb-0 w-full">
-                                                                        <thead class="bg-neutral-50 dark:bg-neutral-800">
+                                                                        <thead class="bg-neutral-50 dark:bg-neutral-800 ">
                                                                             <tr>
                                                                                 <th scope="col"
                                                                                     class="px-4 py-3 text-left w-24">
@@ -600,7 +605,7 @@
                                                                 class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6 flex items-center flex-wrap gap-3 justify-between">
                                                                 <div class="flex items-center flex-wrap gap-3">
                                                                     <form class="navbar-search" onsubmit="return false;">
-                                                                        <input id="searchInput" type="text"
+                                                                        <input id="archivedSearchInput" type="text"
                                                                             class="bg-white dark:bg-neutral-700 h-10 w-auto"
                                                                             name="search"
                                                                             placeholder="Search tenants...">
@@ -608,18 +613,18 @@
                                                                             class="icon"></iconify-icon>
                                                                     </form>
 
-                                                                    <select id="statusFilter"
+                                                                    <select id="archivedTargetFilter"
                                                                         class="form-select form-select-sm w-auto">
-                                                                        <option value="">Filter by Priority</option>
-                                                                        <option value="Normal">Normal</option>
-                                                                        <option value="Important">Important</option>
-                                                                        <option value="Critical">Critical</option>
+                                                                        <option value="">Filter by Target</option>
+                                                                        <option value="all">All Tenants</option>
+                                                                        <option value="specific">Specific Tenants</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
 
                                                             <div class="card-body p-6">
-                                                                <div id="loadingSpinner" class="hidden text-center py-4">
+                                                                <div id="archivedLoadingSpinner"
+                                                                    class="hidden text-center py-4">
                                                                     <div
                                                                         class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500">
                                                                         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -651,7 +656,7 @@
                                                                                                 class="form-check-input rounded border input-form-dark"
                                                                                                 type="checkbox"
                                                                                                 name="checkbox"
-                                                                                                id="selectAll">
+                                                                                                id="archivedSelectAll">
                                                                                         </div>
                                                                                         <span
                                                                                             class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">No.</span>
@@ -689,7 +694,7 @@
                                                                                 </th>
                                                                             </tr>
                                                                         </thead>
-                                                                        <tbody id="tableBody"
+                                                                        <tbody id="archivedTableBody"
                                                                             class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                                                         </tbody>
                                                                     </table>
@@ -697,13 +702,14 @@
 
                                                                 <div
                                                                     class="flex items-center justify-between flex-wrap gap-2 mt-6">
-                                                                    <span id="paginationInfo"
+                                                                    <span id="archivedPaginationInfo"
                                                                         class="text-sm text-neutral-600 dark:text-neutral-400">
                                                                         Showing 0 to 0 of 0 entries
                                                                     </span>
-                                                                    <ul id="pageNumbers"
+                                                                    <ul id="archivedPageNumbers"
                                                                         class="pagination flex flex-wrap items-center gap-2 justify-center">
-                                                                        <div id="pageNumbers" class="flex gap-1"></div>
+                                                                        <div id="archivedPageNumbers" class="flex gap-1">
+                                                                        </div>
                                                                     </ul>
                                                                 </div>
                                                             </div>
@@ -869,6 +875,791 @@
                                 </button>
                             </div>
                         </div>
+                        <!-- Modal Delete Notification -->
+                        <div id="deleteModal"
+                            class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div class="bg-white rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
+                                id="deleteModalContent">
+                                <!-- Header -->
+                                <div class="px-6 py-4 border-b border-neutral-200">
+                                    <h2 class="text-lg font-semibold text-gray-800">Confirm Delete</h2>
+                                </div>
+                                <div class="px-6 py-6">
+                                    <p class="text-sm text-gray-600 mb-5">
+                                        Are you sure you want to delete <span class="font-semibold text-gray-800">this
+                                            notification</span>? This action cannot be undone.
+                                    </p>
+                                    <!-- Action Buttons -->
+                                    <div class="flex justify-end gap-3 mt-6">
+                                        <button onclick="closeDeleteModal()"
+                                            class="px-4 py-2  text-sm rounded-lg bg-gray-200 text-neutral-700 hover:bg-gray-300 transition">
+                                            Cancel
+                                        </button>
+                                        <button id="confirmDeleteBtn"
+                                            class="px-4 py-2 text-sm rounded-lg bg-danger-500 text-white">
+                                            <span class="delete-text">Delete</span>
+                                            <span class="delete-loading" style="display: none;">
+                                                <div class="loading-spinner"></div>
+                                                Menghapus...
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            let deleteId = null;
+
+                            // Buka modal dengan animasi
+                            function deleteNotification(id) {
+                                deleteId = id;
+                                const modal = document.getElementById('deleteModal');
+                                const content = document.getElementById('deleteModalContent');
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    content.classList.remove('scale-95', 'opacity-0');
+                                    content.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            }
+
+                            // Tutup modal dengan animasi
+                            function closeDeleteModal() {
+                                const modal = document.getElementById('deleteModal');
+                                const content = document.getElementById('deleteModalContent');
+                                content.classList.remove('scale-100', 'opacity-100');
+                                content.classList.add('scale-95', 'opacity-0');
+                                setTimeout(() => {
+                                    modal.classList.add('hidden');
+                                }, 200);
+                            }
+
+                            // Konfirmasi Delete
+                            document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+                                fetch(`/admin/notifications/${deleteId}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                                'content')
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showAlert('Notification deleted permanently', 'delete');
+                                            loadNotifications();
+                                        } else {
+                                            showAlert('Error deleting notification', 'error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        showAlert('Error deleting notification', 'error');
+                                    })
+                                    .finally(() => {
+                                        closeDeleteModal();
+                                    });
+                            });
+                        </script>
+
+                        <!-- Modal Restore Notification -->
+                        <div id="restoreModal"
+                            class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div class="bg-white rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
+                                id="restoreModalContent">
+                                <!-- Header -->
+                                <div class="px-6 py-4 border-b border-neutral-200">
+                                    <h2 class="text-lg font-semibold text-gray-800">Confirm Restore</h2>
+                                </div>
+                                <div class="px-6 py-6">
+                                    <p class="text-sm text-gray-600 mb-5">
+                                        Are you sure you want to restore <span class="font-semibold text-gray-800">this
+                                            notification</span>?
+                                    </p>
+                                    <!-- Action Buttons -->
+                                    <div class="flex justify-end gap-3 mt-6">
+                                        <button onclick="closeRestoreModal()"
+                                            class="px-4 py-2 text-sm rounded-lg bg-gray-200 text-neutral-700 hover:bg-gray-300 transition">
+                                            Cancel
+                                        </button>
+                                        <button id="confirmRestoreBtn"
+                                            class="px-4 py-2 text-sm rounded-lg bg-success-500 text-white hover:bg-success-600 transition">
+                                            Restore
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            let restoreId = null;
+
+                            // Buka modal dengan animasi
+                            function restoreNotification(id) {
+                                restoreId = id;
+                                const modal = document.getElementById('restoreModal');
+                                const content = document.getElementById('restoreModalContent');
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    content.classList.remove('scale-95', 'opacity-0');
+                                    content.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            }
+
+                            // Tutup modal dengan animasi
+                            function closeRestoreModal() {
+                                const modal = document.getElementById('restoreModal');
+                                const content = document.getElementById('restoreModalContent');
+                                content.classList.remove('scale-100', 'opacity-100');
+                                content.classList.add('scale-95', 'opacity-0');
+                                setTimeout(() => {
+                                    modal.classList.add('hidden');
+                                }, 200);
+                            }
+
+                            // Konfirmasi Restore
+                            // document.getElementById('confirmRestoreBtn').addEventListener('click', () => {
+                            //     fetch(`/admin/notifications/${restoreId}/restore`, {
+                            //             method: 'POST',
+                            //             headers: {
+                            //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            //                     'content')
+                            //             }
+                            //         })
+                            //         .then(response => response.json())
+                            //         .then(data => {
+                            //             if (data.success) {
+                            //                 showAlert('Notification restored successfully', 'success');
+                            //                 loadNotifications();
+                            //             } else {
+                            //                 showAlert('Error restoring notification', 'error');
+                            //             }
+                            //         })
+                            //         .catch(error => {
+                            //             console.error('Error:', error);
+                            //             showAlert('Error restoring notification', 'error');
+                            //         })
+                            //         .finally(() => {
+                            //             closeRestoreModal();
+                            //         });
+                            // });
+                        </script>
+
+
+                        <!-- Modal Archive Notification -->
+                        <div id="archiveModal"
+                            class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div class="bg-white rounded-2xl shadow-xl p-6 w-96 transform transition-all scale-95 opacity-0"
+                                id="archiveModalContent">
+                                <!-- Header -->
+                                <div class="border-b border-neutral-200 pb-3 mb-4">
+                                    <h2 class="text-lg font-semibold text-gray-800">Confirm Archive</h2>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-5">
+                                    Are you sure you want to archive <span class="font-semibold text-gray-800">this
+                                        notification</span>? This action cannot be undone.
+                                </p>
+                                <!-- Action Buttons -->
+                                <div class="flex justify-end gap-3">
+                                    <button onclick="closeArchiveModal()"
+                                        class="px-4 py-2 text-sm rounded-lg bg-gray-200 text-neutral-700 hover:bg-gray-300 transition">
+                                        Cancel
+                                    </button>
+                                    <button id="confirmArchiveBtn"
+                                        class="px-4 py-2 text-sm rounded-lg bg-warning-100 text-warning-600 hover:bg-gray-300 transition flex items-center justify-center">
+                                        <svg id="archiveLoadingSpinner"
+                                            class="animate-spin -ml-1 mr-2 h-4 w-4 text-warning-600 hidden"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span id="archiveButtonText">Archive</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <script>
+                            let archiveId = null;
+
+                            // Buka modal dengan animasi
+                            function archiveNotification(id) {
+                                archiveId = id;
+                                const modal = document.getElementById('archiveModal');
+                                const content = document.getElementById('archiveModalContent');
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    content.classList.remove('scale-95', 'opacity-0');
+                                    content.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            }
+
+                            // Tutup modal dengan animasi
+                            function closeArchiveModal() {
+                                const modal = document.getElementById('archiveModal');
+                                const content = document.getElementById('archiveModalContent');
+                                content.classList.remove('scale-100', 'opacity-100');
+                                content.classList.add('scale-95', 'opacity-0');
+                                setTimeout(() => {
+                                    modal.classList.add('hidden');
+                                }, 200);
+                            }
+
+                            // Konfirmasi Archive
+                            document.getElementById('confirmArchiveBtn').addEventListener('click', () => {
+                                // Show loading state
+                                const button = document.getElementById('confirmArchiveBtn');
+                                const spinner = document.getElementById('archiveLoadingSpinner');
+                                const buttonText = document.getElementById('archiveButtonText');
+
+                                button.disabled = true;
+                                button.classList.add('opacity-50', 'cursor-not-allowed');
+                                spinner.classList.remove('hidden');
+                                buttonText.textContent = 'Archiving...';
+
+                                fetch(`/admin/notifications/${archiveId}/archive`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                                'content')
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showAlert('Notification archived successfully', 'success');
+                                            loadNotifications();
+                                        } else {
+                                            showAlert('Error archiving notification', 'error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        showAlert('Error archiving notification', 'error');
+                                    })
+                                    .finally(() => {
+                                        // Reset loading state
+                                        button.disabled = false;
+                                        button.classList.remove('opacity-50', 'cursor-not-allowed');
+                                        spinner.classList.add('hidden');
+                                        buttonText.textContent = 'Archive';
+                                        closeArchiveModal();
+                                    });
+                            });
+                        </script>
+                        <!-- Tambahkan CSS ini di bagian <style> di head atau sebelum </body> -->
+                        <style>
+                            /* Enhanced Toast Notification Styles */
+                            .toast-container {
+                                position: fixed;
+                                top: 1rem;
+                                right: 1rem;
+                                z-index: 9999;
+                                pointer-events: none;
+                            }
+
+                            .toast {
+                                display: flex;
+                                align-items: center;
+                                padding: 1rem 1.25rem;
+                                margin-bottom: 0.75rem;
+                                border-radius: 0.75rem;
+                                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                                transform: translateX(100%);
+                                opacity: 0;
+                                transition: all 0.4s ease-in-out;
+                                pointer-events: auto;
+                                min-width: 300px;
+                                max-width: 400px;
+                                backdrop-filter: blur(10px);
+                            }
+
+                            .toast.show {
+                                transform: translateX(0);
+                                opacity: 1;
+                            }
+
+                            .toast.hide {
+                                transform: translateX(100%);
+                                opacity: 0;
+                            }
+
+                            /* Success Toast */
+                            .toast-success {
+                                background: linear-gradient(135deg, rgba(34, 197, 94, 0.95) 0%, rgba(22, 163, 74, 0.95) 100%);
+                                border-left: 4px solid #16a34a;
+                                color: white;
+                            }
+
+                            /* Error Toast */
+                            .toast-error {
+                                background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(220, 38, 38, 0.95) 100%);
+                                border-left: 4px solid #dc2626;
+                                color: white;
+                            }
+
+                            /* Info Toast */
+                            .toast-info {
+                                background: linear-gradient(135deg, rgba(59, 130, 246, 0.95) 0%, rgba(37, 99, 235, 0.95) 100%);
+                                border-left: 4px solid #2563eb;
+                                color: white;
+                            }
+
+                            /* Warning Toast */
+                            .toast-warning {
+                                background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(217, 119, 6, 0.95) 100%);
+                                border-left: 4px solid #d97706;
+                                color: white;
+                            }
+
+                            .toast-icon {
+                                flex-shrink: 0;
+                                width: 1.5rem;
+                                height: 1.5rem;
+                                margin-right: 0.75rem;
+                            }
+
+                            .toast-content {
+                                flex: 1;
+                                font-weight: 500;
+                                font-size: 0.875rem;
+                                line-height: 1.25rem;
+                            }
+
+                            .toast-close {
+                                flex-shrink: 0;
+                                width: 1.25rem;
+                                height: 1.25rem;
+                                margin-left: 0.75rem;
+                                cursor: pointer;
+                                opacity: 0.7;
+                                transition: opacity 0.2s ease;
+                            }
+
+                            .toast-close:hover {
+                                opacity: 1;
+                            }
+
+                            /* Enhanced Modal Button Styles */
+                            .btn-delete {
+                                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+                            }
+
+                            .btn-delete:hover {
+                                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                                box-shadow: 0 6px 8px -1px rgba(239, 68, 68, 0.4);
+                                transform: translateY(-1px);
+                            }
+
+                            .btn-delete:disabled {
+                                background: #9ca3af;
+                                cursor: not-allowed;
+                                transform: none;
+                                box-shadow: none;
+                            }
+
+                            .btn-archive {
+                                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+                            }
+
+                            .btn-archive:hover {
+                                background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+                                box-shadow: 0 6px 8px -1px rgba(245, 158, 11, 0.4);
+                                transform: translateY(-1px);
+                            }
+
+                            .btn-restore {
+                                background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
+                            }
+
+                            .btn-restore:hover {
+                                background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+                                box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
+                                transform: translateY(-1px);
+                            }
+
+                            /* Loading Animation */
+                            .loading-spinner {
+                                width: 1rem;
+                                height: 1rem;
+                                border: 2px solid transparent;
+                                border-top: 2px solid currentColor;
+                                border-radius: 50%;
+                                animation: spin 1s linear infinite;
+                            }
+
+                            @keyframes spin {
+                                0% {
+                                    transform: rotate(0deg);
+                                }
+
+                                100% {
+                                    transform: rotate(360deg);
+                                }
+                            }
+
+                            /* Progress Bar for Toast */
+                            .toast-progress {
+                                position: absolute;
+                                bottom: 0;
+                                left: 0;
+                                height: 3px;
+                                background-color: rgba(255, 255, 255, 0.8);
+                                border-radius: 0 0 0.75rem 0;
+                                animation: progress 3s linear;
+                            }
+
+                            @keyframes progress {
+                                0% {
+                                    width: 100%;
+                                }
+
+                                100% {
+                                    width: 0%;
+                                }
+                            }
+                        </style>
+
+                        <!-- Tambahkan container toast di body -->
+                        <div id="toastContainer" class="toast-container"></div>
+
+                        <script>
+                            // Enhanced showAlert function dengan style yang lebih baik
+                            function showAlert(message, type = 'info', duration = 4000) {
+                                const container = document.getElementById('toastContainer') || createToastContainer();
+
+                                // Create toast element
+                                const toast = document.createElement('div');
+                                toast.className = `toast toast-${type}`;
+
+                                // Icons untuk setiap type
+                                const icons = {
+                                    success: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>`,
+                                    error: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>`,
+                                    warning: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>`,
+                                    info: `<svg class="toast-icon" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>`
+                                };
+
+                                // Toast content
+                                toast.innerHTML = `
+                                    ${icons[type] || icons.info}
+                                    <div class="toast-content">${message}</div>
+                                    <svg class="toast-close" fill="currentColor" viewBox="0 0 20 20" onclick="removeToast(this.parentElement)">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div class="toast-progress"></div>
+                                `;
+
+                                // Add to container
+                                container.appendChild(toast);
+
+                                // Show animation
+                                setTimeout(() => {
+                                    toast.classList.add('show');
+                                }, 100);
+
+                                // Auto remove
+                                setTimeout(() => {
+                                    removeToast(toast);
+                                }, duration);
+
+                                return toast;
+                            }
+
+                            function createToastContainer() {
+                                const container = document.createElement('div');
+                                container.id = 'toastContainer';
+                                container.className = 'toast-container';
+                                document.body.appendChild(container);
+                                return container;
+                            }
+
+                            function removeToast(toast) {
+                                if (toast && toast.parentElement) {
+                                    toast.classList.add('hide');
+                                    setTimeout(() => {
+                                        if (toast.parentElement) {
+                                            toast.parentElement.removeChild(toast);
+                                        }
+                                    }, 400);
+                                }
+                            }
+
+                            // Enhanced Delete Modal dengan loading state
+                            function deleteNotification(id) {
+                                deleteId = id;
+                                const modal = document.getElementById('deleteModal');
+                                const content = document.getElementById('deleteModalContent');
+                                const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+                                // Reset button state
+                                confirmBtn.disabled = false;
+                                confirmBtn.innerHTML = 'Delete';
+                                confirmBtn.className = 'px-4 py-2 text-sm rounded-lg btn-delete text-white transition-all duration-300';
+
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    content.classList.remove('scale-95', 'opacity-0');
+                                    content.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            }
+
+                            // Enhanced Confirm Delete dengan loading dan feedback
+                            document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+                                const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+                                // Show loading state
+                                confirmBtn.disabled = true;
+                                confirmBtn.innerHTML = `
+                                <div class="loading-spinner"></div>
+                                <span style="margin-left: 8px;">Menghapus...</span>
+                            `;
+
+                                fetch(`/admin/notifications/${deleteId}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                                'content')
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showAlert('Notifikasi berhasil dihapus permanen!', 'success');
+                                            loadNotifications();
+                                            closeDeleteModal();
+                                        } else {
+                                            showAlert('Gagal menghapus notifikasi. Silakan coba lagi.', 'error');
+                                            // Reset button
+                                            confirmBtn.disabled = false;
+                                            confirmBtn.innerHTML = 'Delete';
+                                        }
+                                    })
+                                // .catch(error => {
+                                //     console.error('Error:', error);
+                                //     showAlert('Terjadi kesalahan saat menghapus notifikasi.', 'error');
+                                //     // Reset button
+                                //     confirmBtn.disabled = false;
+                                //     confirmBtn.innerHTML = 'Delete';
+                                // });
+                            });
+
+                            // Enhanced Archive Modal dengan loading state
+                            function archiveNotification(id) {
+                                archiveId = id;
+                                const modal = document.getElementById('archiveModal');
+                                const content = document.getElementById('archiveModalContent');
+                                const confirmBtn = document.getElementById('confirmArchiveBtn');
+
+                                // Reset button state
+                                confirmBtn.disabled = false;
+                                confirmBtn.innerHTML = 'Archive';
+                                confirmBtn.className = 'px-4 py-2 text-sm rounded-lg btn-archive text-white transition-all duration-300';
+
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    content.classList.remove('scale-95', 'opacity-0');
+                                    content.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            }
+
+                            // Enhanced Confirm Archive dengan loading dan feedback
+                            document.getElementById('confirmArchiveBtn').addEventListener('click', () => {
+                                const confirmBtn = document.getElementById('confirmArchiveBtn');
+
+                                // Show loading state
+                                confirmBtn.disabled = true;
+                                confirmBtn.innerHTML = `
+        <div class="loading-spinner"></div>
+        <span style="margin-left: 8px;">Mengarsip...</span>
+    `;
+
+                                fetch(`/admin/notifications/${archiveId}/archive`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                                'content')
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showAlert('Notifikasi berhasil diarsipkan!', 'success');
+                                            loadNotifications();
+                                            closeArchiveModal();
+                                        } else {
+                                            showAlert('Gagal mengarsipkan notifikasi. Silakan coba lagi.', 'error');
+                                            // Reset button
+                                            confirmBtn.disabled = false;
+                                            confirmBtn.innerHTML = 'Archive';
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        showAlert('Terjadi kesalahan saat mengarsipkan notifikasi.', 'error');
+                                        // Reset button
+                                        confirmBtn.disabled = false;
+                                        confirmBtn.innerHTML = 'Archive';
+                                    });
+                            });
+
+                            // Enhanced Restore Modal dengan loading state
+                            function restoreNotification(id) {
+                                restoreId = id;
+                                const modal = document.getElementById('restoreModal');
+                                const content = document.getElementById('restoreModalContent');
+                                const confirmBtn = document.getElementById('confirmRestoreBtn');
+
+                                // Reset button state
+                                confirmBtn.disabled = false;
+                                confirmBtn.innerHTML = 'Restore';
+                                confirmBtn.className = 'px-4 py-2 text-sm rounded-lg btn-restore text-white transition-all duration-300';
+
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    content.classList.remove('scale-95', 'opacity-0');
+                                    content.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            }
+
+                            // Enhanced Confirm Restore dengan loading dan feedback
+                            document.getElementById('confirmRestoreBtn').addEventListener('click', () => {
+                                const confirmBtn = document.getElementById('confirmRestoreBtn');
+
+                                // Show loading state
+                                confirmBtn.disabled = true;
+                                confirmBtn.innerHTML = `
+        <div class="loading-spinner"></div>
+        <span style="margin-left: 8px;">Memulihkan...</span>
+    `;
+
+                                fetch(`/admin/notifications/${restoreId}/restore`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                                'content')
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showAlert('Notifikasi berhasil dipulihkan!', 'success');
+                                            loadNotifications();
+                                            closeRestoreModal();
+                                        } else {
+                                            showAlert('Gagal memulihkan notifikasi. Silakan coba lagi.', 'error');
+                                            // Reset button
+                                            confirmBtn.disabled = false;
+                                            confirmBtn.innerHTML = 'Restore';
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        showAlert('Terjadi kesalahan saat memulihkan notifikasi.', 'error');
+                                        // Reset button
+                                        confirmBtn.disabled = false;
+                                        confirmBtn.innerHTML = 'Restore';
+                                    });
+                            });
+
+                            // Enhanced Submit Notification dengan feedback yang lebih baik
+                            function submitNotification() {
+                                const submitBtn = document.querySelector('button[onclick="submitNotification()"]');
+                                if (submitBtn.disabled) {
+                                    return;
+                                }
+
+                                // Show loading state
+                                submitBtn.disabled = true;
+                                submitBtn.innerHTML = `
+        <div class="loading-spinner"></div>
+        <span style="margin-left: 8px;">Mengirim...</span>
+    `;
+
+                                const formData = {
+                                    title: document.getElementById('name').value,
+                                    message: document.getElementById('desc').value,
+                                    priority: document.getElementById('desig').value,
+                                    target_type: document.getElementById('depart').value,
+                                    target_tenant_ids: document.getElementById('depart').value === 'specific' ? selectedTenants : [],
+                                    delivery_methods: getSelectedDeliveryMethods()
+                                };
+
+                                // Validation
+                                if (!formData.title || !formData.message || !formData.priority) {
+                                    showAlert('Mohon isi semua field yang wajib diisi!', 'warning');
+                                    enableSubmitButton();
+                                    return;
+                                }
+
+                                if (formData.delivery_methods.length === 0) {
+                                    showAlert('Mohon pilih minimal satu metode pengiriman!', 'warning');
+                                    enableSubmitButton();
+                                    return;
+                                }
+
+                                if (formData.target_type === 'specific' && formData.target_tenant_ids.length === 0) {
+                                    showAlert('Mohon pilih minimal satu tenant!', 'warning');
+                                    enableSubmitButton();
+                                    return;
+                                }
+
+                                // Submit
+                                fetch('/admin/notifications/store', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                        },
+                                        body: JSON.stringify(formData)
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showAlert('Notifikasi berhasil dibuat dan dikirim!', 'success');
+                                            resetCreateForm();
+                                            if (currentTab === 'active') {
+                                                loadNotifications();
+                                            }
+                                        } else {
+                                            showAlert('Gagal membuat notifikasi. Periksa input Anda.', 'error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        showAlert('Terjadi kesalahan saat membuat notifikasi.', 'error');
+                                    })
+                                    .finally(() => {
+                                        enableSubmitButton();
+                                    });
+                            }
+
+                            function enableSubmitButton() {
+                                const submitBtn = document.querySelector('button[onclick="submitNotification()"]');
+                                if (submitBtn) {
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerHTML = 'Send';
+                                }
+                            }
+                        </script>
+
 
                         <script>
                             // Settings dropdown functions with unique names to avoid conflicts
@@ -1029,6 +1820,7 @@
         let currentTab = 'active';
         let searchTerm = '';
         let priorityFilter = '';
+        let targetFilter = '';
         let selectedNotifications = [];
 
         // Initialize page
@@ -1047,6 +1839,9 @@
 
             // Setup form submit
             setupFormSubmit();
+
+            // Load tenants from database
+            loadTenantsFromDatabase();
         });
 
         // Load notification settings
@@ -1120,22 +1915,27 @@
                 page: page,
                 per_page: 10,
                 search: searchTerm,
-                priority: priorityFilter
+                priority: priorityFilter,
+                target: targetFilter // Tambahkan filter target
             });
 
-            showLoading();
+            console.log('Loading notifications with params:', {
+                tab: currentTab,
+                page: page,
+                search: searchTerm,
+                priority: priorityFilter,
+                target: targetFilter
+            });
 
             fetch(`${endpoint}?${params}`)
                 .then(response => response.json())
                 .then(data => {
-                    hideLoading();
                     if (data.data) {
                         populateTable(data.data);
                         updatePagination(data.pagination);
                     }
                 })
                 .catch(error => {
-                    hideLoading();
                     console.error('Error loading notifications:', error);
                     showAlert('Error loading notifications', 'error');
                 });
@@ -1143,9 +1943,33 @@
 
         // Populate table dengan data
         function populateTable(notifications) {
-            const tbody = document.querySelector('#tableBody');
-            tbody.innerHTML = '';
+            // Gunakan selector yang sesuai dengan tab aktif
+            const tbodyId = currentTab === 'active' ? 'tableBody' : 'archivedTableBody';
+            const tbody = document.querySelector(`#${tbodyId}`);
 
+            // Jika element tidak ditemukan, coba cari dengan cara lain
+            if (!tbody) {
+                // Fallback: cari berdasarkan tab yang aktif
+                const activeTabContent = document.querySelector(currentTab === 'active' ? '#styled-todoList' :
+                    '#styled-recentLead');
+                if (activeTabContent) {
+                    const fallbackTbody = activeTabContent.querySelector('tbody');
+                    if (fallbackTbody) {
+                        fallbackTbody.innerHTML = '';
+                        populateTableRows(fallbackTbody, notifications);
+                        return;
+                    }
+                }
+                console.error(`Table body not found for ${currentTab} tab`);
+                return;
+            }
+
+            tbody.innerHTML = '';
+            populateTableRows(tbody, notifications);
+        }
+
+        // Helper function to populate table rows
+        function populateTableRows(tbody, notifications) {
             if (notifications.length === 0) {
                 tbody.innerHTML = `
             <tr>
@@ -1169,12 +1993,13 @@
             tr.className = 'hover:bg-neutral-50 dark:hover:bg-neutral-800';
 
             const rowNumber = ((currentPage - 1) * 10) + index + 1;
+            const checkboxClass = currentTab === 'active' ? 'notification-checkbox' : 'archived-notification-checkbox';
 
             tr.innerHTML = `
         <td class="px-4 py-3">
             <div class="flex items-center gap-3">
                 <div class="form-check style-check flex items-center">
-                    <input class="form-check-input rounded border input-form-dark notification-checkbox" 
+                    <input class="form-check-input rounded border input-form-dark ${checkboxClass}" 
                            type="checkbox" value="${notif.id}" onchange="updateSelectedNotifications()">
                 </div>
                 <span class="text-sm text-neutral-700 dark:text-neutral-300">${rowNumber}</span>
@@ -1184,23 +2009,23 @@
             <span class="text-sm font-medium text-neutral-900 dark:text-white">${notif.title}</span>
         </td>
         <td class="px-4 py-3">
-            <span class="px-3 py-1.5 rounded-full font-medium text-xs ${notif.priority_badge}">
+            <span class="px-3 py-1.5 rounded-full font-medium text-xs ${notif.priority_badge || 'bg-gray-100 text-gray-800'}">
                 ${notif.priority}
             </span>
         </td>
         <td class="px-4 py-3">
             <span class="text-sm text-neutral-700 dark:text-neutral-300" title="${notif.message}">
-                ${notif.message}
+                ${notif.message.length > 50 ? notif.message.substring(0, 50) + '...' : notif.message}
             </span>
         </td>
         <td class="px-4 py-3 text-center">
             <span class="text-xs text-neutral-600 dark:text-neutral-400">
-                ${notif.target_audience}
+                ${notif.target_audience || 'All Tenants'}
             </span>
         </td>
         <td class="px-4 py-3 text-center">
             <span class="text-xs text-neutral-600 dark:text-neutral-400">
-                ${currentTab === 'active' ? notif.created_at : notif.archived_at}
+                ${currentTab === 'active' ? (notif.created_at || 'N/A') : (notif.archived_at || 'N/A')}
             </span>
         </td>
         <td class="px-4 py-3 text-center">
@@ -1220,6 +2045,11 @@
                         class="w-8 h-8 flex items-center justify-center rounded-lg bg-warning-100 text-warning-600 hover:bg-warning-200 transition-colors"
                         title="Archive">
                     <iconify-icon icon="lucide:archive" class="text-sm"></iconify-icon>
+                </button>
+                <button onclick="deleteNotification(${notif.id})" 
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 transition-colors"
+                        title="Delete Permanently">
+                    <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
                 </button>
             </div>
         `;
@@ -1241,73 +2071,147 @@
             }
         }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            // Tab switching
+        // Reset filters function
+        function resetFilters() {
+            searchTerm = '';
+            priorityFilter = '';
+            targetFilter = '';
+            currentPage = 1;
+
+            // Reset input values - cek dulu apakah element ada
+            const searchInputs = document.querySelectorAll('input[placeholder*="Search"]');
+            searchInputs.forEach(input => input.value = '');
+
+            const filters = document.querySelectorAll('select[id*="Filter"]');
+            filters.forEach(filter => filter.value = '');
+
+            console.log('Filters reset');
+        }
+
+        // Setup tab switching dengan reset filter
+        function setupTabSwitching() {
             document.addEventListener('click', function(e) {
+                // Active tab button
                 if (e.target.closest('[data-tabs-target="#styled-todoList"]')) {
+                    console.log('Switching to active tab');
                     currentTab = 'active';
-                    currentPage = 1;
+                    resetFilters();
                     loadNotifications();
                 }
+                // Archived tab button
                 if (e.target.closest('[data-tabs-target="#styled-recentLead"]')) {
+                    console.log('Switching to archived tab');
                     currentTab = 'archived';
-                    currentPage = 1;
+                    resetFilters();
                     loadNotifications();
                 }
             });
+        }
 
-            // Search input
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                let searchTimeout;
-                searchInput.addEventListener('input', function() {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
+        // Setup event listeners
+        function setupEventListeners() {
+            // Tab switching
+            setupTabSwitching();
+
+            // Search inputs
+            setupSearchInputs();
+
+            // Priority filters
+            setupPriorityFilters();
+
+            // Select all checkboxes
+            setupSelectAllCheckboxes();
+        }
+
+        // Setup search inputs
+        function setupSearchInputs() {
+            // Active search input
+            const activeSearchInput = document.getElementById('searchInput');
+            if (activeSearchInput) {
+                activeSearchInput.addEventListener('input', function() {
+                    clearTimeout(window.searchTimeout);
+                    window.searchTimeout = setTimeout(() => {
                         searchTerm = this.value;
                         currentPage = 1;
+                        console.log('Active search changed:', searchTerm);
                         loadNotifications();
                     }, 500);
                 });
             }
 
-            // Priority filter
-            const prioritySelect = document.getElementById('statusFilter');
-            if (prioritySelect) {
-                prioritySelect.addEventListener('change', function() {
-                    priorityFilter = this.value;
-                    currentPage = 1;
-                    loadNotifications();
-                });
-            }
-
-            // Select all checkbox
-            const selectAllCheckbox = document.getElementById('selectAll');
-            if (selectAllCheckbox) {
-                selectAllCheckbox.addEventListener('change', function() {
-                    const checkboxes = document.querySelectorAll('.notification-checkbox');
-                    checkboxes.forEach(checkbox => {
-                        checkbox.checked = this.checked;
-                    });
-                    updateSelectedNotifications();
+            // Archived search input
+            const archivedSearchInput = document.getElementById('archivedSearchInput');
+            if (archivedSearchInput) {
+                archivedSearchInput.addEventListener('input', function() {
+                    clearTimeout(window.archivedSearchTimeout);
+                    window.archivedSearchTimeout = setTimeout(() => {
+                        searchTerm = this.value;
+                        currentPage = 1;
+                        console.log('Archived search changed:', searchTerm);
+                        loadNotifications();
+                    }, 500);
                 });
             }
         }
 
-        // Setup form submit
-        function setupFormSubmit() {
-            // Create notification form submit
-            const createForm = document.querySelector('form[action="#"]');
-            if (createForm) {
-                const submitBtn = createForm.querySelector('button[type="button"]:last-child');
-                if (submitBtn) {
-                    submitBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        submitNotification();
-                    });
-                }
+        // Setup priority filters - DIPERBAIKI
+        function setupPriorityFilters() {
+            // Active tab filters
+            const activeStatusFilter = document.getElementById('statusFilter');
+            if (activeStatusFilter) {
+                activeStatusFilter.addEventListener('change', function() {
+                    priorityFilter = this.value;
+                    currentPage = 1;
+                    console.log('Active priority filter changed:', priorityFilter);
+                    loadNotifications();
+                });
             }
 
+            // // Archived tab priority filter
+            // const archivedStatusFilter = document.getElementById('archivedStatusFilter');
+            // if (archivedStatusFilter) {
+            //     archivedStatusFilter.addEventListener('change', function() {
+            //         priorityFilter = this.value;
+            //         currentPage = 1;
+            //         console.log('Archived priority filter changed:', priorityFilter);
+            //         loadNotifications();
+            //     });
+            // }
+
+            // PERBAIKAN UTAMA: Archived target filter
+            const archivedTargetFilter = document.getElementById('archivedTargetFilter');
+            if (archivedTargetFilter) {
+                archivedTargetFilter.addEventListener('change', function() {
+                    targetFilter = this.value;
+                    currentPage = 1;
+                    console.log('Archived target filter changed:', targetFilter);
+                    loadNotifications();
+                });
+            } else {
+                console.warn('archivedTargetFilter element not found - pastikan ID di HTML benar');
+            }
+        }
+
+        // Setup select all checkboxes
+        function setupSelectAllCheckboxes() {
+            const selectAllCheckboxes = document.querySelectorAll('input[id*="selectAll"]');
+
+            selectAllCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checkboxClass = this.id.includes('archived') ? '.archived-notification-checkbox' :
+                        '.notification-checkbox';
+                    const targetCheckboxes = document.querySelectorAll(checkboxClass);
+
+                    targetCheckboxes.forEach(cb => {
+                        cb.checked = this.checked;
+                    });
+                    updateSelectedNotifications();
+                });
+            });
+        }
+
+        // Setup form submit
+        function setupFormSubmit() {
             // Settings form submit
             const settingsSubmitBtn = document.querySelector('#notification-password button[type="button"]:last-child');
             if (settingsSubmitBtn) {
@@ -1320,6 +2224,16 @@
 
         // Submit notification baru
         function submitNotification() {
+            // Prevent double submission
+            const submitBtn = document.querySelector('button[onclick="submitNotification()"]');
+            if (submitBtn.disabled) {
+                return;
+            }
+
+            // Disable button to prevent double click
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
             const formData = {
                 title: document.getElementById('name').value,
                 message: document.getElementById('desc').value,
@@ -1332,16 +2246,19 @@
             // Validation
             if (!formData.title || !formData.message || !formData.priority) {
                 showAlert('Please fill all required fields', 'error');
+                enableSubmitButton();
                 return;
             }
 
             if (formData.delivery_methods.length === 0) {
                 showAlert('Please select at least one delivery method', 'error');
+                enableSubmitButton();
                 return;
             }
 
             if (formData.target_type === 'specific' && formData.target_tenant_ids.length === 0) {
                 showAlert('Please select at least one tenant', 'error');
+                enableSubmitButton();
                 return;
             }
 
@@ -1356,18 +2273,31 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    enableSubmitButton();
                     if (data.success) {
                         showAlert('Notification created successfully', 'success');
                         resetCreateForm();
-                        loadNotifications(); // Reload table
+                        if (currentTab === 'active') {
+                            loadNotifications();
+                        }
                     } else {
                         showAlert('Error creating notification', 'error');
                     }
                 })
                 .catch(error => {
+                    enableSubmitButton();
                     console.error('Error:', error);
                     showAlert('Error creating notification', 'error');
                 });
+        }
+
+        // Helper function to enable submit button
+        function enableSubmitButton() {
+            const submitBtn = document.querySelector('button[onclick="submitNotification()"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send';
+            }
         }
 
         // Submit settings
@@ -1392,7 +2322,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showAlert('Settings updated successfully', 'success');
+                        showAlert('Settings updated successfully', 'info');
                     } else {
                         showAlert('Error updating settings', 'error');
                     }
@@ -1415,98 +2345,32 @@
             return Array.from(checkboxes).map(cb => cb.value);
         }
 
-        // Archive notification
-        function archiveNotification(id) {
-            if (confirm('Are you sure you want to archive this notification?')) {
-                fetch(`/admin/notifications/${id}/archive`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showAlert('Notification archived successfully', 'success');
-                            loadNotifications();
-                        } else {
-                            showAlert('Error archiving notification', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showAlert('Error archiving notification', 'error');
-                    });
-            }
-        }
 
-        // Restore notification
-        function restoreNotification(id) {
-            if (confirm('Are you sure you want to restore this notification?')) {
-                fetch(`/admin/notifications/${id}/restore`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showAlert('Notification restored successfully', 'success');
-                            loadNotifications();
-                        } else {
-                            showAlert('Error restoring notification', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showAlert('Error restoring notification', 'error');
-                    });
-            }
-        }
 
-        // Delete notification permanent
-        function deleteNotification(id) {
-            if (confirm('Are you sure you want to delete this notification permanently? This action cannot be undone.')) {
-                fetch(`/admin/notifications/${id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showAlert('Notification deleted permanently', 'success');
-                            loadNotifications();
-                        } else {
-                            showAlert('Error deleting notification', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showAlert('Error deleting notification', 'error');
-                    });
-            }
-        }
+
 
         // Update selected notifications untuk bulk actions
         function updateSelectedNotifications() {
-            const checkboxes = document.querySelectorAll('.notification-checkbox:checked');
+            const checkboxClass = currentTab === 'active' ? '.notification-checkbox' : '.archived-notification-checkbox';
+            const selectAllId = currentTab === 'active' ? 'selectAll' : 'archivedSelectAll';
+
+            const checkboxes = document.querySelectorAll(`${checkboxClass}:checked`);
             selectedNotifications = Array.from(checkboxes).map(cb => parseInt(cb.value));
 
             // Update select all checkbox
-            const selectAllCheckbox = document.getElementById('selectAll');
-            const allCheckboxes = document.querySelectorAll('.notification-checkbox');
+            const selectAllCheckbox = document.getElementById(selectAllId);
+            const allCheckboxes = document.querySelectorAll(checkboxClass);
 
-            if (selectedNotifications.length === 0) {
-                selectAllCheckbox.indeterminate = false;
-                selectAllCheckbox.checked = false;
-            } else if (selectedNotifications.length === allCheckboxes.length) {
-                selectAllCheckbox.indeterminate = false;
-                selectAllCheckbox.checked = true;
-            } else {
-                selectAllCheckbox.indeterminate = true;
+            if (selectAllCheckbox && allCheckboxes.length > 0) {
+                if (selectedNotifications.length === 0) {
+                    selectAllCheckbox.indeterminate = false;
+                    selectAllCheckbox.checked = false;
+                } else if (selectedNotifications.length === allCheckboxes.length) {
+                    selectAllCheckbox.indeterminate = false;
+                    selectAllCheckbox.checked = true;
+                } else {
+                    selectAllCheckbox.indeterminate = true;
+                }
             }
         }
 
@@ -1529,35 +2393,57 @@
 
         // Update pagination
         function updatePagination(pagination) {
-            const paginationInfo = document.getElementById('paginationInfo');
-            const pageNumbers = document.getElementById('pageNumbers');
+            const paginationInfoId = currentTab === 'active' ? 'paginationInfo' : 'archivedPaginationInfo';
+            const pageNumbersId = currentTab === 'active' ? 'pageNumbers' : 'archivedPageNumbers';
+
+            let paginationInfo = document.getElementById(paginationInfoId);
+            let pageNumbers = document.getElementById(pageNumbersId);
+
+            // Fallback jika tidak menemukan element berdasarkan ID
+            if (!paginationInfo || !pageNumbers) {
+                const activeTabContent = document.querySelector(currentTab === 'active' ? '#styled-todoList' :
+                    '#styled-recentLead');
+                if (activeTabContent) {
+                    if (!paginationInfo) {
+                        paginationInfo = activeTabContent.querySelector(
+                            'span[id*="paginationInfo"], span.text-neutral-600');
+                    }
+                    if (!pageNumbers) {
+                        pageNumbers = activeTabContent.querySelector('div[id*="pageNumbers"], div.flex.gap-1');
+                    }
+                }
+            }
 
             // Update info
-            paginationInfo.textContent =
-                `Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total} entries`;
+            if (paginationInfo) {
+                paginationInfo.textContent =
+                    `Showing ${pagination.from || 0} to ${pagination.to || 0} of ${pagination.total} entries`;
+            }
 
             // Update page numbers
-            pageNumbers.innerHTML = '';
+            if (pageNumbers) {
+                pageNumbers.innerHTML = '';
 
-            // Previous button
-            if (pagination.current_page > 1) {
-                const prevBtn = createPageButton('Previous', pagination.current_page - 1);
-                pageNumbers.appendChild(prevBtn);
-            }
+                // Previous button
+                if (pagination.current_page > 1) {
+                    const prevBtn = createPageButton('Previous', pagination.current_page - 1);
+                    pageNumbers.appendChild(prevBtn);
+                }
 
-            // Page numbers
-            const startPage = Math.max(1, pagination.current_page - 2);
-            const endPage = Math.min(pagination.last_page, pagination.current_page + 2);
+                // Page numbers
+                const startPage = Math.max(1, pagination.current_page - 2);
+                const endPage = Math.min(pagination.last_page, pagination.current_page + 2);
 
-            for (let i = startPage; i <= endPage; i++) {
-                const pageBtn = createPageButton(i, i, i === pagination.current_page);
-                pageNumbers.appendChild(pageBtn);
-            }
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = createPageButton(i, i, i === pagination.current_page);
+                    pageNumbers.appendChild(pageBtn);
+                }
 
-            // Next button
-            if (pagination.current_page < pagination.last_page) {
-                const nextBtn = createPageButton('Next', pagination.current_page + 1);
-                pageNumbers.appendChild(nextBtn);
+                // Next button
+                if (pagination.current_page < pagination.last_page) {
+                    const nextBtn = createPageButton('Next', pagination.current_page + 1);
+                    pageNumbers.appendChild(nextBtn);
+                }
             }
         }
 
@@ -1581,50 +2467,167 @@
             return button;
         }
 
-        // Show/hide loading
-        function showLoading() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) {
-                spinner.classList.remove('hidden');
-            }
-        }
 
-        function hideLoading() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) {
-                spinner.classList.add('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab');
+
+            if (activeTab === 'all-notifications') {
+                document.getElementById('change-password-tab').click(); // ID tab "All Notifications"
             }
-        }
+        });
+
 
         // Show alert
         function showAlert(message, type = 'info') {
+            // Remove existing notifications
+            document.querySelectorAll('.notification-toast').forEach(n => n.remove());
+
             // Create toast notification
             const toast = document.createElement('div');
-            toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
-        type === 'success' ? 'bg-green-500 text-white' :
-        type === 'error' ? 'bg-red-500 text-white' :
-        'bg-blue-500 text-white'
-    }`;
-            toast.textContent = message;
+            toast.className = 'notification-toast';
+            toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 380px;
+        max-width: calc(100vw - 40px);
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        pointer-events: auto;
+    `;
+
+            const colors = {
+                success: {
+                    bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    shadow: '0 10px 25px rgba(16, 185, 129, 0.3)',
+                    icon: 'ph:check-circle-fill'
+                },
+                error: {
+                    bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    shadow: '0 10px 25px rgba(239, 68, 68, 0.3)',
+                    icon: 'ph:warning-circle-fill'
+                },
+                delete: {
+                    bg: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                    shadow: '0 10px 25px rgba(239, 68, 68, 0.3)',
+                    icon: 'ph:warning-circle-fill'
+                },
+                info: {
+                    bg: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                    shadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
+                    icon: 'ph:info-fill'
+                }
+            };
+
+            const config = colors[type] || colors.info;
+
+            toast.innerHTML = `
+        <div style="
+            background: ${config.bg};
+            border-radius: 12px;
+            box-shadow: ${config.shadow};
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        ">
+            <div style="padding: 16px;">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="
+                        width: 32px;
+                        height: 32px;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        flex-shrink: 0;
+                        margin-top: 2px;
+                    ">
+                        <iconify-icon icon="${config.icon}" style="
+                            font-size: 18px;
+                            color: white;
+                        "></iconify-icon>
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <h4 style="
+                            color: white;
+                            font-weight: 600;
+                            font-size: 14px;
+                            margin: 0 0 4px 0;
+                            line-height: 1.2;
+                        ">${type === 'success' ? 'Success!' : type === 'delete' ? 'Deleted!' : type === 'error' ? 'Error!' : 'Info!'}</h4>
+                        <p style="
+                            color: rgba(255, 255, 255, 0.9);
+                            font-size: 13px;
+                            margin: 0;
+                            line-height: 1.4;
+                        ">${message}</p>
+                    </div>
+                    <button onclick="this.closest('.notification-toast').remove()" style="
+                        background: rgba(255, 255, 255, 0.1);
+                        border: none;
+                        color: rgba(255, 255, 255, 0.7);
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.2s;
+                        flex-shrink: 0;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.color='white'" 
+                       onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.7)'">
+×
+                    </button>
+                </div>
+            </div>
+            <div style="
+                height: 3px;
+                background: rgba(255, 255, 255, 0.3);
+            ">
+                <div class="notification-progress" style="
+                    height: 100%;
+                    background: rgba(255, 255, 255, 0.8);
+                    width: 100%;
+                    transition: width 4s linear;
+                "></div>
+            </div>
+        </div>
+    `;
 
             document.body.appendChild(toast);
 
-            // Auto remove after 3 seconds
+            // Trigger slide-in animation
             setTimeout(() => {
-                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
+            }, 10);
+
+            // Start progress bar animation
+            const progressBar = toast.querySelector('.notification-progress');
+            if (progressBar) {
                 setTimeout(() => {
-                    document.body.removeChild(toast);
-                }, 300);
-            }, 3000);
+                    progressBar.style.width = '0%';
+                }, 100);
+            }
+
+            // Auto remove after 3 seconds
+            const timeout = type === 'error' ? 6000 : type === 'delete' ? 4500 : 4500;
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.transform = 'translateX(100%)';
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 400);
+                }
+            }, timeout);
         }
-
-        // Replace script tenants hardcoded dengan ini:
-
-        // Load tenants dari database saat halaman load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTenantsFromDatabase();
-        });
-
         // Load tenants dari database
         function loadTenantsFromDatabase() {
             console.log('Loading tenants from database...');
@@ -1745,7 +2748,74 @@
             console.log('Tenant list rendered with', tenantData.length, 'items');
         }
 
-        // Remove hardcoded tenants array - sekarang pakai dari database
-        // Delete bagian const tenants = [...] yang hardcoded
+        // Toggle tenant selection
+        function toggleTenantSelection(tenantId) {
+            const index = selectedTenants.indexOf(tenantId);
+            if (index > -1) {
+                selectedTenants.splice(index, 1);
+            } else {
+                selectedTenants.push(tenantId);
+            }
+
+            // Re-render to update checkbox states and styling
+            const searchTerm = document.getElementById('tenantSearch').value.toLowerCase();
+            const filteredTenants = window.tenants.filter(tenant =>
+                tenant.name.toLowerCase().includes(searchTerm) ||
+                tenant.email.toLowerCase().includes(searchTerm)
+            );
+            renderTenantList(filteredTenants);
+
+            console.log('Selected tenants:', selectedTenants);
+        }
+
+        // DEBUGGING: Function untuk cek apakah filter element ada
+        function checkFilterElements() {
+            console.log('Checking filter elements...');
+            console.log('archivedTargetFilter:', document.getElementById('archivedTargetFilter'));
+            console.log('archivedStatusFilter:', document.getElementById('archivedStatusFilter'));
+            console.log('archivedSearchInput:', document.getElementById('archivedSearchInput'));
+            console.log('Active statusFilter:', document.getElementById('statusFilter'));
+            console.log('Active searchInput:', document.getElementById('searchInput'));
+        }
+
+        // Call check function after page load untuk debugging
+        setTimeout(checkFilterElements, 1000)
+
+        function setupPriorityFilters() {
+            // Filter untuk tab Active
+            const activeStatusFilter = document.getElementById('statusFilter');
+            if (activeStatusFilter) {
+                activeStatusFilter.addEventListener('change', function() {
+                    priorityFilter = this.value;
+                    currentPage = 1;
+                    console.log('Active priority filter changed:', priorityFilter);
+                    loadNotifications();
+                });
+            }
+
+            // Filter untuk tab Archived
+            const archivedTargetFilter = document.getElementById('archivedTargetFilter');
+            if (archivedTargetFilter) {
+                console.log('archivedTargetFilter ditemukan:', archivedTargetFilter); // Debugging
+                archivedTargetFilter.addEventListener('change', function() {
+                    targetFilter = this.value;
+                    currentPage = 1;
+                    console.log('Archived target filter changed:', targetFilter); // Debugging
+                    loadNotifications();
+                });
+            } else {
+                console.warn('archivedTargetFilter tidak ditemukan - pastikan ID di HTML benar');
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get('tab');
+
+            if (activeTab === 'all-notifications') {
+                document.getElementById('change-password-tab').click(); // ID tab "All Notifications"
+            }
+        });
     </script>
 @endsection

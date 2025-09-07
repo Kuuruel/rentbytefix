@@ -27,11 +27,11 @@
                     </span>
                 </button>
 
-                <button data-dropdown-toggle="dropdownMessage"
+                {{-- <button data-dropdown-toggle="dropdownMessage"
                     class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center"
                     type="button">
                     <iconify-icon icon="mage:email" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
-                </button>
+                </button> --}}
                 <div id="dropdownMessage"
                     class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
                     <div
@@ -94,9 +94,10 @@
                             </div>
                         </div>
                         <div class="text-center py-3 px-4">
-                            <a href="{{ route('super-admin.index7') }}"
-                                class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">See
-                                All Notification</a>
+                            <a href="/super-admin/index7?tab=all-notifications"
+                                class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">
+                                See All Notifications
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -245,37 +246,57 @@
     // Create navbar notification item
     function createNavbarNotificationItem(notification) {
         const item = document.createElement('div');
-        item.className = `px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 ${
-        !notification.is_read ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-    }`;
+
+        // Warna berdasarkan prioritas
+        const priorityColors = getPriorityColor(notification.priority);
+
+        // Background untuk status dibaca/belum dibaca
+        const backgroundClass = !notification.is_read ? 'bg-gray-100 dark:bg-gray-800' : 'bg-white dark:bg-neutral-700';
+
+        item.className =
+            `px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-all duration-200 ${backgroundClass}`;
 
         item.onclick = () => markNotificationAsRead(notification.id);
 
-        const priorityIcon = getPriorityIcon(notification.priority);
-        const priorityColor = getPriorityColor(notification.priority);
-
         item.innerHTML = `
         <div class="flex items-start gap-3">
-            <div class="flex-shrink-0 mt-1">
-                <div class="w-8 h-8 rounded-full ${priorityColor} flex items-center justify-center">
-                    <iconify-icon icon="${priorityIcon}" class="text-sm text-white"></iconify-icon>
+            <div class="flex-shrink-0 mt-1 relative">
+                <div class="w-6 h-6 rounded-full flex items-center justify-center">
+                    <div class="w-3 h-3 rounded-full ${priorityColors.icon}"></div>
                 </div>
             </div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
-                    <h6 class="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    <h6 class="text-sm font-semibold ${
+                        !notification.is_read ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'
+                    } truncate">
                         ${notification.title}
+                        ${
+                            !notification.is_read
+                                ? '<span class="ml-2 inline-block w-2 h-2 bg-blue-500 rounded-full"></span>'
+                                : ''
+                        }
                     </h6>
-                    ${!notification.is_read ? '<div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>' : ''}
+                    ${
+                        !notification.is_read
+                            ? '<span class="text-xs bg-blue-100 text-primary-600 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded-full font-medium flex-shrink-0">NEW</span>'
+                            : ''
+                    }
                 </div>
-                <p class="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 mb-1">
+                <p class="text-xs ${
+                    !notification.is_read
+                        ? 'text-gray-700 dark:text-gray-200 font-medium'
+                        : 'text-gray-600 dark:text-gray-400'
+                } line-clamp-2 mb-2">
                     ${notification.message}
                 </p>
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-gray-500">${notification.created_at}</span>
-                    <span class="text-xs px-2 py-1 rounded-full ${notification.priority_badge}">
-                        ${notification.priority}
-                    </span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">${notification.created_at}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs px-2 py-1 rounded-full ${notification.priority_badge}">
+                            ${notification.priority}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -285,33 +306,49 @@
     }
 
     // Get priority icon
-    function getPriorityIcon(priority) {
-        switch (priority) {
-            case 'Critical':
-                return 'lucide:alert-triangle';
-            case 'Important':
-                return 'lucide:info';
-            case 'Normal':
-            default:
-                return 'lucide:bell';
-        }
-    }
+    // function getPriorityIcon(priority) {
+    //     switch (priority) {
+    //         case 'Critical':
+    //             return 'lucide:alert-triangle';
+    //         case 'Important':
+    //             return 'lucide:info';
+    //         case 'Normal':
+    //         default:
+    //             return 'lucide:bell';
+    //     }
+    // }
 
     // Get priority color
     function getPriorityColor(priority) {
         switch (priority) {
             case 'Critical':
-                return 'bg-red-500';
+                return {
+                    bg: 'bg-danger-100', // Background merah muda untuk lingkaran besar
+                        icon: 'bg-danger-500' // Lingkaran kecil merah
+                };
             case 'Important':
-                return 'bg-yellow-500';
+                return {
+                    bg: 'bg-warning-100', // Background kuning muda untuk lingkaran besar
+                        icon: 'bg-warning-500' // Lingkaran kecil kuning
+                };
             case 'Normal':
             default:
-                return 'bg-blue-500';
+                return {
+                    bg: 'bg-primary-100', // Background biru muda untuk lingkaran besar
+                        icon: 'bg-primary-500' // Lingkaran kecil biru
+                };
         }
     }
 
     // Mark notification as read
     function markNotificationAsRead(notificationId) {
+        // Update UI immediately untuk feedback instant
+        const notificationElement = event.target.closest('div[class*="px-4 py-3"]');
+        if (notificationElement) {
+            notificationElement.className = notificationElement.className.replace('bg-blue-100 dark:bg-blue-900/40',
+                'bg-white dark:bg-neutral-700');
+        }
+
         fetch(`/admin/notifications/${notificationId}/mark-read`, {
                 method: 'POST',
                 headers: {
@@ -322,20 +359,56 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Reload navbar notifications
+                    // Reload navbar notifications untuk update badge count dan status
                     loadNavbarNotifications();
+                } else {
+                    // Kalau gagal, kembalikan ke state semula
+                    if (notificationElement) {
+                        notificationElement.className = notificationElement.className.replace(
+                            'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
+                    }
                 }
             })
             .catch(error => {
                 console.error('Error marking notification as read:', error);
+                // Kalau error, kembalikan ke state semula
+                if (notificationElement) {
+                    notificationElement.className = notificationElement.className.replace(
+                        'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
+                }
             });
     }
 
-    // Auto refresh notifications setiap 30 detik
+    // Real-time notification dengan polling yang lebih cepat
     function startNotificationAutoRefresh() {
+        // Polling setiap 5 detik untuk notifikasi real-time
         setInterval(() => {
             loadNavbarNotifications();
-        }, 30000); // 30 seconds
+        }, 5000); // 5 seconds
+    }
+
+    // Instant notification check untuk notifikasi baru
+    function checkForNewNotifications() {
+        loadNavbarNotifications();
+    }
+
+    // WebSocket atau Server-Sent Events listener (jika tersedia)
+    function initializeRealTimeNotifications() {
+        // Jika menggunakan WebSocket
+        if (typeof window.Echo !== 'undefined') {
+            window.Echo.channel('notifications')
+                .listen('NewNotification', (e) => {
+                    checkForNewNotifications();
+                });
+        }
+
+        // Atau menggunakan EventSource untuk Server-Sent Events
+        if (typeof EventSource !== 'undefined') {
+            const eventSource = new EventSource('/admin/notifications/stream');
+            eventSource.onmessage = function(event) {
+                checkForNewNotifications();
+            };
+        }
     }
 
     // Initialize navbar notifications saat halaman load
@@ -343,17 +416,33 @@
         // Load initial notifications
         loadNavbarNotifications();
 
-        // Start auto refresh
+        // Start auto refresh dengan interval yang lebih cepat
         startNotificationAutoRefresh();
+
+        // Initialize real-time notifications
+        initializeRealTimeNotifications();
 
         // Refresh notifications ketika dropdown dibuka
         const notificationButton = document.getElementById('notificationButton');
         if (notificationButton) {
             notificationButton.addEventListener('click', function() {
-                setTimeout(() => {
-                    loadNavbarNotifications();
-                }, 100);
+                checkForNewNotifications();
             });
         }
+
+        // Refresh ketika window mendapat focus (user kembali ke tab)
+        window.addEventListener('focus', function() {
+            checkForNewNotifications();
+        });
+
+        // Refresh ketika ada aktivitas mouse/keyboard (user aktif)
+        let lastActivity = Date.now();
+        document.addEventListener('mousemove', function() {
+            const now = Date.now();
+            if (now - lastActivity > 10000) { // 10 detik sejak aktivitas terakhir
+                checkForNewNotifications();
+                lastActivity = now;
+            }
+        });
     });
 </script>

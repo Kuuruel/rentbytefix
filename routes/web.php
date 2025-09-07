@@ -19,13 +19,18 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\MidtransController;
 
-// Tambahkan routes ini ke dalam middleware auth di web.php
 
 // Global Notifications Routes
 Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
     Route::controller(\App\Http\Controllers\Admin\NotificationController::class)->group(function () {
         Route::get('/', 'index')->name('index');
 
+
+        // Route yang sudah ada di web.php (pastikan ini ada)
+        Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+            Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
+            Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
+        });
         // AJAX Routes
         Route::get('/get-notifications', 'getNotifications')->name('get');
         Route::get('/get-all-notifications', 'getAllNotifications')->name('get-all');

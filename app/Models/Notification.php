@@ -134,7 +134,7 @@ class Notification extends Model
     public function getPriorityBadgeAttribute()
     {
         return match ($this->priority) {
-            'Normal' => 'bg-blue-100 text-blue-600 dark:bg-blue-600/25 dark:text-blue-400',
+            'Normal' => 'bg-blue-400 text-blue-600 dark:bg-blue-600/25 dark:text-blue-400',
             'Important' => 'bg-warning-100 text-warning-600 dark:bg-warning-600/25 dark:text-warning-400',
             'Critical' => 'bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400',
             default => 'bg-gray-100 text-gray-600 dark:bg-gray-600/25 dark:text-gray-400'

@@ -17,28 +17,44 @@ class MidtransSetting extends Model
         'server_key',
         'environment',
         'webhook_url',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    public static function getConfig()
+    // Accessor untuk server key (untuk keamanan)
+    public function getServerKeyAttribute($value)
     {
-        $setting = self::first();
+        return $value;
+    }
 
-        if (!$setting) {
-            return null;
-        }
+    // Mutator untuk server key (enkripsi sederhana jika diperlukan)
+    public function setServerKeyAttribute($value)
+    {
+        $this->attributes['server_key'] = $value;
+    }
 
-        return [
-            'merchant_id' => $setting->merchant_id,
-            'client_key' => $setting->client_key,
-            'server_key' => $setting->server_key,
-            'environment' => $setting->environment,
-            'webhook_url' => $setting->webhook_url,
-            'is_production' => $setting->environment === 'production',
-        ];
+    // Method untuk cek apakah environment production
+    public function isProduction()
+    {
+        return $this->environment === 'production';
+    }
+
+    // Method untuk cek apakah environment sandbox
+    public function isSandbox()
+    {
+        return $this->environment === 'sandbox';
+    }
+
+    // Method untuk mendapatkan base URL berdasarkan environment
+    public function getBaseUrl()
+    {
+        return $this->environment === 'production'
+            ? 'https://api.midtrans.com'
+            : 'https://api.sandbox.midtrans.com';
     }
 }

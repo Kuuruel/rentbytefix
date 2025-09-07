@@ -6043,6 +6043,8 @@ svg.radial-progress text.percentage {
 .text-blue-600{
   --tw-text-opacity: 1;
   color: rgb(28 100 242 / var(--tw-text-opacity));
+background-color: rgb(219 234 254 / var(--tw-bg-opacity));
+
 }
 
 .text-cyan-600{

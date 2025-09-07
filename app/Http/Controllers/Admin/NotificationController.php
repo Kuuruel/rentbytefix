@@ -381,4 +381,5 @@ class NotificationController extends Controller
             'message' => count($request->notification_ids) . ' notifications deleted permanently'
         ]);
     }
+    
 }
