@@ -1,173 +1,93 @@
-<aside class="sidebar">
-    <button type="button" class="sidebar-close-btn !mt-4">
-        <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
-    </button>
-    <div>
-        <a href="{{ route('super-admin.index') }}" class="sidebar-logo">
-            Rentbyte
-            {{-- <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo"> --}}
-            <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon">
-        </a>
-    </div>
-    <div class="sidebar-menu-area">
-        <ul class="sidebar-menu" id="sidebar-menu">
-            <!-- Home selalu active, Dashboard tidak pernah active -->
-            <style>
-                .sidebar-menu li.active>a,
-                .sidebar-menu li.active>a .menu-icon,
-                .sidebar-menu li.active>a span {
-                    background-color: #3b82f6;
-                    /* bg-blue-500 */
-
-                    /* bg-blue-800 */
-
-                    /* bg-blue-700 */
-                    
-
-                    color: #ffffff !important;
-                    font-weight: 600;
-                    padding: 7px;
-                }
-
-                .sidebar-menu li.active>a .menu-icon {
-                    margin-right: 0px !important;
-                }
-
-                .sidebar-menu li.active>a span {
-                    margin-left: 0px !important;
-                }
-                
-
-                /* Dark mode */
-                .dark .sidebar-menu li.active>a,
-                .dark .sidebar-menu li.active>a .menu-icon,
-                .dark .sidebar-menu li.active>a span {
-                    background-color: rgb(72 127 255 / var(--tw-bg-opacity));
-                    color: #ffffff !important;
-                    font-weight: 600;
-                }
-            </style>
-
-            <li class="active">
-                <a href="{{ route('super-admin.index') }}">
-                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
-                    <span class="">Home</span>
-                </a>
-            </li>
-            <li class="mt-2 mb-2">
+{{-- <li class="mt-2 mb-2">
                 <a href="{{ route('super-admin.index') }}">
                     <iconify-icon icon="hugeicons:dashboard-square-01" class="menu-icon"></iconify-icon>
-                    <span class="px-2">Dashboard</span>
+                    <span>Dashboard</span>
                 </a>
             </li>
-            <li class="dropdown ">
+
+            <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="lucide:user-cog" class="menu-icon"></iconify-icon>
-                    <span class="px-2">Users</span>
+                    <span>Users</span>
                 </a>
                 <ul class="sidebar-submenu">
                     <li class="pb-2">
                         <a href="{{ route('super-admin.index2') }}">
-                            {{-- <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon> --}}
-                            <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
-                            <span class="px-2">Manage Users</span>
+                            <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon>
+                            <span>Manage Users</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('super-admin.index4') }}">
-                            {{-- <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon> --}}
-                            <i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i>
-                            <span class="px-2">Statistik Users</span>
+                            <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon>
+                            <span>Statistik Users</span>
                         </a>
                     </li>
                 </ul>
             </li>
 
-            {{-- <li class="mt-2 mb-6">
+            <li>
                 <a href="{{ route('super-admin.index3') }}">
                     <iconify-icon icon="guidance:settings" class="menu-icon"></iconify-icon>
-                    <span class="px-2">Settings Global</span>
+                    <span>Settings Global</span>
                 </a>
             </li> --}}
-            <li class="dropdown mt-2 mb-6">
-                <a href="javascript:void(0)">
-                    <iconify-icon icon="guidance:settings" class="menu-icon"></iconify-icon>
-                    <span class="px-2">Settings Global</span>
-                </a>
-                <ul class="sidebar-submenu">
-                    <li class="pb-2">
-                        <a href="{{ route('super-admin.index9') }}">
-                            {{-- <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon> --}}
-                            <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
-                            <span class="px-2">Midtrans API Key</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('super-admin.index7') }}">
-                            {{-- <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon> --}}
-                            <i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i>
-                            <span class="px-2">Global Notifications</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
 
-
-
-
-
-            {{-- <li class="">
+{{-- <li class="">
                 <a href="{{ route('super-admin.index4') }}"><i
                         class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
-            </li> --}}
-            {{-- <li>
+            </li>
+
+            <li>
                 <a href="{{ route('super-admin.index5') }}"><i
                         class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Investment</a>
             </li>
+
             <li>
                 <a href="{{ route('super-admin.index6') }}"><i
                         class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> LMS / Learning System</a>
             </li>
+
             <li>
                 <a href="{{ route('super-admin.index7') }}"><i
                         class="ri-circle-fill circle-icon text-info-600 w-auto"></i> NFT & Gaming</a>
-            </li> --}}
-            {{-- <li>
-    <a href="{{ route('super-admin.index8') }}">
-        <i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Statistic Users
-    </a>
-</li> --}}
+            </li>
 
-            {{-- <li>
+            <li>
                 <a href="{{ route('super-admin.index9') }}"><i
                         class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
             </li>
+
             <li class="sidebar-menu-group-title">Application</li>
+
             <li>
                 <a href="{{ route('email') }}">
                     <iconify-icon icon="mage:email" class="menu-icon"></iconify-icon>
                     <span>Email</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('chatMessage') }}">
                     <iconify-icon icon="bi:chat-dots" class="menu-icon"></iconify-icon>
                     <span>Chat</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('calendarMain') }}">
                     <iconify-icon icon="solar:calendar-outline" class="menu-icon"></iconify-icon>
                     <span>Calendar</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('kanban') }}">
                     <iconify-icon icon="material-symbols:map-outline" class="menu-icon"></iconify-icon>
                     <span>Kanban</span>
                 </a>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
@@ -192,6 +112,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="hugeicons:ai-brain-03" class="menu-icon"></iconify-icon>
@@ -220,6 +141,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="hugeicons:bitcoin-circle" class="menu-icon"></iconify-icon>
@@ -232,7 +154,9 @@
                     </li>
                 </ul>
             </li>
+
             <li class="sidebar-menu-group-title">UI Elements</li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:document-text-outline" class="menu-icon"></iconify-icon>
@@ -327,6 +251,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="heroicons:document" class="menu-icon"></iconify-icon>
@@ -351,6 +276,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="mingcute:storage-line" class="menu-icon"></iconify-icon>
@@ -367,6 +293,7 @@
                     </li>
                 </ul>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="solar:pie-chart-outline" class="menu-icon"></iconify-icon>
@@ -387,12 +314,14 @@
                     </li>
                 </ul>
             </li>
+
             <li>
                 <a href="{{ route('widgets') }}">
                     <iconify-icon icon="fe:vector" class="menu-icon"></iconify-icon>
                     <span>Widgets</span>
                 </a>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
@@ -417,7 +346,9 @@
                     </li>
                 </ul>
             </li>
+
             <li class="sidebar-menu-group-title">Application</li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="simple-line-icons:vector" class="menu-icon"></iconify-icon>
@@ -438,36 +369,42 @@
                     </li>
                 </ul>
             </li>
+
             <li>
                 <a href="{{ route('gallery') }}">
                     <iconify-icon icon="solar:gallery-wide-linear" class="menu-icon"></iconify-icon>
                     <span>Gallery</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('pricing') }}">
                     <iconify-icon icon="hugeicons:money-send-square" class="menu-icon"></iconify-icon>
                     <span>Pricing</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('faq') }}">
                     <iconify-icon icon="mage:message-question-mark-round" class="menu-icon"></iconify-icon>
                     <span>FAQs.</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('pageError') }}">
                     <iconify-icon icon="streamline:straight-face" class="menu-icon"></iconify-icon>
                     <span>404</span>
                 </a>
             </li>
+
             <li>
                 <a href="{{ route('termsCondition') }}">
                     <iconify-icon icon="octicon:info-24" class="menu-icon"></iconify-icon>
                     <span>Terms & Conditions</span>
                 </a>
             </li>
+
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="icon-park-outline:setting-two" class="menu-icon"></iconify-icon>
@@ -503,7 +440,52 @@
                                 class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Payment Gateway</a>
                     </li>
                 </ul>
-            </li>
-        </ul> --}}
-    </div>
-</aside>
+            </li> --}}
+
+
+
+
+
+{{-- <div class="flex flex-wrap gap-4">
+                                                <div
+                                                    class="form-switch switch-primary py-3 px-4 border rounded-lg relative mb-4">
+                                                    <label for="orderNotification"
+                                                        class="absolute w-full h-full start-0 top-0"></label>
+                                                    <div class="flex items-center gap-3 justify-between">
+                                                        <span
+                                                            class="form-check-label line-height-1 font-medium text-secondary-light">API
+                                                            Key
+                                                            Changed</span>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="orderNotification" checked>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="form-switch switch-primary py-3 px-4 border rounded-lg relative mb-4">
+                                                    <label for="orderNotification"
+                                                        class="absolute w-full h-full start-0 top-0"></label>
+                                                    <div class="flex items-center gap-3 justify-between">
+                                                        <span
+                                                            class="form-check-label line-height-1 font-medium text-secondary-light">API
+                                                            Key
+                                                            Changed</span>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="orderNotification" checked>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="form-switch switch-primary py-3 px-4 border rounded-lg relative mb-4">
+                                                    <label for="orderNotification"
+                                                        class="absolute w-full h-full start-0 top-0"></label>
+                                                    <div class="flex items-center gap-3 justify-between">
+                                                        <span
+                                                            class="form-check-label line-height-1 font-medium text-secondary-light">API
+                                                            Key
+                                                            Changed</span>
+                                                        <input class="form-check-input" type="checkbox" role="switch"
+                                                            id="orderNotification" checked>
+                                                    </div>
+                                                </div>
+
+
+                                            </div> --}}

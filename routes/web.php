@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AiapplicationController;
 use App\Http\Controllers\AuthenticationController;
@@ -20,23 +21,63 @@ use App\Http\Controllers\RentalController;
 use App\Http\Controllers\MidtransWebhookController;
 
 use App\Http\Controllers\DashboardController;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Admin\MidtransController;
+
+
+// Global Notifications Routes
+Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
+    Route::controller(\App\Http\Controllers\Admin\NotificationController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+
+
+        // Route yang sudah ada di web.php (pastikan ini ada)
+        Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+            Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
+            Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
+        });
+        // AJAX Routes
+        Route::get('/get-notifications', 'getNotifications')->name('get');
+        Route::get('/get-all-notifications', 'getAllNotifications')->name('get-all');
+        Route::get('/get-archived-notifications', 'getArchivedNotifications')->name('get-archived');
+        Route::get('/get-tenants', 'getTenants')->name('get-tenants');
+        Route::get('/get-settings', 'getSettings')->name('get-settings');
+
+        // Actions
+        Route::post('/store', 'store')->name('store');
+        Route::post('/update-settings', 'updateSettings')->name('update-settings');
+        Route::post('/{id}/archive', 'archive')->name('archive');
+        Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::delete('/{id}', 'destroy')->name('destroy');
+        Route::post('/{id}/mark-read', 'markAsRead')->name('mark-read');
+
+        // Bulk Actions
+        Route::post('/bulk-archive', 'bulkArchive')->name('bulk-archive');
+        Route::post('/bulk-delete', 'bulkDelete')->name('bulk-delete');
+    });
+});
+/*
+|-----------------------------------------------------------------------
+| Default Route
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
-    if (Auth::guard('web')->check()) {
-        $user = Auth::guard('web')->user();
+    if (Auth::check()) {
+        $user = Auth::user();
         if ($user->role === 'admin') {
             return redirect()->route('super-admin.index');
+        } else {
+            return redirect()->route('landlord.index');
         }
     }
-
-    if (Auth::guard('tenant')->check()) {
-        return redirect()->route('landlord.index');
-    }
-    
     return redirect()->route('showSigninForm');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 Route::prefix('authentication')->group(function () {
     Route::controller(AuthenticationController::class)->group(function () {
         Route::get('/forgot-password', 'forgotPassword')->name('forgotPassword');
@@ -48,27 +89,15 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
-Route::middleware('guest')->group(function() {
-    Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
-});
+/*
+|--------------------------------------------------------------------------
+| Protected Routes (Auth Required)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
 
-Route::post('/login', [AuthenticationController::class, 'signin']);
-
-Route::middleware(['auth'])->group(function(){
-    Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
-});
-
-Route::middleware(['auth', 'role:admin'])->group(function() {
-    Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super-admin.index');
-});
-
-Route::middleware(['auth', 'role:landlord'])->group(function () {
-    Route::get('/landlord', [LandlordController::class, 'index'])->name('landlord.index');
-});
-
-Route::middleware(['auth:web,tenant'])->group(function () {
-
-    Route::prefix('super-admin')->middleware('auth:web')->group(function () {
+    // Super Admin Dashboard
+    Route::prefix('super-admin')->group(function () {
         Route::controller(SuperAdminController::class)->group(function () {
             Route::get('/', 'index')->name('super-admin.index');
             Route::get('/index2', 'index2')->name('super-admin.index2');
@@ -76,12 +105,15 @@ Route::middleware(['auth:web,tenant'])->group(function () {
             Route::get('/index4', 'index4')->name('super-admin.index4');
             Route::get('/index5', 'index5')->name('super-admin.index5');
             Route::get('/index6', 'index6')->name('super-admin.index6');
-            Route::get('/index7', 'index7')->name('super-admin.index7');
-            Route::get('/index8', 'index8')->name('super-admin.index8');
+            // Ganti route lama
+            Route::get('/index7', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('super-admin.index7');
+            Route::get('/index8/{tenant_id}', 'index8')->name('super-admin.index8');
+
             Route::get('/index9', 'index9')->name('super-admin.index9');
         });
     });
 
+    // Landlord Dashboard
     Route::prefix('landlord')->group(function () {
         Route::controller(LandlordController::class)->group(function () {
             Route::get('/', 'index')->name('landlord.index');
@@ -96,22 +128,23 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         });
     });
 
-        Route::controller(HomeController::class)->group(function () {
-            Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
-            Route::get('chatempty', 'chatempty')->name('chatempty');
-            Route::get('chat-message', 'chatMessage')->name('chatMessage');
-            Route::get('chat-profile', 'chatProfile')->name('chatProfile');
-            Route::get('email', 'email')->name('email');
-            Route::get('faq', 'faq')->name('faq');
-            Route::get('gallery', 'gallery')->name('gallery');
-            Route::get('image-upload', 'imageUpload')->name('imageUpload');
-            Route::get('kanban', 'kanban')->name('kanban');
-            Route::get('page-error', 'pageError')->name('pageError');
-            Route::get('pricing', 'pricing')->name('pricing');
-            Route::get('starred', 'starred')->name('starred');
-            Route::get('terms-condition', 'termsCondition')->name('termsCondition');
-            Route::get('veiw-details', 'veiwDetails')->name('veiwDetails');
-            Route::get('widgets', 'widgets')->name('widgets');
+    // HomeController Routes
+    Route::controller(HomeController::class)->group(function () {
+        Route::get('calendar-Main', 'calendarMain')->name('calendarMain');
+        Route::get('chatempty', 'chatempty')->name('chatempty');
+        Route::get('chat-message', 'chatMessage')->name('chatMessage');
+        Route::get('chat-profile', 'chatProfile')->name('chatProfile');
+        Route::get('email', 'email')->name('email');
+        Route::get('faq', 'faq')->name('faq');
+        Route::get('gallery', 'gallery')->name('gallery');
+        Route::get('image-upload', 'imageUpload')->name('imageUpload');
+        Route::get('kanban', 'kanban')->name('kanban');
+        Route::get('page-error', 'pageError')->name('pageError');
+        Route::get('pricing', 'pricing')->name('pricing');
+        Route::get('starred', 'starred')->name('starred');
+        Route::get('terms-condition', 'termsCondition')->name('termsCondition');
+        Route::get('veiw-details', 'veiwDetails')->name('veiwDetails');
+        Route::get('widgets', 'widgets')->name('widgets');
     });
 
     Route::prefix('aiapplication')->group(function () {
@@ -196,15 +229,15 @@ Route::prefix('landlord')->group(function () {
     });
 });
 
-// Forms
-Route::prefix('forms')->group(function () {
-    Route::controller(FormsController::class)->group(function () {
-        Route::get('/form', 'form')->name('form');
-        Route::get('/form-layout', 'formLayout')->name('formLayout');
-        Route::get('/form-validation', 'formValidation')->name('formValidation');
-        Route::get('/wizard', 'wizard')->name('wizard');
+    // Forms
+    Route::prefix('forms')->group(function () {
+        Route::controller(FormsController::class)->group(function () {
+            Route::get('/form', 'form')->name('form');
+            Route::get('/form-layout', 'formLayout')->name('formLayout');
+            Route::get('/form-validation', 'formValidation')->name('formValidation');
+            Route::get('/wizard', 'wizard')->name('wizard');
+        });
     });
-});
 
     Route::prefix('invoice')->group(function () {
         Route::controller(InvoiceController::class)->group(function () {
@@ -287,4 +320,10 @@ Route::prefix('forms')->group(function () {
             Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
                 ->name('landlord.rentals.payment-status');
     });
+        Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+        Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
+        Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
+    });
+
+    
 });

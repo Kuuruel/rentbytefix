@@ -46,10 +46,10 @@ class UsersController extends Controller
         return redirect()->route('usersList')->with('success', 'User created successfully');
     }
 
-public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => [
@@ -81,7 +81,7 @@ public function update(Request $request, $id)
     public function updatePassword(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        
+
         $request->validate([
             'password' => 'required|min:6|confirmed',
         ]);
@@ -96,7 +96,7 @@ public function update(Request $request, $id)
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        
+
         if (Auth::check() && Auth::id() == $user->id) {
             return redirect()->back()->with('error', 'You cannot delete your own account');
         }
@@ -127,7 +127,7 @@ public function update(Request $request, $id)
         return view('users.users-list', compact('users'));
     }
 
-    public function viewProfileAdmin($id = null)
+    public function viewProfile($id = null)
     {
         if ($id === null) {
             $user = Auth::user();
@@ -140,8 +140,8 @@ public function update(Request $request, $id)
         } else {
             $user = User::findOrFail($id);
         }
-        
-        return view('users.viewProfileAdmin', compact('user'));
+
+        return view('users.viewProfile', compact('user'));
     }
 
     private function handleImageUpload($file)
@@ -158,9 +158,8 @@ public function update(Request $request, $id)
             if ($file->move($destination, $filename)) {
                 return $filename;
             }
-            
+
             throw new \Exception('Failed to move uploaded file');
-            
         } catch (\Exception $e) {
             Log::error('Image upload failed: ' . $e->getMessage());
             throw new \Exception('Failed to upload image. Please try again.');
@@ -172,14 +171,13 @@ public function update(Request $request, $id)
         try {
             $destination = public_path('assets/images/super-admin');
             $filePath = $destination . '/' . $filename;
-            
+
             if (file_exists($filePath)) {
                 @unlink($filePath);
                 return true;
             }
-            
+
             return false;
-            
         } catch (\Exception $e) {
             Log::error('Image deletion failed: ' . $e->getMessage());
             return false;

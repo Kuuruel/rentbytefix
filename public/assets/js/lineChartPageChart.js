@@ -1,103 +1,103 @@
-    // =========================== Default Line Chart Start ===============================
-    var options = {
-        series: [{
-            name: "This month",
-            data: [0, 48, 20, 24, 6, 33, 30, 48, 35, 18, 20, 5]
-        }],
-        chart: {
-            height: 264,
-            type: 'line',
-            toolbar: {
-                show: false
-            },
-            zoom: {
-                enabled: false
-            },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth',
-            colors: ['#487FFF'],
-            width: 4
-        },
-        markers: {
-            size: 0,
-            strokeWidth: 3,
-            hover: {
-                size: 8
-            }
-        },
-        tooltip: {
-            enabled: true,
-            x: {
-                show: true,
-            },
-            y: {
-                show: false,
-            },
-            z: {
-                show: false,
-            }
-        },
-        grid: {
-            row: {
-                colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
-                opacity: 0.5
-            },
-            borderColor: '#D1D5DB',
-            strokeDashArray: 3,
-        },
-        yaxis: {
-            labels: {
-                formatter: function (value) {
-                    return "$" + value + "k";
-                },
-                style: {
-                    fontSize: "14px"
-                }
-            },
-        },
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            tooltip: {
-                enabled: false
-            },
-            labels: {
-                formatter: function (value) {
-                    return value;
-                },
-                style: {
-                    fontSize: "14px"
-                }
-            },
-            axisBorder: {
-                show: false
-            },
-            // crosshairs: {
-            //     show: true,
-            //     width: 20,
-            //     stroke: {
-            //         width: 0
-            //     },
-            //     fill: {
-            //         type: 'solid',
-            //         color: '#487FFF40',
-            //         // gradient: {
-            //         //   colorFrom: '#D8E3F0',
-            //         //   // colorTo: '#BED1E6',
-            //         //   stops: [0, 100],
-            //         //   opacityFrom: 0.4,
-            //         //   opacityTo: 0.5,
-            //         // },
-            //     }
-            // }
-        }
-    };
+    // // =========================== Default Line Chart Start ===============================
+    // var options = {
+    //     series: [{
+    //         name: "This month",
+    //         data: [0, 48, 20, 24, 6, 33, 30, 48, 35, 18, 20, 5]
+    //     }],
+    //     chart: {
+    //         height: 264,
+    //         type: 'line',
+    //         toolbar: {
+    //             show: false
+    //         },
+    //         zoom: {
+    //             enabled: false
+    //         },
+    //     },
+    //     dataLabels: {
+    //         enabled: false
+    //     },
+    //     stroke: {
+    //         curve: 'smooth',
+    //         colors: ['#487FFF'],
+    //         width: 4
+    //     },
+    //     markers: {
+    //         size: 0,
+    //         strokeWidth: 3,
+    //         hover: {
+    //             size: 8
+    //         }
+    //     },
+    //     tooltip: {
+    //         enabled: true,
+    //         x: {
+    //             show: true,
+    //         },
+    //         y: {
+    //             show: false,
+    //         },
+    //         z: {
+    //             show: false,
+    //         }
+    //     },
+    //     grid: {
+    //         row: {
+    //             colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
+    //             opacity: 0.5
+    //         },
+    //         borderColor: '#D1D5DB',
+    //         strokeDashArray: 3,
+    //     },
+    //     yaxis: {
+    //         labels: {
+    //             formatter: function (value) {
+    //                 return "$" + value + "k";
+    //             },
+    //             style: {
+    //                 fontSize: "14px"
+    //             }
+    //         },
+    //     },
+    //     xaxis: {
+    //         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    //         tooltip: {
+    //             enabled: false
+    //         },
+    //         labels: {
+    //             formatter: function (value) {
+    //                 return value;
+    //             },
+    //             style: {
+    //                 fontSize: "14px"
+    //             }
+    //         },
+    //         axisBorder: {
+    //             show: false
+    //         },
+    //         // crosshairs: {
+    //         //     show: true,
+    //         //     width: 20,
+    //         //     stroke: {
+    //         //         width: 0
+    //         //     },
+    //         //     fill: {
+    //         //         type: 'solid',
+    //         //         color: '#487FFF40',
+    //         //         // gradient: {
+    //         //         //   colorFrom: '#D8E3F0',
+    //         //         //   // colorTo: '#BED1E6',
+    //         //         //   stops: [0, 100],
+    //         //         //   opacityFrom: 0.4,
+    //         //         //   opacityTo: 0.5,
+    //         //         // },
+    //         //     }
+    //         // }
+    //     }
+    // };
 
-    var chart = new ApexCharts(document.querySelector("#defaultLineChart"), options);
-    chart.render();
+    // var chart = new ApexCharts(document.querySelector("#defaultLineChart"), options);
+    // chart.render();
   // =========================== Default Line Chart End ===============================
 
   // =========================== Zoom able Line Chart End ===============================
@@ -232,78 +232,78 @@
   createChartTwo('zoomAbleLineChart', '#487fff');
   // =========================== Zoom able Line Chart End ===============================
 
-  // =========================== Line Chart With Data labels Start ===============================
-    var options = {
-          series: [{
-            name: "Desktops",
-            data: [5, 25, 35, 15, 21, 15, 35, 35, 51]
-        }],
-        chart: {
-            height: 264,
-            type: 'line',
-            colors: '#000',
-            zoom: {
-                enabled: false
-            },
-            toolbar: {
-                show: false
-            },
-        },
-        colors: ['#487FFF'],  // Set the color of the series
-        dataLabels: {
-          enabled: true
-        },
-        stroke: {
-          curve: 'straight',
-          width: 4,
-          color: "#000"
-        },
-        markers: {
-            size: 0,
-            strokeWidth: 3,
-            hover: {
-                size: 8
-            }
-        },
-        grid: {
-            show: true,
-            borderColor: '#D1D5DB',
-            strokeDashArray: 3,
-          row: {
-            colors: ['#f3f3f3', 'transparent'],
-            opacity: 0,
-          },
-        },
-        // Customize the circle marker color on hover
-        markers: {
-            colors: '#487FFF',
-            strokeWidth: 3,
-            size: 0,
-            hover: {
-                size: 10
-            }
-        },
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            lines: {
-                show: false
-            }
-        },
-        yaxis: {
-                labels: {
-                    formatter: function (value) {
-                        return "$" + value + "k";
-                    },
-                    style: {
-                        fontSize: "14px"
-                    }
-                },
-        },
-    };
+//   // =========================== Line Chart With Data labels Start ===============================
+//     var options = {
+//           series: [{
+//             name: "Desktops",
+//             data: [5, 25, 35, 15, 21, 15, 35, 35, 51,10,25,0]
+//         }],
+//         chart: {
+//             height: 264,
+//             type: 'line',
+//             colors: '#000',
+//             zoom: {
+//                 enabled: false
+//             },
+//             toolbar: {
+//                 show: false
+//             },
+//         },
+//         colors: ['#487FFF'],  // Set the color of the series
+//         dataLabels: {
+//           enabled: true
+//         },
+//         stroke: {
+//           curve: 'straight',
+//           width: 4,
+//           color: "#000"
+//         },
+//         markers: {
+//             size: 0,
+//             strokeWidth: 3,
+//             hover: {
+//                 size: 8
+//             }
+//         },
+//         grid: {
+//             show: true,
+//             borderColor: '#D1D5DB',
+//             strokeDashArray: 3,
+//           row: {
+//             colors: ['#f3f3f3', 'transparent'],
+//             opacity: 0,
+//           },
+//         },
+//         // Customize the circle marker color on hover
+//         markers: {
+//             colors: '#487FFF',
+//             strokeWidth: 3,
+//             size: 0,
+//             hover: {
+//                 size: 10
+//             }
+//         },
+//         xaxis: {
+//             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+//             lines: {
+//                 show: false
+//             }
+//         },
+//         yaxis: {
+//                 labels: {
+//                     formatter: function (value) {
+//                         return "$" + value + "k";
+//                     },
+//                     style: {
+//                         fontSize: "14px"
+//                     }
+//                 },
+//         },
+//     };
 
-    var chart = new ApexCharts(document.querySelector("#lineDataLabel"), options);
-    chart.render();
-  // =========================== Line Chart With Data labels End ===============================
+//     var chart = new ApexCharts(document.querySelector("#lineDataLabel"), options);
+//     chart.render();
+//   // =========================== Line Chart With Data labels End ===============================
 
   // =========================== Double Line Chart Start ===============================
   function createLineChart(chartId, chartColor) {

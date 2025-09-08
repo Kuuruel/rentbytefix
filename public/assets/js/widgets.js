@@ -116,9 +116,10 @@ function createWidgetChart(chartId, chartColor) {
 }
 
 // Call the function for each chart with the desired ID and color
-createWidgetChart('new-user-chart', '#487fff');
+// createWidgetChart('new-user-chart', '#487fff');
 createWidgetChart('active-user-chart', '#45b369');
 createWidgetChart('total-sales-chart', '#f4941e');
+createWidgetChart('inactive-user-chart', '#dc2626');
 createWidgetChart('conversion-user-chart', '#8252e9');
 // ================================== Crm Home widgets charts End =================================
 
@@ -477,53 +478,53 @@ chart.render();
 // ================================ Earning Statistics bar chart End ================================
 
 // ================================ Users Overview Donut chart Start ================================
-var options = {
-    series: [400, 400, 400],
-    colors: ['#FF9F29', '#487FFF', '#E4F1FF'],
-    labels: ['Active', 'New', 'Total'],
-    legend: {
-        show: false
-    },
-    chart: {
-        type: 'donut',
-        height: 270,
-        sparkline: {
-            enabled: true // Remove whitespace
-        },
-        margin: {
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0
-        },
-        padding: {
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0
-        }
-    },
-    stroke: {
-        width: 0,
-    },
-    dataLabels: {
-        enabled: false
-    },
-    responsive: [{
-        breakpoint: 480,
-        options: {
-            chart: {
-                width: 200
-            },
-            legend: {
-                position: 'bottom'
-            }
-        }
-    }],
-};
+// var options = {
+//     series: [400, 400, 400],
+//     colors: ['#FF9F29', '#487FFF', '#E4F1FF'],
+//     labels: ['Active', 'New', 'Total'],
+//     legend: {
+//         show: false
+//     },
+//     chart: {
+//         type: 'donut',
+//         height: 270,
+//         sparkline: {
+//             enabled: true // Remove whitespace
+//         },
+//         margin: {
+//             top: 0,
+//             right: 0,
+//             bottom: 0,
+//             left: 0
+//         },
+//         padding: {
+//             top: 0,
+//             right: 0,
+//             bottom: 0,
+//             left: 0
+//         }
+//     },
+//     stroke: {
+//         width: 0,
+//     },
+//     dataLabels: {
+//         enabled: false
+//     },
+//     responsive: [{
+//         breakpoint: 480,
+//         options: {
+//             chart: {
+//                 width: 200
+//             },
+//             legend: {
+//                 position: 'bottom'
+//             }
+//         }
+//     }],
+// };
 
-var chart = new ApexCharts(document.querySelector("#userOverviewDonutChart"), options);
-chart.render();
+// var chart = new ApexCharts(document.querySelector("#userOverviewDonutChart"), options);
+// chart.render();
 // ================================ Users Overview Donut chart End ================================
 
 // ================================ Client Payment Status chart End ================================

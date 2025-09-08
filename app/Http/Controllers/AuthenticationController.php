@@ -21,7 +21,7 @@ class AuthenticationController extends Controller
     {
         return view('authentication.signin');
     }
-    
+
     public function signup()
     {
         return view('authentication.signup');
@@ -56,12 +56,43 @@ class AuthenticationController extends Controller
         return redirect()->route('landlord.index');
     }
 
-     public function signin(Request $request)
-        {
-            $request->validate([
-                'email'    => 'required|email',
-                'password' => 'required',
-            ]);
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:admin,tenant',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        Auth::login($user);
+
+        if ($user->role === 'admin') {
+            return redirect()->route('super-admin.index');
+        } else {
+            return redirect()->route('landlord.index');
+        }
+    }
+
+    public function signin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
         if (Auth::guard('web')->attempt([
             'email' => $request->email,
