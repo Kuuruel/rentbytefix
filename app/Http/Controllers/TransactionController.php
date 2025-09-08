@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Bill;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -46,6 +47,11 @@ class TransactionController extends Controller
                           $billQuery->where('id', 'like', "%$search%")
                                    ->orWhereHas('renter', function($renterQuery) use ($search) {
                                        $renterQuery->where('name', 'like', "%$search%");
+                                   })
+                                   ->orWhereHas('property', function($propertyQuery) use ($search) {
+                                       $propertyQuery->where('id', 'like', "%$search%")
+                                                   ->orWhere('name', 'like', "%$search%")
+                                                   ->orWhere('address', 'like', "%$search%");
                                    });
                       });
                 });
@@ -68,6 +74,8 @@ class TransactionController extends Controller
                 return [
                     'id'          => $tx->id,
                     'bill_id'     => $tx->bill_id,
+                    'property_id' => $tx->bill?->property?->id ?? null,
+                    'property_name' => $tx->bill?->property?->name ?? 'Unknown Property',
                     'order_id'    => $tx->order_id,
                     'renter_name' => $tx->bill?->renter?->name ?? 'Unknown',
                     'reciept_name' => $tx->bill?->renter?->name ?? 'Unknown',
@@ -75,10 +83,11 @@ class TransactionController extends Controller
                     'formatted_amount' => 'Rp ' . number_format($tx->amount, 0, ',', '.'),
                     'status'      => $tx->status,
                     'status_badge_class' => $this->getStatusBadgeClass($tx->status),
-                    'created_at'  => $tx->created_at?->format('d M Y, H:i'),
-                    'created_at_iso'  => $tx->created_at?->toISOString(),
-                    'paid_at'     => $tx->paid_at?->format('d M Y, H:i'),
-                    'paid_at_iso' => $tx->paid_at?->toISOString(),
+                    // FORMAT TANGGAL DENGAN WIB
+                    'created_at'  => $tx->created_at ? Carbon::parse($tx->created_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB' : null,
+                    'created_at_iso'  => $tx->created_at ? Carbon::parse($tx->created_at)->setTimezone('Asia/Jakarta')->toISOString() : null,
+                    'paid_at'     => $tx->paid_at ? Carbon::parse($tx->paid_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB' : null,
+                    'paid_at_iso' => $tx->paid_at ? Carbon::parse($tx->paid_at)->setTimezone('Asia/Jakarta')->toISOString() : null,
                 ];
             });
 
@@ -139,16 +148,17 @@ class TransactionController extends Controller
     public function monthlyRevenue(Request $request)
     {
         try {
+            // SET TIMEZONE UNTUK QUERY
             $year = $request->input('year', date('Y'));
             
             $monthlyRevenue = Transaction::selectRaw('
-                    MONTH(paid_at) as month,
-                    YEAR(paid_at) as year,
+                    MONTH(CONVERT_TZ(paid_at, "+00:00", "+07:00")) as month,
+                    YEAR(CONVERT_TZ(paid_at, "+00:00", "+07:00")) as year,
                     SUM(amount) as total_amount,
                     COUNT(*) as transaction_count
                 ')
                 ->where('status', 'success')
-                ->whereYear('paid_at', $year)
+                ->whereRaw('YEAR(CONVERT_TZ(paid_at, "+00:00", "+07:00")) = ?', [$year])
                 ->whereNotNull('paid_at')
                 ->groupBy('year', 'month')
                 ->orderBy('month')
@@ -195,23 +205,24 @@ class TransactionController extends Controller
     public function revenueSummary(Request $request)
     {
         try {
-            $currentMonth = date('n');
-            $currentYear = date('Y');
+            $now = Carbon::now('Asia/Jakarta');
+            $currentMonth = $now->month;
+            $currentYear = $now->year;
             $previousMonth = $currentMonth == 1 ? 12 : $currentMonth - 1;
             $previousYear = $currentMonth == 1 ? $currentYear - 1 : $currentYear;
 
             $thisMonthRevenue = Transaction::where('status', 'success')
-                ->whereMonth('paid_at', $currentMonth)
-                ->whereYear('paid_at', $currentYear)
+                ->whereRaw('MONTH(CONVERT_TZ(paid_at, "+00:00", "+07:00")) = ?', [$currentMonth])
+                ->whereRaw('YEAR(CONVERT_TZ(paid_at, "+00:00", "+07:00")) = ?', [$currentYear])
                 ->sum('amount');
 
             $lastMonthRevenue = Transaction::where('status', 'success')
-                ->whereMonth('paid_at', $previousMonth)
-                ->whereYear('paid_at', $previousYear)
+                ->whereRaw('MONTH(CONVERT_TZ(paid_at, "+00:00", "+07:00")) = ?', [$previousMonth])
+                ->whereRaw('YEAR(CONVERT_TZ(paid_at, "+00:00", "+07:00")) = ?', [$previousYear])
                 ->sum('amount');
 
             $thisYearRevenue = Transaction::where('status', 'success')
-                ->whereYear('paid_at', $currentYear)
+                ->whereRaw('YEAR(CONVERT_TZ(paid_at, "+00:00", "+07:00")) = ?', [$currentYear])
                 ->sum('amount');
 
             $percentageChange = 0;
@@ -225,12 +236,12 @@ class TransactionController extends Controller
                     'this_month' => [
                         'amount' => (float) $thisMonthRevenue,
                         'formatted' => 'Rp ' . number_format($thisMonthRevenue, 0, ',', '.'),
-                        'month' => date('F Y')
+                        'month' => $now->format('F Y')
                     ],
                     'last_month' => [
                         'amount' => (float) $lastMonthRevenue,
                         'formatted' => 'Rp ' . number_format($lastMonthRevenue, 0, ',', '.'),
-                        'month' => date('F Y', mktime(0, 0, 0, $previousMonth, 1, $previousYear))
+                        'month' => Carbon::create($previousYear, $previousMonth, 1)->setTimezone('Asia/Jakarta')->format('F Y')
                     ],
                     'this_year' => [
                         'amount' => (float) $thisYearRevenue,

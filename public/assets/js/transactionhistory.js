@@ -13,8 +13,8 @@
         perPage: parseInt(document.getElementById('perPageSelect')?.value || '10'),
         query: '',
         statusFilter: '',
-        monthFilter: '', // NEW: Month filter
-        yearFilter: new Date().getFullYear().toString(), // NEW: Year filter (default current year)
+        monthFilter: '',
+        yearFilter: new Date().getFullYear().toString(),
         selectedTransactions: [],
         currentDeleteId: null,
         currentDeleteName: ''
@@ -25,18 +25,16 @@
         perPageSelect: document.getElementById('perPageSelect'),
         searchInput: document.getElementById('searchInput'),
         statusFilter: document.getElementById('statusFilter'),
-        monthFilter: document.getElementById('monthFilter'), // NEW
-        yearFilter: document.getElementById('yearFilter'), // NEW
-        clearFilters: document.getElementById('clearFilters'), // NEW
-        revenueSummary: document.getElementById('revenueSummary'), // NEW
-        totalRevenue: document.getElementById('totalRevenue'), // NEW
-        totalTransactions: document.getElementById('totalTransactions'), // NEW
-        emptyState: document.getElementById('emptyState'), // NEW
+        monthFilter: document.getElementById('monthFilter'),
+        yearFilter: document.getElementById('yearFilter'),
+        clearFilters: document.getElementById('clearFilters'),
+        revenueSummary: document.getElementById('revenueSummary'),
+        totalRevenue: document.getElementById('totalRevenue'),
+        totalTransactions: document.getElementById('totalTransactions'),
         paginationInfo: document.getElementById('paginationInfo'),
         pageNumbers: document.getElementById('pageNumbers'),
         loadingSpinner: document.getElementById('loadingSpinner'),
         selectAllCheckbox: document.getElementById('selectAll'),
-        // Single delete modal elements
         deleteBackdrop: document.getElementById('deleteBackdrop'),
         deleteName: document.getElementById('deleteName'),
         deleteCancel: document.getElementById('deleteCancel'),
@@ -124,7 +122,6 @@
         if (DOM.loadingSpinner) DOM.loadingSpinner.classList.add('hidden');
     }
 
-    // NEW: Update revenue summary display
     function updateRevenueSummary(summary) {
         if (!summary) return;
         
@@ -139,7 +136,6 @@
         }
     }
 
-    // NEW: Clear all filters
     function clearAllFilters() {
         state.query = '';
         state.statusFilter = '';
@@ -156,7 +152,6 @@
         loadTransactions();
     }
 
-    // Update selected transactions tracking
     function updateSelectedTransactions() {
         state.selectedTransactions = [];
         const checkboxes = DOM.tableBody.querySelectorAll('.property-checkbox:checked');
@@ -256,12 +251,9 @@
     function renderSpinnerRow() {
         if (!DOM.tableBody) return;
         
-        // Hide empty state when loading
-        if (DOM.emptyState) DOM.emptyState.classList.add('hidden');
-        
         DOM.tableBody.innerHTML = `
             <tr>
-                <td colspan="8" class="py-6 text-center">
+                <td colspan="9" class="py-6 text-center">
                     <div class="flex justify-center items-center gap-2">
                         <div class="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                         <span class="text-gray-500 dark:text-neutral-400">Loading...</span>
@@ -271,13 +263,11 @@
         `;
     }
 
-    // ENHANCED: Load transactions with new filters
     async function loadTransactions(){
         console.log('Starting loadTransactions...');
         renderSpinnerRow(); 
         
         try {
-            // Build params with new filters
             const params = new URLSearchParams({
                 page: state.page,
                 per_page: state.perPage,
@@ -285,7 +275,6 @@
                 status: state.statusFilter
             });
 
-            // Add month and year filters if they have values
             if (state.monthFilter) params.append('month', state.monthFilter);
             if (state.yearFilter) params.append('year', state.yearFilter);
             
@@ -301,7 +290,7 @@
             }
             
             const payload = res.data.data;
-            const summary = res.data.summary; // NEW: Get summary data
+            const summary = res.data.summary;
             
             console.log('Payload:', payload);
             console.log('Items count:', payload.data?.length || 0);
@@ -309,19 +298,25 @@
             
             renderTable(payload.data || []);
             renderPagination(payload);
-            updateRevenueSummary(summary); // NEW: Update revenue summary
+            updateRevenueSummary(summary);
             
             console.log('Transaction loading completed');
         } catch (err) {
             console.error('Load transactions error:', err);
             showNotification('Error loading transactions: ' + (err.message || err), 'error');
             
-            // Show empty state on error
             if (DOM.tableBody) {
-                DOM.tableBody.innerHTML = '';
-            }
-            if (DOM.emptyState) {
-                DOM.emptyState.classList.remove('hidden');
+                DOM.tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="text-center py-4 text-neutral-500">
+                            <div class="flex flex-col items-center gap-4">
+                                <div class="text-center">
+                                    <p class="text-lg font-medium">Error loading transactions</p>
+                                    <p class="text-sm text-neutral-400">Please try again or check your connection</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>`;
             }
         } finally {
             hideLoading();
@@ -341,27 +336,18 @@
         if (!items || items.length === 0) {
             console.log('No items to display');
             
-            // Show empty state if available
-            if (DOM.emptyState) {
-                DOM.emptyState.classList.remove('hidden');
-            } else {
-                // Fallback to table row
-                DOM.tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="text-center py-6 text-neutral-500">
-                            <div class="flex flex-col items-center">
+            DOM.tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center py-4 text-neutral-500">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="text-center">
                                 <p class="text-lg font-medium">No transactions found</p>
-                                <p class="text-sm text-neutral-400">Try different search or filters</p>
+                                <p class="text-sm text-neutral-400">Try changing your search or filters</p>
                             </div>
-                        </td>
-                    </tr>`;
-            }
+                        </div>
+                    </td>
+                </tr>`;
             return;
-        }
-
-        // Hide empty state when we have data
-        if (DOM.emptyState) {
-            DOM.emptyState.classList.add('hidden');
         }
 
         items.forEach((tx, index) => {
@@ -369,22 +355,27 @@
             
             const date = tx.created_at ? formatDate(tx.created_at) : '-';
             const paidAt = tx.paid_at ? formatDate(tx.paid_at) : '-';
-            const amount = tx.formatted_amount || (tx.amount ? `Rp ${formatNumber(tx.amount)}` : '-'); // Use formatted amount if available
+            const amount = tx.formatted_amount || (tx.amount ? `Rp ${formatNumber(tx.amount)}` : '-');
             const status = tx.status ? String(tx.status).charAt(0).toUpperCase() + String(tx.status).slice(1) : '-';
             const billId = tx.bill_id || tx.id || '-';
+            const propertyId = tx.property_id || '-';
+            const propertyName = tx.property_name || 'Unknown Property';
             const renterName = tx.renter_name || tx.reciept_name || 'Unknown';
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="px-4 py-3" style="padding-right:0 !important">
-                    <div class="form-check style-check flex items-center">
-                        <input class="form-check-input rounded border input-form-dark property-checkbox" type="checkbox" value="${escapeHtml(billId)}">
-                    </div>
                 </td>
                 <td class="px-4 py-3" style="padding-left:0 !important">
                     <div>
                         <h6 class="text-base mb-0 fw-medium text-primary-bold">#${escapeHtml(billId)}</h6>
                     </div>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="text-sm text-secondary-light">#${escapeHtml(propertyId)}</span>
+                </td>
+                <td class="px-4 py-3">
+                    <span class="text-sm text-secondary-light">${escapeHtml(propertyName)}</span>
                 </td>
                 <td class="px-4 py-3">
                     <span class="text-sm text-secondary-light">${escapeHtml(renterName)}</span>
@@ -407,7 +398,6 @@
 
         console.log('Table rendered successfully');
 
-        // Attach click listeners for delete buttons
         DOM.tableBody.querySelectorAll('button[title="Delete"]').forEach(btn => {
             btn.onclick = function(){
                 const billId = this.getAttribute('data-bill');
@@ -416,12 +406,10 @@
             };
         });
 
-        // Attach change listeners for checkboxes
         DOM.tableBody.querySelectorAll('.property-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', updateSelectedTransactions);
         });
 
-        // Update selected state after rendering
         updateSelectedTransactions();
     }
 
@@ -501,6 +489,8 @@
         
         const normalized = {
             bill_id: tx.bill_id ?? tx.id ?? tx.billId ?? null,
+            property_id: tx.property_id ?? tx.propertyId ?? null,
+            property_name: tx.property_name ?? tx.propertyName ?? 'Unknown Property',
             renter_name: tx.renter_name ?? tx.reciept_name ?? tx.renterName ?? '-',
             created_at: tx.created_at ?? tx.createdAt ?? new Date().toISOString(),
             paid_at: tx.paid_at ?? tx.paidAt ?? null,
@@ -515,25 +505,18 @@
             const amount = `Rp ${formatNumber(normalized.amount)}`;
             const status = normalized.status.charAt(0).toUpperCase() + normalized.status.slice(1);
             const billId = normalized.bill_id ?? '-';
+            const propertyId = normalized.property_id ?? '-';
+            const propertyName = normalized.property_name;
+            
             tr.innerHTML = `
-                <td class="px-4 py-3" style="padding-right:0 !important">
-                    <div class="form-check style-check flex items-center">
-                        <input class="form-check-input rounded border input-form-dark property-checkbox" type="checkbox" value="${escapeHtml(billId)}">
-                    </div>
-                </td>
                 <td class="px-4 py-3" style="padding-left:0 !important"><h6 class="text-base mb-0 fw-medium text-primary-bold">#${escapeHtml(billId)}</h6></td>
+                <td class="px-4 py-3"><span class="text-sm text-secondary-light">#${escapeHtml(propertyId)}</span></td>
+                <td class="px-4 py-3"><span class="text-sm text-secondary-light">${escapeHtml(propertyName)}</span></td>
                 <td class="px-4 py-3"><span class="text-sm text-secondary-light">${escapeHtml(normalized.renter_name)}</span></td>
                 <td class="px-4 py-3"><span class="text-sm text-secondary-light">${escapeHtml(date)}</span></td>
                 <td class="px-4 py-3"><span class="text-sm text-secondary-light">${escapeHtml(paidAt)}</span></td>
                 <td class="px-4 py-3 text-center"><span class="text-sm font-medium">${escapeHtml(amount)}</span></td>
                 <td class="px-4 py-3 text-center"><span class="px-4 py-1 rounded-full text-sm font-medium">${escapeHtml(status)}</span></td>
-                <td class="px-4 py-3 text-center">
-                    <div class="flex items-center justify-center gap-2">
-                        <button class="w-8 h-8 bg-red-50 dark:bg-red-600/10 text-red-600 rounded-full inline-flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-600/20" title="Delete" data-bill="${escapeHtml(billId)}" data-renter="${escapeHtml(normalized.renter_name)}">
-                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
-                        </button>
-                    </div>
-                </td>
             `;
             DOM.tableBody.prepend(tr);
             
@@ -559,7 +542,6 @@
         };
     }
 
-    // ENHANCED: Initialize events with new filters
     function initEvents(){
         DOM.searchInput?.addEventListener('input', debounce(function(){
             state.query = DOM.searchInput.value;
@@ -573,14 +555,12 @@
             loadTransactions();
         });
 
-        // NEW: Month filter event
         DOM.monthFilter?.addEventListener('change', function(){
             state.monthFilter = DOM.monthFilter.value;
             state.page = 1;
             loadTransactions();
         });
 
-        // NEW: Year filter event
         DOM.yearFilter?.addEventListener('change', function(){
             state.yearFilter = DOM.yearFilter.value;
             state.page = 1;
@@ -593,30 +573,18 @@
             loadTransactions();
         });
 
-        // NEW: Clear filters button
         DOM.clearFilters?.addEventListener('click', clearAllFilters);
 
-        // Select All checkbox functionality
-        DOM.selectAllCheckbox?.addEventListener('change', function() {
-            const checkboxes = DOM.tableBody.querySelectorAll('.property-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-            updateSelectedTransactions();
-        });
 
-        // Single delete modal events
         DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
         DOM.deleteConfirm?.addEventListener('click', confirmSingleDelete);
 
-        // Close single delete modal when clicking outside
         DOM.deleteBackdrop?.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeDeleteModal();
             }
         });
 
-        // Close modal with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeDeleteModal();
@@ -628,9 +596,9 @@
     console.log('tableBody:', DOM.tableBody);
     console.log('perPageSelect:', DOM.perPageSelect);
     console.log('searchInput:', DOM.searchInput);
-    console.log('monthFilter:', DOM.monthFilter); // NEW
-    console.log('yearFilter:', DOM.yearFilter); // NEW
-    console.log('clearFilters:', DOM.clearFilters); // NEW
+    console.log('monthFilter:', DOM.monthFilter);
+    console.log('yearFilter:', DOM.yearFilter);
+    console.log('clearFilters:', DOM.clearFilters);
     console.log('deleteBackdrop:', DOM.deleteBackdrop);
 
     initEvents();
@@ -640,7 +608,6 @@
         loadTransactions();
     }, 100);
 
-    // ENHANCED: Export enhanced window object
     window.transactionManager = {
         loadTransactions,
         addTransactionToHistory: window.addTransactionToHistory,

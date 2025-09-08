@@ -69,18 +69,33 @@ class MidtransWebhookController extends Controller
 
             $bill->update(['status' => $billStatus]);
 
-            Transaction::updateOrCreate(
-                ['bill_id' => $bill->id],
-                [
-                    'bill_id' => $bill->id,
+            // INI YANG DIPERBAIKI - TAMBAH tenant_id dan amount
+            // Update existing transaction (yang udah dibuat pas bill creation)
+            $transaction = Transaction::where('bill_id', $bill->id)->first();
+            
+            if ($transaction) {
+                $transaction->update([
                     'status' => $mappedTransactionStatus,
                     'midtrans_response' => json_encode($payload),
                     'transaction_id' => $payload['transaction_id'] ?? null,
                     'payment_type' => $payload['payment_type'] ?? null,
                     'paid_at' => in_array($transactionStatus, ['settlement', 'capture']) && 
                                 ($fraudStatus === 'accept' || $fraudStatus === null) ? now() : null,
-                ]
-            );
+                ]);
+            } else {
+                // Fallback kalau transaction belum ada (legacy data)
+                Transaction::create([
+                    'bill_id' => $bill->id,
+                    'tenant_id' => $bill->tenant_id,
+                    'amount' => $bill->amount,
+                    'status' => $mappedTransactionStatus,
+                    'midtrans_response' => json_encode($payload),
+                    'transaction_id' => $payload['transaction_id'] ?? null,
+                    'payment_type' => $payload['payment_type'] ?? null,
+                    'paid_at' => in_array($transactionStatus, ['settlement', 'capture']) && 
+                                ($fraudStatus === 'accept' || $fraudStatus === null) ? now() : null,
+                ]);
+            }
 
             if (in_array($transactionStatus, ['settlement']) || 
                 ($transactionStatus === 'capture' && $fraudStatus === 'accept')) {

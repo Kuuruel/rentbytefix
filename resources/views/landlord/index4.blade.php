@@ -90,22 +90,24 @@
                         <thead class="bg-neutral-50 dark:bg-neutral-800">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-left w-24"  style="padding-right:0 !important">
-                                    <div class="flex items-center">
-                                        <div class="form-check style-check flex items-center">
-                                            <input class="form-check-input rounded border input-form-dark" type="checkbox" name="checkbox" id="selectAll">
-                                        </div>
-                                    </div>
+                                   
                                 </th>
                                 <th scope="col" class="px-4 py-3 text-left w-32"  style="padding-left:0 !important">
                                     <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Invoice ID</span>
                                 </th>
-                                <th scope="col" class="px-4 py-3 text-left min-w-[200px]">
+                                <th scope="col" class="px-4 py-3 text-left w-32">
+                                    <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Property ID</span>
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-left min-w-[180px]">
+                                    <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Property Name</span>
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-left min-w-[160px]">
                                     <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Receipt Name</span>
                                 </th>
-                                <th scope="col" class="px-4 py-3 text-left min-w-[180px]">
+                                <th scope="col" class="px-4 py-3 text-left min-w-[140px]">
                                     <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Created At</span>
                                 </th>
-                                <th scope="col" class="px-4 py-3 text-left min-w-[180px]">
+                                <th scope="col" class="px-4 py-3 text-left min-w-[140px]">
                                     <span class="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Paid At</span>
                                 </th>
                                 <th scope="col" class="px-4 py-3 text-center w-28">
@@ -119,11 +121,6 @@
                         <tbody id="tableBody" class="divide-y divide-neutral-200 dark:divide-neutral-700">
                         </tbody>
                     </table>
-                </div>
-
-                <div id="emptyState" class="hidden text-center py-8">
-                    <h3 class="text-lg font-medium text-neutral-900 dark:text-white mb-2">No transactions found</h3>
-                    <p class="text-neutral-500 dark:text-neutral-400">Try adjusting your filters or search terms.</p>
                 </div>
 
                 <div class="flex items-center justify-between flex-wrap gap-2 mt-6">

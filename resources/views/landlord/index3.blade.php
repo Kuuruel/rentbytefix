@@ -196,7 +196,7 @@
                 <div class="flex items-center gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-600">
                     <div>
                         <h4 id="rentPropertyName" class="text-xl font-bold text-neutral-900 dark:text-white"></h4>
-                        <div id="rentPropertyPrice" class="mt-1 text-lg font-semibold text-blue-600"></div>
+                        <div id="rentPropertyPrice" class="mt-1 text-lg font-semibold text-blue-600 "></div>
                     </div>
                 </div>
 
@@ -404,7 +404,7 @@
         <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-600 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-neutral-800 dark:to-neutral-700">
             <div class="flex justify-between items-center">
                 <h3 class="text-lg font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
-                    <iconify-icon icon="ph:house" class="text-2xl text-blue-600 dark:text-blue-400"></iconify-icon>
+                    <iconify-icon icon="ph:house" class="text-2xl dark:text-blue-400"></iconify-icon>
                     Property Details
                 </h3>
                 <button id="closeDetailsBtn" class="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 text-xl">&times;</button>

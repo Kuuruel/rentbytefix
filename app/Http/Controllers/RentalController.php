@@ -84,16 +84,20 @@ class RentalController extends BaseController
             $property->update(['status' => 'Processing']);
 
             $renter = Renter::updateOrCreate(
-                ['email' => $request->renter_email],
-                [
-                    'name' => $request->renter_name,
-                    'phone' => $request->renter_phone,
-                    'address' => $request->renter_address,
-                    'tenant_id' => $currentTenant->id,
-                    'start_date' => $request->start_date, 
-                    'end_date' => $request->end_date, 
-                ]
-            );
+            [
+                'email' => $request->renter_email,
+                'property_id' => $property->id 
+            ],
+            [
+                'name' => $request->renter_name,
+                'phone' => $request->renter_phone,
+                'address' => $request->renter_address,
+                'tenant_id' => $currentTenant->id,
+                'property_id' => $property->id, 
+                'start_date' => $request->start_date, 
+                'end_date' => $request->end_date, 
+            ]
+        );
 
             $startDate = \Carbon\Carbon::parse($request->start_date);
             $endDate = \Carbon\Carbon::parse($request->end_date);
@@ -122,6 +126,16 @@ class RentalController extends BaseController
                 'payment_link' => $paymentLink,
                 'snap_token' => $snapToken
             ]);
+
+            Transaction::create([
+            'bill_id' => $bill->id,
+            'tenant_id' => $currentTenant->id,
+            'amount' => $amount,
+            'status' => 'pending',
+            'order_id' => 'BILL-' . $bill->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
             DB::commit();
 
