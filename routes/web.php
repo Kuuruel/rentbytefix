@@ -19,22 +19,18 @@ use App\Http\Controllers\TenantController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\MidtransWebhookController;
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\MidtransController;
 
-
-// Global Notifications Routes
+/*
+|--------------------------------------------------------------------------
+| Global Notifications Routes (From File 1)
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
     Route::controller(\App\Http\Controllers\Admin\NotificationController::class)->group(function () {
         Route::get('/', 'index')->name('index');
-
-
-        // Route yang sudah ada di web.php (pastikan ini ada)
-        Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
-            Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
-            Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
-        });
+        
         // AJAX Routes
         Route::get('/get-notifications', 'getNotifications')->name('get');
         Route::get('/get-all-notifications', 'getAllNotifications')->name('get-all');
@@ -55,21 +51,28 @@ Route::prefix('admin/notifications')->name('admin.notifications.')->group(functi
         Route::post('/bulk-delete', 'bulkDelete')->name('bulk-delete');
     });
 });
+
 /*
-|-----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | Default Route
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', function () {
-    if (Auth::check()) {
-        $user = Auth::user();
+    // Check for admin user (web guard)
+    if (Auth::guard('web')->check()) {
+        $user = Auth::guard('web')->user();
         if ($user->role === 'admin') {
             return redirect()->route('super-admin.index');
         } else {
             return redirect()->route('landlord.index');
         }
     }
+    
+    // Check for tenant guard
+    if (Auth::guard('tenant')->check()) {
+        return redirect()->route('landlord.index');
+    }
+    
     return redirect()->route('showSigninForm');
 });
 
@@ -89,15 +92,37 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
+// Guest middleware routes (from File 2)
+Route::middleware('guest')->group(function() {
+    Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
+});
+
+Route::post('/login', [AuthenticationController::class, 'signin']);
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes (Auth Required)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
+});
+
+// Admin-only routes
+Route::middleware(['auth', 'role:admin'])->group(function() {
+    Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super-admin.index');
+});
+
+// Landlord-only routes
+Route::middleware(['auth', 'role:landlord'])->group(function () {
+    Route::get('/landlord', [LandlordController::class, 'index'])->name('landlord.index');
+});
+
+// Routes accessible by both web and tenant guards
+Route::middleware(['auth:web,tenant'])->group(function () {
 
     // Super Admin Dashboard
-    Route::prefix('super-admin')->group(function () {
+    Route::prefix('super-admin')->middleware('auth:web')->group(function () {
         Route::controller(SuperAdminController::class)->group(function () {
             Route::get('/', 'index')->name('super-admin.index');
             Route::get('/index2', 'index2')->name('super-admin.index2');
@@ -105,11 +130,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/index4', 'index4')->name('super-admin.index4');
             Route::get('/index5', 'index5')->name('super-admin.index5');
             Route::get('/index6', 'index6')->name('super-admin.index6');
-            // Ganti route lama
+            // Using NotificationController for index7
             Route::get('/index7', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('super-admin.index7');
             Route::get('/index8/{tenant_id}', 'index8')->name('super-admin.index8');
-
             Route::get('/index9', 'index9')->name('super-admin.index9');
+            Route::get('/activities', 'activities')->name('super-admin.activities');
         });
     });
 
@@ -147,6 +172,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('widgets', 'widgets')->name('widgets');
     });
 
+    // AI Application Routes
     Route::prefix('aiapplication')->group(function () {
         Route::controller(AiapplicationController::class)->group(function () {
             Route::get('/code-generator', 'codeGenerator')->name('codeGenerator');
@@ -159,6 +185,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // Chart Routes
     Route::prefix('chart')->group(function () {
         Route::controller(ChartController::class)->group(function () {
             Route::get('/column-chart', 'columnChart')->name('columnChart');
@@ -167,6 +194,7 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // Components Page Routes
     Route::prefix('componentspage')->group(function () {
         Route::controller(ComponentspageController::class)->group(function () {
             Route::get('/alert', 'alert')->name('alert');
@@ -193,43 +221,14 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
+    // Cryptocurrency Routes
     Route::prefix('cryptocurrency')->group(function () {
         Route::controller(CryptocurrencyController::class)->group(function () {
             Route::get('/wallet', 'wallet')->name('wallet');
         });
     });
 
-Route::prefix('super-admin')->group(function () {
-    Route::controller(SuperAdminController::class)->group(function () {
-        Route::get('/', 'index')->name('super-admin.index');
-        Route::get('/index2', 'index2')->name('super-admin.index2');
-        Route::get('/index3', 'index3')->name('super-admin.index3');
-        Route::get('/index4', 'index4')->name('super-admin.index4');
-        Route::get('/index5', 'index5')->name('super-admin.index5');
-        Route::get('/index6', 'index6')->name('super-admin.index6');
-        Route::get('/index7', 'index7')->name('super-admin.index7');
-        Route::get('/index8', 'index8')->name('super-admin.index8');
-        Route::get('/index9', 'index9')->name('super-admin.index9');
-        // ✅ Tambahkan route untuk activities (opsional)
-        Route::get('/activities', 'activities')->name('super-admin.activities');
-    });
-});
-
-Route::prefix('landlord')->group(function () {
-    Route::controller(LandlordController::class)->group(function () {
-        Route::get('/', 'index')->name('landlord.index');
-        Route::get('/index2', 'index2')->name('landlord.index2');
-        Route::get('/index3', 'index3')->name('landlord.index3');
-        Route::get('/index4', 'index4')->name('landlord.index4');
-        Route::get('/index5', 'index5')->name('landlord.index5');
-        Route::get('/index6', 'index6')->name('landlord.index6');
-        Route::get('/index7', 'index7')->name('landlord.index7');
-        Route::get('/index8', 'index8')->name('landlord.index8');
-        Route::get('/index9', 'index9')->name('landlord.index9');
-    });
-});
-
-    // Forms
+    // Forms Routes
     Route::prefix('forms')->group(function () {
         Route::controller(FormsController::class)->group(function () {
             Route::get('/form', 'form')->name('form');
@@ -239,6 +238,7 @@ Route::prefix('landlord')->group(function () {
         });
     });
 
+    // Invoice Routes
     Route::prefix('invoice')->group(function () {
         Route::controller(InvoiceController::class)->group(function () {
             Route::get('/invoice-add', 'invoiceAdd')->name('invoiceAdd');
@@ -248,6 +248,7 @@ Route::prefix('landlord')->group(function () {
         });
     });
 
+    // Settings Routes
     Route::prefix('settings')->group(function () {
         Route::controller(SettingsController::class)->group(function () {
             Route::get('/company', 'company')->name('company');
@@ -260,6 +261,7 @@ Route::prefix('landlord')->group(function () {
         });
     });
 
+    // Table Routes
     Route::prefix('table')->group(function () {
         Route::controller(TableController::class)->group(function () {
             Route::get('/table-basic', 'tableBasic')->name('tableBasic');
@@ -267,6 +269,7 @@ Route::prefix('landlord')->group(function () {
         });
     });
 
+    // Users Routes (web guard only)
     Route::prefix('users')->middleware('auth:web')->group(function () {
         Route::controller(UsersController::class)->group(function () {
             Route::get('/add-user', 'addUser')->name('addUser');
@@ -280,6 +283,7 @@ Route::prefix('landlord')->group(function () {
         });
     });
 
+    // Tenant Profile Routes
     Route::prefix('tenant')->group(function () {
         Route::controller(TenantController::class)->group(function () {
             Route::get('/view-profile/{id?}', 'viewProfileTenant')->name('viewProfileTenant');
@@ -288,42 +292,45 @@ Route::prefix('landlord')->group(function () {
         });
     });
 
+    // Tenant Resource Routes
     Route::resource('tenants', TenantController::class);
 
     Route::prefix('tenants')->name('tenants.')->group(function () {
-            Route::get('/', [TenantController::class, 'index'])->name('index');
-            Route::post('/', [TenantController::class, 'store'])->name('store');
-            Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
-            Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
-            Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
-    });            Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
-            Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
-            Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
-            Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
-            Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
+        Route::get('/', [TenantController::class, 'index'])->name('index');
+        Route::post('/', [TenantController::class, 'store'])->name('store');
+        Route::get('/{tenant}', [TenantController::class, 'show'])->name('show');
+        Route::put('/{tenant}', [TenantController::class, 'update'])->name('update');
+        Route::delete('/{tenant}', [TenantController::class, 'destroy'])->name('destroy');
+    });
 
-    Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
-    Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
-
+    // Property Routes
+    Route::get('/landlord/properties/data', [PropertyController::class, 'data'])->name('landlord.properties.data');
+    Route::post('/landlord/properties', [PropertyController::class, 'store'])->name('landlord.properties.store');
+    Route::get('/landlord/properties/{property}', [PropertyController::class, 'show'])->name('landlord.properties.show');
+    Route::put('/landlord/properties/{property}', [PropertyController::class, 'update'])->name('landlord.properties.update');
+    Route::delete('/landlord/properties/{property}', [PropertyController::class, 'destroy'])->name('landlord.properties.destroy');
     Route::get('/landlord/properties/{property}/renter-details', [PropertyController::class, 'getRenterDetails'])->name('landlord.properties.renter-details');
+
+    // Rental Routes
     Route::get('/landlord/rentals', [RentalController::class, 'index'])->name('landlord.rentals.index');
     Route::post('/landlord/rentals', [RentalController::class, 'store'])->name('landlord.rentals.store');
     Route::get('/landlord/rentals/{billId}/payment-status', [RentalController::class, 'checkPaymentStatus'])->name('landlord.rentals.payment-status');
 
+    // Transaction Routes
     Route::prefix('landlord')->group(function () {
-            Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
-                ->name('landlord.transactions.data');
-            
-            Route::get('/transactions/{billId}/print', [App\Http\Controllers\TransactionController::class, 'printTransaction'])
-                ->name('landlord.transactions.print');
-            
-            Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
-                ->name('landlord.rentals.payment-status');
+        Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
+            ->name('landlord.transactions.data');
+        
+        Route::get('/transactions/{billId}/print', [App\Http\Controllers\TransactionController::class, 'printTransaction'])
+            ->name('landlord.transactions.print');
+        
+        Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
+            ->name('landlord.rentals.payment-status');
     });
-        Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+
+    // Midtrans Settings Routes
+    Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
         Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
     });
-
-    
 });

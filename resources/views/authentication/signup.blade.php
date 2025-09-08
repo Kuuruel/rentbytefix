@@ -102,8 +102,7 @@
                     <div class="mb-5">
                         <div class="relative">
                             <div class="icon-field">
-                                <span
-                                    class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
+                                <span class="absolute start-4 top-1/2 -translate-y-1/2 pointer-events-none flex text-xl">
                                     <iconify-icon icon="solar:lock-password-outline"></iconify-icon>
                                 </span>
                                 <input type="password" name="password_confirmation" class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl" id="password_confirmation" placeholder="Confirm Password" required>
@@ -118,31 +117,24 @@
                                 <input class="form-check-input border border-neutral-300 mt-1.5" type="checkbox" value="" id="condition" required>
                                 <label class="text-sm" for="condition">
                                     By creating an account means you agree to the
-                                    <a href="javascript:void(0)" class="text-primary-600 font-semibold">Terms &
-                                        Conditions</a> and our
-                                    <a href="javascript:void(0)" class="text-primary-600 font-semibold">Privacy
-                                        Policy</a>
+                                    <a href="javascript:void(0)" class="text-primary-600 font-semibold">Terms & Conditions</a> and our
+                                    <a href="javascript:void(0)" class="text-primary-600 font-semibold">Privacy Policy</a>
                                 </label>
                             </div>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary justify-center text-sm btn-sm px-3 py-4 w-full rounded-xl mt-8">Create Tenant Account</button>
 
-                    <div
-                        class="mt-8 center-border-horizontal text-center relative before:absolute before:w-full before:h-[1px] before:top-1/2 before:-translate-y-1/2 before:bg-neutral-300 before:start-0">
+                    <div class="mt-8 center-border-horizontal text-center relative before:absolute before:w-full before:h-[1px] before:top-1/2 before:-translate-y-1/2 before:bg-neutral-300 before:start-0">
                         <span class="bg-white dark:bg-dark-2 z-[2] relative px-4">Or sign up with</span>
                     </div>
                     <div class="mt-8 flex items-center gap-3">
-                        <button type="button"
-                            class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
-                            <iconify-icon icon="ic:baseline-facebook"
-                                class="text-primary-600 text-xl line-height-1"></iconify-icon>
+                        <button type="button" class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
+                            <iconify-icon icon="ic:baseline-facebook" class="text-primary-600 text-xl line-height-1"></iconify-icon>
                             Facebook
                         </button>
-                        <button type="button"
-                            class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
-                            <iconify-icon icon="logos:google-icon"
-                                class="text-primary-600 text-xl line-height-1"></iconify-icon>
+                        <button type="button" class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
+                            <iconify-icon icon="logos:google-icon" class="text-primary-600 text-xl line-height-1"></iconify-icon>
                             Google
                         </button>
                     </div>
@@ -173,5 +165,4 @@
     <x-script />
 
 </body>
-
 </html>

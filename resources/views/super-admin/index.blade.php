@@ -37,29 +37,6 @@
             </div>
         </div>
 
-        <!-- Card Total Properties -->
-        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
-            <div
-                class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-purple-600/10 to-bg-white w-full">
-                <div class="card-body p-5">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Properties</p>
-                            <h6 class="mb-0 dark:text-white">400</h6>
-                        </div>
-                        <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center">
-                            <iconify-icon icon="fa-solid:award" class="text-white text-2xl"></iconify-icon>
-                        </div>
-                    </div>
-                    <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
-                            <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -80
-                        </span>
-                        Last 30 days
-                    </p>
-                </div>
-            </div>
-        </div>
 
         <!-- Card Active Tenants -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
