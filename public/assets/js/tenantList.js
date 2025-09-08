@@ -98,7 +98,7 @@
 
             if (contentType && contentType.includes('text/html')) {
                 console.error('Received HTML response instead of JSON:', response.url);
- 
+
                 const htmlText = await response.text();
                 console.error('HTML Response:', htmlText.substring(0, 500) + '...');
 
@@ -399,85 +399,84 @@
 
         renderPageNumbers(totalPages);
 
-        if (paginated.length === 0) {
-            DOM.tableBody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
-                        <div class="flex flex-col items-center gap-4">
-                            <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
-                            <div class="text-center">
-                                <p class="text-lg font-medium">No tenants found</p>
-                                <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
-                            </div>
+    if (paginated.length === 0) {
+        DOM.tableBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                    <div class="flex flex-col items-center gap-4">
+                        <iconify-icon icon="tabler:users-off" class="text-5xl text-neutral-300 dark:text-neutral-600"></iconify-icon>
+                        <div class="text-center">
+                            <p class="text-lg font-medium">No tenants found</p>
+                            <p class="text-sm text-neutral-400">Try adjusting your search or filter criteria</p>
                         </div>
-                    </td>
-                </tr>`;
-        } else {
-            DOM.tableBody.innerHTML = paginated.map((t, idx) => {
-                const avatar = t.avatar || '/assets/images/user-list/user-list1.png';
-                const status = t.status || 'Active';
-                const country = t.country || '-';
-                const ownerText = t.user ? `Added by: ${t.user.name}` : '';
-                const checkboxId = `tenant-cb-${t.id}`;
-
-                return `
-                <tr class="transition-all duration-200">
-                    <td class="px-4 py-4 align-middle">
-                        <div class="flex items-center gap-3">
-                            <div class="form-check style-check flex items-center">
-                                <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
-                                    type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
-                            </div>
-                            <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
+                    </div>
+                </td>
+            </tr>`;
+    } else {
+        DOM.tableBody.innerHTML = paginated.map((t, idx) => {
+            const avatar = t.avatar || '/assets/images/user-list/user-list1.png';
+            const status = t.status || 'Active';
+            const country = t.country || '-';
+            const ownerText = t.user ? `Added by: ${t.user.name}` : '';
+            const checkboxId = `tenant-cb-${t.id}`;
+            
+            return `
+            <tr class="transition-all duration-200">
+                <td class="px-4 py-4 align-middle">
+                    <div class="flex items-center gap-3">
+                        <div class="form-check style-check flex items-center">
+                            <input class="form-check-input rounded border border-neutral-400 tbody-checkbox" 
+                                   type="checkbox" name="checkbox" id="${checkboxId}" data-id="${t.id}">
                         </div>
-                    </td>
-                    <td class="px-4 py-4 align-middle">
-                        <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
-                    </td>
-                    <td class="px-4 py-4 align-middle">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="min-w-0 flex-1">
-                                <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(country)}</p>
-                                ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
-                            </div>
+                        <span class="text-sm font-medium text-neutral-600 dark:text-neutral-400 min-w-[20px]">${start + idx + 1}</span>
+                    </div>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                    <span class="text-sm text-neutral-600 dark:text-neutral-300 whitespace-nowrap">${formatDate(t.created_at)}</span>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">${escapeHtml(t.name)}</p>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(country)}</p>
+                            ${ownerText ? `<p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">${escapeHtml(ownerText)}</p>` : ''}
                         </div>
-                    </td>
-                    <td class="px-4 py-4 align-middle">
-                        <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
-                    </td>
-               <td class="px-4 py-4 text-center align-middle">
-    <span class="${status === 'Active'
-                        ? 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm'
-                        : 'bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 px-8 py-1.5 rounded-full font-medium text-sm'
-                    }">
-        ${status}
-    </span>
-</td>
-
-                    <td class="px-4 py-4 text-center align-middle"> 
-                        <div class="flex items-center gap-1.5 justify-center">
-                            <button type="button" title="View Details" 
-                                   class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center"
-                                    onclick="viewTenant(${t.id})">
-                                <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
-                            </button>
-                            <button type="button" title="Edit Tenant" 
-                                    class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center"
-                                    onclick="editTenant(${t.id})">
-                                <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
-                            </button>
-                            <button type="button" title="Delete Tenant" 
-                                     class="w-8 h-8 bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 rounded-full inline-flex items-center justify-center"
-                                    onclick="confirmDelete(${t.id})">
-                                <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
-                            </button>
-                        </div>
-                    </td>
-                </tr>`;
-            }).join('');
-        }
+                    </div>
+                </td>
+                <td class="px-4 py-4 align-middle">
+                    <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
+                </td>
+                <td class="px-4 py-4 text-center align-middle">
+                    <span class="${status === 'Active' ? 
+                        'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                        'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
+                    } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
+                        ${status}
+                    </span>
+                </td>
+                <td class="px-4 py-4 text-center align-middle">
+                    <div class="flex items-center gap-1.5 justify-center">
+                        <button type="button" title="View Details" 
+                                class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                onclick="viewTenant(${t.id})">
+                            <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
+                        </button>
+                        <button type="button" title="Edit Tenant" 
+                                class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                onclick="editTenant(${t.id})">
+                            <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
+                        </button>
+                        <button type="button" title="Delete Tenant" 
+                                class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                onclick="confirmDelete(${t.id})">
+                            <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
+                        </button>
+                    </div>
+                </td>
+            </tr>`; 
+        }).join('');
     }
+}
 
     function renderPageNumbers(totalPages) {
         if (!DOM.pageNumbers) return;
@@ -611,6 +610,7 @@
         DOM.pageNumbers.innerHTML = pageHTML;
 
         addPaginationEventListeners(totalPages);
+
     }
 
     function addPaginationEventListeners(totalPages) {
@@ -640,6 +640,78 @@
         const lastPageBtn = DOM.pageNumbers.querySelector('#lastPageBtn');
         if (lastPageBtn && !lastPageBtn.disabled) {
             lastPageBtn.addEventListener('click', () => goToPage(totalPages));
+        }
+    }
+
+    function initEventListeners() {
+        DOM.tenantForm?.addEventListener('submit', handleFormSubmit);
+
+        DOM.searchInput?.addEventListener('input', debounce(updateFilters, 300));
+        DOM.statusFilter?.addEventListener('change', updateFilters);
+        DOM.perPageSelect?.addEventListener('change', updatePerPage);
+
+        DOM.btnOpenCreate?.addEventListener('click', openCreateModal);
+        DOM.formCancel?.addEventListener('click', closeModal);
+        DOM.closeModalBtn?.addEventListener('click', closeModal);
+        DOM.modalBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.modalBackdrop) closeModal();
+        });
+
+        DOM.closeDetailsBtn?.addEventListener('click', closeDetailsModal);
+        DOM.closeDetailsFooterBtn?.addEventListener('click', closeDetailsModal);
+        DOM.detailsBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.detailsBackdrop) closeDetailsModal();
+        });
+
+        DOM.deleteConfirm?.addEventListener('click', deleteTenant);
+        DOM.deleteCancel?.addEventListener('click', closeDeleteModal);
+        DOM.deleteBackdrop?.addEventListener('click', (e) => {
+            if (e.target === DOM.deleteBackdrop) closeDeleteModal();
+        });
+
+        initSelectEventListeners();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDetailsModal();
+                closeDeleteModal();
+            }
+        });
+
+        document.getElementById('bulkDeleteCancel')?.addEventListener('click', hideBulkDeleteModal);
+        document.getElementById('bulkDeleteConfirm')?.addEventListener('click', bulkDeleteTenants);
+        document.getElementById('bulkDeleteModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'bulkDeleteModal') hideBulkDeleteModal();
+        });
+
+        document.getElementById('bulkStatusCancel')?.addEventListener('click', hideBulkStatusModal);
+        document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
+        document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideBulkDeleteModal();
+                hideBulkStatusModal();
+            }
+        });
+    }
+
+    function goToPage(page) {
+        const filtered = getFiltered();
+        const totalPages = getTotalPages(filtered);
+
+        if (isNaN(page) || page < 1 || page > totalPages) {
+            const input = document.querySelector('#pageNumbers input[type="number"]');
+            if (input) input.value = state.page;
+            return;
+        }
+
+        if (page >= 1 && page <= totalPages) {
+            state.page = page;
+            render();
         }
     }
 
@@ -859,8 +931,6 @@
                 formData.password = DOM.formPassword.value;
             }
 
-            console.log('Form data to be sent:', formData);
-
             const isEdit = state.isEditing;
             const method = isEdit ? 'PUT' : 'POST';
             const url = isEdit ? API_ENDPOINTS.UPDATE(DOM.formId?.value) : API_ENDPOINTS.STORE;
@@ -869,8 +939,6 @@
                 method: method,
                 body: JSON.stringify(formData)
             });
-
-            console.log('Server response:', data);
 
             if (data.success) {
                 const tenantName = formData.name;
@@ -899,24 +967,13 @@
         } catch (error) {
             console.error('Form submit error:', error);
 
-            if (error.validationErrors) {
-                showErrors(error.validationErrors);
-                return;
-            }
-
             try {
-                const errorMessage = error.message;
-                if (errorMessage.includes('{') && errorMessage.includes('errors')) {
-                    const startIndex = errorMessage.indexOf('{');
-                    const jsonPart = errorMessage.substring(startIndex);
-                    const errorData = JSON.parse(jsonPart);
-                    if (errorData.errors) {
-                        showErrors(errorData.errors);
-                        return;
-                    }
+                const errorData = JSON.parse(error.message);
+                if (errorData.errors) {
+                    showErrors(errorData.errors);
+                    return;
                 }
             } catch (parseError) {
-                console.log('Could not parse error as JSON, showing generic error');
             }
 
             showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'create'} tenant`, 'error');
@@ -963,6 +1020,7 @@
         state.page = 1;
         render();
     }
+
 
     function toggleSelectAll() {
         const checkboxes = document.querySelectorAll('.tbody-checkbox');
@@ -1287,8 +1345,6 @@
                 closeModal();
                 closeDetailsModal();
                 closeDeleteModal();
-                hideBulkDeleteModal();
-                hideBulkStatusModal();
             }
         });
 
@@ -1302,6 +1358,13 @@
         document.getElementById('bulkStatusConfirm')?.addEventListener('click', bulkToggleStatus);
         document.getElementById('bulkStatusModal')?.addEventListener('click', (e) => {
             if (e.target.id === 'bulkStatusModal') hideBulkStatusModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideBulkDeleteModal();
+                hideBulkStatusModal();
+            }
         });
     }
 

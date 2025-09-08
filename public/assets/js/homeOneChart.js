@@ -206,64 +206,8 @@ var chart = new ApexCharts(document.querySelector("#barChart"), options);
 chart.render();
 // ================================ Total Subscriber bar chart End ================================ 
 
-// ================================ Users Overview Donut chart Start ================================ 
-var options = {
-  series: [500, 500, 500,300],
-  colors: ['#FF9F29', '#487FFF', '#E4F1FF', '#FFD580'],
-  labels: ['Active', 'New', 'Total', 'Inactive'],
-  legend: {
-    show: false
-  },
-  chart: {
-    type: 'donut',
-    height: 250,
-    sparkline: {
-      enabled: true // Remove whitespace
-    },
-    margin: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0
-    },
-    padding: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0
-    }
-  },
-  plotOptions: {
-    pie: {
-      donut: {
-        size: '60%' // Semakin besar persentasenya, lubang tengah semakin besar (default biasanya 65%)
-      }
-    }
-  },
-  stroke: {
-    width: 0,
-  },
-  dataLabels: {
-    enabled: false
-  },
-  responsive: [{
-    breakpoint: 480,
-    options: {
-      chart: {
-        width: 200
-      },
-      legend: {
-        position: 'bottom'
-      }
 
-    }
 
-  }],
-};
-
-var chart = new ApexCharts(document.querySelector("#userOverviewDonutChart"), options);
-chart.render();
-// ================================ Users Overview Donut chart End ================================ 
 
 // ================================ Revenue Report Chart Start ================================ 
 var options = {

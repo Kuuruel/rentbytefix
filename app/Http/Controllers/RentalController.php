@@ -59,11 +59,17 @@ class RentalController extends BaseController
             $property = Property::where('id', $request->property_id)
                 ->where('status', 'Available')
                 ->where('tenant_id', $currentTenant->id)
+                ->where('tenant_id', $currentTenant->id)
                 ->lockForUpdate()
                 ->first();
 
             if (!$property) {
                 DB::rollBack();
+                Log::warning('Property not available for tenant', [
+                    'property_id' => $request->property_id,
+                    'tenant_id' => $currentTenant->id
+                ]);
+                
                 Log::warning('Property not available for tenant', [
                     'property_id' => $request->property_id,
                     'tenant_id' => $currentTenant->id
