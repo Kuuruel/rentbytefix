@@ -52,6 +52,11 @@ class Tenants extends Authenticatable
         return $this->belongsTo(\App\Models\User::class);
     }
 
+       public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
+
     /**
      * Accessor untuk field avatar
      * Jika tidak ada avatar, return default image
