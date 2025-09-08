@@ -117,19 +117,72 @@ class SuperAdminController extends Controller
         // NEW: Chart Data untuk Growth Comparison
         $chartData = $this->getChartData();
 
-        return view('super-admin.index', compact(
-            'totalTenants',
-            'activeTenants',
-            'inactiveTenants',
-            'newTenantsCount',
-            'newTenantsToday',
-            'tenants',
-            'recentActivities', // ✅ Kirim recentActivities
-            'countryName',
-            'ownerDistribution',
-            'chartData'
-        ));
-    }
+
+    // Tambahkan perhitungan untuk Monthly Billings dan Platform Revenue
+    $monthlyBillings = Bill::whereMonth('created_at', now()->month)
+        ->whereYear('created_at', now()->year)
+        ->sum('amount');
+
+    $lastMonthBillings = Bill::whereMonth('created_at', now()->subMonth()->month)
+        ->whereYear('created_at', now()->subMonth()->year)
+        ->sum('amount');
+
+    $billsDecrease = $lastMonthBillings > 0
+        ? $monthlyBillings - $lastMonthBillings
+        : $monthlyBillings;
+
+  $platformRevenue = Bill::where('status', 'paid')
+    ->whereMonth('created_at', now()->month)
+    ->whereYear('created_at', now()->year)
+    ->sum('amount');
+
+    $lastMonthRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
+        ->whereMonth('created_at', now()->subMonth()->month)
+        ->whereYear('created_at', now()->subMonth()->year)
+        ->sum('amount');
+
+    $revenueIncrease = $lastMonthRevenue > 0
+        ? $platformRevenue - $lastMonthRevenue
+        : $platformRevenue;
+
+    // ...existing code...
+// ...existing code...
+$totalTransactionsThisWeek = Transaction::where('status', Transaction::STATUS_SUCCESS)
+    ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+    ->count();
+// ...existing code...
+// ...existing code...
+$totalBills = Bill::count();
+$paidBills = Bill::where('status', 'paid')->count();
+$paymentSuccessRate = $totalBills > 0 ? round(($paidBills / $totalBills) * 100, 1) : 0;
+// ...existing code...
+
+$totalTenants = Tenants::count();
+$totalSuccessTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)->count();
+$averageTransactionPerTenant = $totalTenants > 0 ? round($totalSuccessTransactions / $totalTenants, 1) : 0;
+// ...existing code...?
+
+return view('super-admin.index', compact(
+    'totalTenants',
+    'activeTenants',
+    'inactiveTenants',
+    'newTenantsCount',
+    'newTenantsToday',
+    'tenants',
+    'recentActivities',
+    'countryName',
+    'ownerDistribution',
+    'chartData',
+    'monthlyBillings',
+    'billsDecrease',
+    'platformRevenue',
+    'revenueIncrease',
+    'totalTransactionsThisWeek',
+    'paymentSuccessRate',
+    'averageTransactionPerTenant'
+));
+}
+// ...existing code...
 
     public function index2()
     {

@@ -508,7 +508,8 @@
                             <div>
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Total Transactions This
                                     Week</span>
-                                <h5 class="font-semibold mb-0">{{ number_format($totalTransactionsThisWeek ?? 0) }}</h5>
+                                <h5 class="font-semibold mb-0">{{ $totalTransactionsThisWeek }}
+</h5>
                                 <small class="text-xs text-neutral-500">
                                     @if (($transactionPercentageChange ?? 0) >= 0)
                                         <span
@@ -538,10 +539,10 @@
                             <div>
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Payment Success Rate</span>
                                 <h5 class="font-semibold mb-0">{{ number_format($paymentSuccessRate ?? 0, 1) }}%</h5>
-                                <small class="text-xs text-neutral-500">
+                                {{-- <small class="text-xs text-neutral-500">
                                     {{ number_format($successfulTransactions ?? 0) }} of
                                     {{ number_format($totalTransactions ?? 0) }} transactions
-                                </small>
+                                </small> --}}
                             </div>
                             <div id="areaChart"></div>
                         </div>
@@ -551,9 +552,9 @@
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Average Transaction per
                                     Tenant</span>
                                 <h6 class="font-semibold mb-0">
-                                    Rp{{ number_format(($averageTransactionPerTenant ?? 0) / 1000, 1, ',', '.') }}k</h6>
+                                    Rp {{ $averageTransactionPerTenant }}</h6>
                                 <small class="text-xs text-neutral-500">
-                                    Based on {{ number_format($totalTenants ?? 0) }} tenants
+                                    Based on {{ $totalTenants ?? 0 }} tenants
                                 </small>
                             </div>
                             <div id="dailyIconBarChart"></div>
