@@ -1,5 +1,3 @@
-// =========================== Revenue Statistic Line Chart Start ===============================
-// Use dynamic data from PHP if available, otherwise use default data
 var chartData = typeof monthlyRevenueData !== 'undefined' && monthlyRevenueData.length > 0 
     ? monthlyRevenueData.map(function(item) { return item.revenue; })
     : [10, 20, 12, 30, 14, 35, 16, 32, 14, 25, 13, 28];
@@ -53,7 +51,6 @@ var options = {
     },
     y: {
       formatter: function (value) {
-        // Format as Rupiah
         return "Rp " + (value * 1000).toLocaleString('id-ID');
       }
     },
@@ -72,7 +69,6 @@ var options = {
   yaxis: {
     labels: {
       formatter: function (value) {
-        // Show in thousands with 'k' suffix
         return "Rp" + value + "k";
       },
       style: {
@@ -110,15 +106,11 @@ var options = {
   }
 };
 
-// Check if element exists before rendering
 if (document.querySelector("#revenueChart")) {
   var chart = new ApexCharts(document.querySelector("#revenueChart"), options);
   chart.render();
 }
-// =========================== Revenue Statistic Line Chart End ===============================
 
-// ================================ Property Status Donut chart Start ================================ 
-// You can add more charts here if needed, for example a donut chart for property status
 var propertyStatusOptions = {
   series: [
     typeof monthlyRevenueData !== 'undefined' ? monthlyRevenueData.length : 12,
@@ -173,9 +165,7 @@ var propertyStatusOptions = {
   }],
 };
 
-// Check if element exists before rendering
 if (document.querySelector("#propertyStatusChart")) {
   var propertyChart = new ApexCharts(document.querySelector("#propertyStatusChart"), propertyStatusOptions);
   propertyChart.render();
 }
-// ================================ Property Status Donut chart End ================================

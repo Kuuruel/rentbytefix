@@ -20,16 +20,16 @@
                     <li>
                         <a href="{{ route('landlord.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Statistic</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="{{ route('landlord.index2') }}"><i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i> CRM</a>
-                    </li>
+                    </li> -->
                     <li>
                         <a href="{{ route('landlord.index3') }}"><i class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Properties Management</a>
                     </li>
                     <li>
                         <a href="{{ route('landlord.index4') }}"><i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Transaction History</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="{{ route('landlord.index5') }}"><i class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Investment</a>
                     </li>
                     <li>
@@ -43,7 +43,7 @@
                     </li>
                     <li>
                         <a href="{{ route('landlord.index9') }}"><i class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
-                    </li>
+                    </li> -->
                 </ul>
             </li>
         </ul>

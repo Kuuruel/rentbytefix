@@ -9,24 +9,29 @@
 @section('content')
     <div class="grid grid-cols-12 gap-6">
 
-        <div
-            class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-cyan-600/10 to-bg-white">
-            <div class="card-body p-5">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Tenants</p>
-                        <h6 class="mb-0 dark:text-white">{{ $totalTenants }}</h6>
-                    </div>
-                    <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
-                        <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
-                    </div>
-                    <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                            <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $newTenantsToday }}
-                        </span>
-                        Added today
-                    </p>
+        <!-- Card Total Tenants (fix: tambahkan col-span) -->
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div
+                class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-cyan-600/10 to-bg-white">
+                <div class="card-body p-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Tenants</p>
+                                <h6 class="mb-0 dark:text-white">{{ $totalTenants }}</h6>
+                            </div>
+                            <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
+                                <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
+                            </div>
+                        </div>
+                        <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $newTenantsToday }}
+                            </span>
+                            Added today
+                        </p>
 
+                    </div>
                 </div>
             </div>
         </div>
@@ -178,11 +183,12 @@
                                         </td>
                                         <td>{{ $tenant->created_at->format('d M Y') }}</td>
                                         <td class="text-center">
-                                            <span
-                                                class="px-8 py-1.5 rounded-full font-medium text-sm
-                                        @if ($tenant->status == 'Active') bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400
-                                        @else
-                                            bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400 @endif">
+                                            @php
+                                              $statusClass = $tenant->status === 'Active'
+                                                ? 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400'
+                                                : 'bg-danger-100 dark:bg-danger-600/25 text-danger-600 dark:text-danger-400';
+                                            @endphp
+                                            <span class="px-8 py-1.5 rounded-full font-medium text-sm {{ $statusClass }}">
                                                 {{ $tenant->status }}
                                             </span>
                                         </td>
@@ -221,26 +227,24 @@
                                     @endif
                                 </li>
 
-                                <!-- Page Numbers -->
-                                <div class="flex gap-1">
-                                    @foreach ($tenants->getUrlRange(1, $tenants->lastPage()) as $page => $url)
-                                        @if ($page == $tenants->currentPage())
-                                            <li class="page-item">
-                                                <span
-                                                    class="page-link bg-primary-600 text-white rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
-                                                    {{ $page }}
-                                                </span>
-                                            </li>
-                                        @else
-                                            <li class="page-item">
-                                                <a href="{{ $url }}"
-                                                    class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
-                                                    {{ $page }}
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                <!-- Page Numbers: render li langsung (fix: hapus div wrapper) -->
+                                @foreach ($tenants->getUrlRange(1, $tenants->lastPage()) as $page => $url)
+                                    @if ($page == $tenants->currentPage())
+                                        <li class="page-item">
+                                            <span
+                                                class="page-link bg-primary-600 text-white rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base">
+                                                {{ $page }}
+                                            </span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <a href="{{ $url }}"
+                                                class="page-link bg-neutral-300 dark:bg-neutral-600 text-secondary-light rounded-lg border-0 flex items-center justify-center h-8 w-8 text-base hover:bg-primary-600 hover:text-white">
+                                                {{ $page }}
+                                            </a>
+                                        </li>
+                                    @endif
+                                @endforeach
 
                                 <!-- Next Button -->
                                 <li class="page-item">
@@ -328,95 +332,3 @@
 
     </div>
 @endsection
-{{-- 
-<div class="xl:col-span-12 2xl:col-span-6 ">
-    <div class="card h-full border-0">
-        <div class="card-body">
-            <div class="flex items-center flex-wrap gap-2 justify-between">
-                <h6 class="font-bold text-lg mb-0">Top Performer</h6>
-                <a href="javascript:void(0)"
-                    class="text-primary-600 dark:text-primary-600 hover-text-primary flex items-center gap-1">
-                    View All
-                    <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                </a>
-            </div>
-
-            <div class="mt-8">
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user1.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Dianne Russell</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$20</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user2.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Wade Warren</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$20</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user3.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Albert Flores</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$30</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user4.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Bessie Cooper</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$40</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2 mb-6">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user5.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$10</span>
-                </div>
-
-                <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-3">
-                        <img src="{{ asset('assets/images/users/user1.png') }}" alt=""
-                            class="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <div class="grow">
-                            <h6 class="text-base mb-0 font-medium">Arlene McCoy</h6>
-                            <span class="text-sm text-secondary-light font-medium">Agent ID: 36254</span>
-                        </div>
-                    </div>
-                    <span class="text-neutral-600 dark:text-neutral-200 text-base font-medium">$10</span>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-</div> --}}

@@ -74,34 +74,6 @@
             </div>
         </div>
         
-        <div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white">
-            <div class="card-body p-5">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <p class="font-medium text-neutral-900 dark:text-white mb-1">Free Renters</p>
-                        <h6 class="mb-0 dark:text-white">{{ number_format($statistics['freeRenters'] ?? 0) }}</h6>
-                    </div>
-                    <div class="w-[50px] h-[50px] bg-blue-600 rounded-full flex justify-center items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
-                    </div>
-                </div>
-                <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 mb-0 flex items-center gap-2">
-                    @if($statistics['newFreeRentersLast30Days'] > 0)
-                        <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                            <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> 
-                            +{{ $statistics['newFreeRentersLast30Days'] }}
-                        </span>
-                    @else
-                        <span class="inline-flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-                            <iconify-icon icon="bx:minus" class="text-xs"></iconify-icon> 
-                            0
-                        </span>
-                    @endif
-                    Last 30 days
-                </p>
-            </div>
-        </div>
-        
         <div class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-success-600/10 to-bg-white">
             <div class="card-body p-5">
                 <div class="flex flex-wrap items-center justify-between gap-3">

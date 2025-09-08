@@ -4,73 +4,124 @@
     </button>
     <div>
         <a href="{{ route('super-admin.index') }}" class="sidebar-logo">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo">
+            Rentbyte
+            {{-- <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
+            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo"> --}}
             <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon">
         </a>
     </div>
     <div class="sidebar-menu-area">
         <ul class="sidebar-menu" id="sidebar-menu">
+            <!-- Home selalu active, Dashboard tidak pernah active -->
             <style>
                 .sidebar-menu li.active>a,
                 .sidebar-menu li.active>a .menu-icon,
                 .sidebar-menu li.active>a span {
+                    background-color: #3b82f6;
+                    /* bg-blue-500 */
+
+                    /* bg-blue-800 */
+
+                    /* bg-blue-700 */
+                    
+
+                    color: #ffffff !important;
+                    font-weight: 600;
+                    padding: 7px;
+                }
+
+                .sidebar-menu li.active>a .menu-icon {
+                    margin-right: 0px !important;
+                }
+
+                .sidebar-menu li.active>a span {
+                    margin-left: 0px !important;
+                }
+                
+
+                /* Dark mode */
+                .dark .sidebar-menu li.active>a,
+                .dark .sidebar-menu li.active>a .menu-icon,
+                .dark .sidebar-menu li.active>a span {
                     background-color: rgb(72 127 255 / var(--tw-bg-opacity));
                     color: #ffffff !important;
                     font-weight: 600;
                 }
-   
             </style>
-
 
             <li class="active">
                 <a href="{{ route('super-admin.index') }}">
                     <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
-                    <span>Home</span>
+                    <span class="">Home</span>
                 </a>
             </li>
             <li class="mt-2 mb-2">
                 <a href="{{ route('super-admin.index') }}">
                     <iconify-icon icon="hugeicons:dashboard-square-01" class="menu-icon"></iconify-icon>
-                    <span>Dashboard</span>
+                    <span class="px-2">Dashboard</span>
                 </a>
             </li>
             <li class="dropdown ">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="lucide:user-cog" class="menu-icon"></iconify-icon>
-                    <span>Users</span>
+                    <span class="px-2">Users</span>
                 </a>
                 <ul class="sidebar-submenu">
                     <li class="pb-2">
                         <a href="{{ route('super-admin.index2') }}">
-                            <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon>
-                            <span>Manage Users</span>
+                            {{-- <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon> --}}
+                            <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+                            <span class="px-2">Manage Users</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('super-admin.index4') }}">
-                            <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon>
-                            <span>Statistik Users</span>
+                            {{-- <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon> --}}
+                            <i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i>
+                            <span class="px-2">Statistik Users</span>
                         </a>
                     </li>
                 </ul>
             </li>
-            <li>
+
+            {{-- <li class="mt-2 mb-6">
                 <a href="{{ route('super-admin.index3') }}">
                     <iconify-icon icon="guidance:settings" class="menu-icon"></iconify-icon>
-                    <span>Settings Global</span>
+                    <span class="px-2">Settings Global</span>
                 </a>
+            </li> --}}
+            <li class="dropdown mt-2 mb-6">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="guidance:settings" class="menu-icon"></iconify-icon>
+                    <span class="px-2">Settings Global</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li class="pb-2">
+                        <a href="{{ route('super-admin.index9') }}">
+                            {{-- <iconify-icon icon="iconoir:add-user" class="menu-icon"></iconify-icon> --}}
+                            <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+                            <span class="px-2">Midtrans API Key</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('super-admin.index7') }}">
+                            {{-- <iconify-icon icon="arcticons:my-data-manager" class="menu-icon"></iconify-icon> --}}
+                            <i class="ri-circle-fill circle-icon text-warning-600 w-auto"></i>
+                            <span class="px-2">Global Notifications</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
 
 
 
 
-        <li class="">
+            {{-- <li class="">
                 <a href="{{ route('super-admin.index4') }}"><i
                         class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Cryptocurrency</a>
-            </li>
-            <li>
+            </li> --}}
+            {{-- <li>
                 <a href="{{ route('super-admin.index5') }}"><i
                         class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Investment</a>
             </li>
@@ -81,16 +132,18 @@
             <li>
                 <a href="{{ route('super-admin.index7') }}"><i
                         class="ri-circle-fill circle-icon text-info-600 w-auto"></i> NFT & Gaming</a>
-            </li>
-            <li>
-                <a href="{{ route('super-admin.index8') }}"><i
-                        class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Medical</a>
-            </li>
-            <li>
+            </li> --}}
+            {{-- <li>
+    <a href="{{ route('super-admin.index8') }}">
+        <i class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> Statistic Users
+    </a>
+</li> --}}
+
+            {{-- <li>
                 <a href="{{ route('super-admin.index9') }}"><i
                         class="ri-circle-fill circle-icon text-purple-600 w-auto"></i> Analytics</a>
             </li>
-            <li class="sidebar-menu-group-title">Application</li> 
+            <li class="sidebar-menu-group-title">Application</li>
             <li>
                 <a href="{{ route('email') }}">
                     <iconify-icon icon="mage:email" class="menu-icon"></iconify-icon>
@@ -358,10 +411,10 @@
                         <a href="{{ route('addUser') }}"><i
                                 class="ri-circle-fill circle-icon text-info-600 w-auto"></i> Add User</a>
                     </li>
-                    {{-- <li>
+                    <li>
                         <a href="{{ route('viewProfile') }}"><i
                                 class="ri-circle-fill circle-icon text-danger-600 w-auto"></i> View Profile</a>
-                    </li> --}}
+                    </li>
                 </ul>
             </li>
             <li class="sidebar-menu-group-title">Application</li>
@@ -451,6 +504,6 @@
                     </li>
                 </ul>
             </li>
-        </ul>
+        </ul> --}}
     </div>
 </aside>
