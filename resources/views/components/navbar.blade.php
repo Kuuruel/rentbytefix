@@ -26,15 +26,6 @@
                     </span>
                 </button>
 
-                <div class="hidden sm:inline-block">
-                    <button data-dropdown-toggle="dropdownInformation" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center" type="button">
-                        <img src="{{ asset('assets/images/lang-flag.png') }}" alt="image" class="w-6 h-6 object-cover rounded-full">
-                    </button>
-                </div>
-
-                <button data-dropdown-toggle="dropdownMessage" class="has-indicator w-10 h-10 bg-neutral-200 dark:bg-neutral-700 rounded-full flex justify-center items-center" type="button">
-                    <iconify-icon icon="mage:email" class="text-neutral-900 dark:text-white text-xl"></iconify-icon>
-                </button>
                 <div id="dropdownMessage" class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
                     <div class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 m-4 flex items-center justify-between gap-2">
                         <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">Message</h6>
@@ -157,18 +148,6 @@
                                     </a>
                                 </li>
                             @endif
-
-                            <li>
-                                <a class="text-black dark:text-white px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('email') }}">
-                                    <iconify-icon icon="tabler:message-check" class="icon text-xl"></iconify-icon> Inbox
-                                </a>
-                            </li>
-                            <li>
-                                <a class="text-black dark:text-white px-0 py-2 hover:text-primary-600 flex items-center gap-4" href="{{ route('company') }}">
-                                    <iconify-icon icon="icon-park-outline:setting-two" class="icon text-xl"></iconify-icon> Setting
-                                </a>
-                            </li>
-
                             <li>
                                 <button id="logoutButton" class="text-black dark:text-white px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left bg-transparent border-0">
                                     <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
