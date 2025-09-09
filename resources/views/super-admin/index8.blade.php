@@ -350,8 +350,8 @@
                     </div>
 
                     <div class="text-center border-b border-neutral-200 dark:border-neutral-600">
-                        <img src="{{ asset('assets/images/user-grid/user-grid-img14.png') }}" alt=""
-                            class="border br-white border-width-2-px w-200-px h-[200px] rounded-full object-fit-cover mx-auto">
+                        <img src="{{ asset('assets/images/tenants/' . $tenant->avatar) }}" 
+                                        class="w-[120px] h-[120px] ms-auto me-auto rounded-full object-cover object-center border-white border-[8px]">
                         <div class="flex items-center justify-center gap-2">
                             <h6 class="mb-0 mt-4">{{ $tenant->name }}</h6>
                             <button type="button" title="Edit Tenant"

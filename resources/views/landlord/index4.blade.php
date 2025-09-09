@@ -68,7 +68,7 @@
                             Total Revenue: <span id="totalRevenue" class="font-semibold">Rp 0</span>
                         </span>
                         <span class="text-sm text-blue-600 dark:text-blue-400 ml-2">
-                            (<span id="totalTransactions">0</span> transactions)
+                            (<span id="totalTransactions">0</span> transactions success)
                         </span>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                 </div>
 
                 <div class="table-responsive scroll-sm overflow-x-auto">
-                    <table class="table bordered-table sm-table mb-0 w-full">
+                    <table class="table bordered-table sm-table mb-0 w-full overflow-y-scroll">
                         <thead class="bg-neutral-50 dark:bg-neutral-800">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-left w-24"  style="padding-right:0 !important">

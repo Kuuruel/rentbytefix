@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Tenants;
 
 class Bill extends Model
 {
@@ -30,7 +31,7 @@ class Bill extends Model
 
     public function tenant()
     {
-        return $this->belongsTo(User::class, 'tenant_id');
+        return $this->belongsTo(Tenants::class, 'tenant_id', 'id');
     }
 
     public function renter()

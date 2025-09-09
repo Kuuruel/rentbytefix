@@ -85,7 +85,7 @@
                             </span>
                         @elseif(($billsDecrease ?? 0) > 0)
                             <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $billsDecrease ?? 0 }}
+                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +Rp{{ number_format(abs($billsDecrease ?? 0), 0, ',', '.') }}
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 text-info-600 dark:text-info-400">
