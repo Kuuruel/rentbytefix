@@ -27,10 +27,23 @@ use App\Http\Controllers\Admin\MidtransController;
 | Global Notifications Routes (From File 1)
 |--------------------------------------------------------------------------
 */
+
+Route::post('admin/midtrans/save-draft', [MidtransController::class, 'saveDraft'])->name('admin.midtrans.save-draft');
+Route::get('admin/midtrans/check-draft', [MidtransController::class, 'checkDraft'])->name('admin.midtrans.check-draft');
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    // Route untuk Midtrans
+    Route::get('midtrans', [MidtransController::class, 'index'])->name('midtrans.index');
+    Route::post('midtrans/store', [MidtransController::class, 'store'])->name('midtrans.store');
+    Route::post('midtrans/save-draft', [MidtransController::class, 'saveDraft'])->name('midtrans.save-draft');
+    Route::get('midtrans/check-draft', [MidtransController::class, 'checkDraft'])->name('midtrans.check-draft'); // Debug route
+    Route::post('midtrans/test-connection', [MidtransController::class, 'testConnection'])->name('midtrans.test-connection');
+    Route::post('midtrans/toggle-edit', [MidtransController::class, 'toggleEdit'])->name('midtrans.toggle-edit');
+});
 Route::prefix('admin/notifications')->name('admin.notifications.')->group(function () {
     Route::controller(\App\Http\Controllers\Admin\NotificationController::class)->group(function () {
         Route::get('/', 'index')->name('index');
-        
+
         // AJAX Routes
         Route::get('/get-notifications', 'getNotifications')->name('get');
         Route::get('/get-all-notifications', 'getAllNotifications')->name('get-all');
@@ -67,12 +80,12 @@ Route::get('/', function () {
             return redirect()->route('landlord.index');
         }
     }
-    
+
     // Check for tenant guard
     if (Auth::guard('tenant')->check()) {
         return redirect()->route('landlord.index');
     }
-    
+
     return redirect()->route('showSigninForm');
 });
 
@@ -93,7 +106,7 @@ Route::prefix('authentication')->group(function () {
 });
 
 // Guest middleware routes (from File 2)
-Route::middleware('guest')->group(function() {
+Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
 });
 
@@ -109,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Admin-only routes
-Route::middleware(['auth', 'role:admin'])->group(function() {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super-admin.index');
 });
 
@@ -320,10 +333,10 @@ Route::middleware(['auth:web,tenant'])->group(function () {
     Route::prefix('landlord')->group(function () {
         Route::get('/transactions/data', [App\Http\Controllers\TransactionController::class, 'data'])
             ->name('landlord.transactions.data');
-        
+
         Route::get('/transactions/{billId}/print', [App\Http\Controllers\TransactionController::class, 'printTransaction'])
             ->name('landlord.transactions.print');
-        
+
         Route::get('/rentals/{billId}/payment-status', [App\Http\Controllers\RentalController::class, 'getPaymentStatus'])
             ->name('landlord.rentals.payment-status');
     });

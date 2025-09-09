@@ -2,6 +2,8 @@
 @php
     $title = 'Midtrans API Key (Global)';
     $subTitle = 'Midtrans API Key';
+    $hasData = isset($midtrans_settings) && $midtrans_settings;
+    $isEditMode = session('edit_mode', false) || !$hasData;
     $script = '<script>
         $(document).ready(function() {
             // ================== Password Show Hide Js Start ==========
@@ -29,6 +31,19 @@
             $("#midtransForm").on("submit", function() {
                 $("#submitBtn").prop("disabled", true).html(
                     "<i class=\"ri-loader-2-line me-1 animate-spin\"></i> Menyimpan...");
+            });
+
+            // Toggle edit mode
+            $("#editBtn").on("click", function() {
+                $(".form-control, .form-select").prop("disabled", false);
+                $(this).addClass("d-none");
+                $("#cancelBtn, #submitBtn").removeClass("d-none");
+                $("#viewMode").addClass("d-none");
+                $("#editMode").removeClass("d-none");
+            });
+
+            $("#cancelBtn").on("click", function() {
+                location.reload();
             });
         });
     </script>';
@@ -487,19 +502,46 @@
         </script>
     @endif
 
+
+
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="col-span-12 lg:col-span-12">
             <div class="card h-full border-0">
                 <div class="card-body p-6">
 
                     <div class="mb-5">
-                        <h6 class="font-semibold text-lg py-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h6 class="font-semibold text-lg py-2">
+                                    Midtrans API Key Settings
+                                </h6>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    Midtrans credential configuration for payment processing
+                                </p>
+                            </div>
 
-                            Midtrans API Key Settings
-                        </h6>
-                        <p class="text-sm text-gray-600 mt-1">
-                            Midtrans credential configuration for payment processing
-                        </p>
+                            {{-- Status Badge --}}
+                            {{-- @if ($hasData)
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <i class="ri-check-circle-line mr-1"></i>
+                                        Configured
+                                    </span>
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        {{ $midtrans_settings->environment === 'production' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                        {{ ucfirst($midtrans_settings->environment) }}
+                                    </span>
+                                </div>
+                            @else
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <i class="ri-settings-line mr-1"></i>
+                                    Not Configured
+                                </span>
+                            @endif --}}
+                        </div>
                     </div>
 
                     <div id="default-tab-content">
@@ -519,7 +561,8 @@
                                                 class="form-control rounded-lg @error('merchant_id') border-danger-600 @enderror"
                                                 id="merchant_id" name="merchant_id"
                                                 value="{{ old('merchant_id', $midtrans_settings->merchant_id ?? '') }}"
-                                                placeholder="Masukkan Merchant ID" maxlength="255" required>
+                                                placeholder="Masukkan Merchant ID" maxlength="255"
+                                                {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
                                             @error('merchant_id')
                                                 <span class="text-danger-600 text-sm mt-1">{{ $message }}</span>
                                             @enderror
@@ -537,7 +580,8 @@
                                                 class="form-control rounded-lg @error('client_key') border-danger-600 @enderror"
                                                 id="client_key" name="client_key"
                                                 value="{{ old('client_key', $midtrans_settings->client_key ?? '') }}"
-                                                placeholder="Masukkan Client Key" maxlength="255" required>
+                                                placeholder="Masukkan Client Key" maxlength="255"
+                                                {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
                                             @error('client_key')
                                                 <span class="text-danger-600 text-sm mt-1">{{ $message }}</span>
                                             @enderror
@@ -555,7 +599,8 @@
                                                 <input type="password" id="server_key" name="server_key"
                                                     class="form-control w-full rounded-lg pr-12 @error('server_key') border-danger-600 @enderror"
                                                     value="{{ old('server_key', $midtrans_settings->server_key ?? '') }}"
-                                                    placeholder="Masukkan Server Key" maxlength="255" required>
+                                                    placeholder="Masukkan Server Key" maxlength="255"
+                                                    {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
 
                                                 <!-- Eye toggle button -->
                                                 <button type="button"
@@ -580,7 +625,8 @@
                                             </label>
                                             <select
                                                 class="form-control rounded-lg form-select @error('environment') border-danger-600 @enderror"
-                                                id="environment" name="environment" required>
+                                                id="environment" name="environment"
+                                                {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
                                                 <option value="">Pilih Environment</option>
                                                 <option value="sandbox"
                                                     {{ old('environment', $midtrans_settings->environment ?? '') == 'sandbox' ? 'selected' : '' }}>
@@ -598,16 +644,18 @@
                                     </div>
 
                                     {{-- Webhook URL --}}
+
                                     <div class="col-span-12">
                                         <div class="mb-5">
                                             <label for="webhook_url"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">
                                                 Webhook / Notification URL
-                                                <span class="text-gray-400 text-xs">(Opsional)</span>
+                                                {{-- <span class="text-gray-400 text-xs">(Opsional)</span> --}}
                                             </label>
-                                            <textarea name="webhook_url" class="form-control rounded-lg @error('webhook_url') border-danger-600 @enderror"
-                                                id="webhook_url" placeholder="https://yourdomain.com/midtrans/notification" style="height: 100px;"
-                                                maxlength="500">{{ old('webhook_url', $midtrans_settings->webhook_url ?? '') }}</textarea>
+                                            <textarea name="webhook_url"
+                                                class="form-control rounded-lg text-primary-600 @error('webhook_url') border-danger-600 @enderror"
+                                                id="webhook_url" placeholder="https://yourdomain.com/midtrans/notification"
+                                                style="height: 100px; color: #2563eb;" maxlength="500" {{ $hasData && !$isEditMode ? 'disabled' : '' }}>{{ old('webhook_url', $midtrans_settings->webhook_url ?? '') }}</textarea>
                                             @error('webhook_url')
                                                 <span class="text-danger-600 text-sm mt-1">{{ $message }}</span>
                                             @enderror
@@ -622,18 +670,45 @@
 
                                 {{-- Buttons --}}
                                 <div class="flex items-center justify-end gap-3 mt-6">
-                                    <button type="button"
-                                        class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg hover:bg-danger-50"
-                                        onclick="window.history.back()">
+                                    @if ($hasData && !$isEditMode)
+                                        {{-- View Mode Buttons --}}
+                                        <div id="viewMode">
+                                            {{-- <button type="button"
+                                                class="border border-gray-300 bg-white text-gray-700 text-base px-6 py-[10px] rounded-lg hover:bg-gray-50"
+                                                onclick="window.history.back()">
+                                                <i class="ri-arrow-left-line me-1"></i>
+                                                Back
+                                            </button> --}}
+                                            <button type="button" id="editBtn"
+                                                class="btn btn-primary border border-primary-600 text-base px-6 py-[10px] rounded-lg">
+                                                <i class="ri-edit-line me-1"></i>
+                                                Edit Configuration
+                                            </button>
+                                        </div>
 
-                                        Cancel
-                                    </button>
-                                    <button type="submit"
-                                        class="btn btn-primary border border-primary-600 text-base px-10 py-[10px] rounded-lg"
-                                        id="submitBtn">
-
-                                        Save Configuration
-                                    </button>
+                                        {{-- Edit Mode Buttons (Hidden by default) --}}
+                                        <div id="editMode" class="d-none">
+                                            {{-- <button type="button" id="cancelBtn"
+                                                class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg hover:bg-danger-50">
+                                                Cancel
+                                            </button> --}}
+                                            <button type="submit" id="submitBtn"
+                                                class="btn btn-primary border border-primary-600 text-base px-10 py-[10px] rounded-lg">
+                                                Update Configuration
+                                            </button>
+                                        </div>
+                                    @else
+                                        {{-- New/Edit Mode Buttons --}}
+                                        <button type="button"
+                                            class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg hover:bg-danger-50"
+                                            onclick="window.history.back()">
+                                            Cancel
+                                        </button>
+                                        <button type="submit" id="submitBtn"
+                                            class="btn btn-primary border border-primary-600 text-base px-10 py-[10px] rounded-lg">
+                                            {{ $hasData ? 'Update Configuration' : 'Save Configuration' }}
+                                        </button>
+                                    @endif
                                 </div>
                             </form>
                         </div>

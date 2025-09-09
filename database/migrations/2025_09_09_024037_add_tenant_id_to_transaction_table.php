@@ -11,7 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('renters', function (Blueprint $table) {
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->unsignedBigInteger('tenant_id')->nullable()->after('id');
         });
     }
 
@@ -20,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('renters', function (Blueprint $table) {
-            $table->string('email')->unique();
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropColumn('tenant_id');
         });
     }
 };
