@@ -12,8 +12,6 @@ class NotificationSetting extends Model
     protected $fillable = [
         'default_priority',
         'default_delivery_methods',
-        'email_from',
-        'email_footer',
         'push_enabled',
         'dashboard_display_count',
         'updated_by'
@@ -42,8 +40,6 @@ class NotificationSetting extends Model
             $settings = self::create([
                 'default_priority' => 'Normal',
                 'default_delivery_methods' => ['Dashboard'],
-                'email_from' => 'admin@system.com',
-                'email_footer' => 'System Administrator',
                 'push_enabled' => true,
                 'dashboard_display_count' => 5,
                 'updated_by' => auth()->id() ?? 1
@@ -61,7 +57,7 @@ class NotificationSetting extends Model
 
         if ($settings) {
             $settings->update($data);
-            return $settings;
+            return $settings->fresh(); // Refresh data dari database
         } else {
             return self::create($data);
         }
@@ -71,10 +67,8 @@ class NotificationSetting extends Model
     public function getDefaultsForForm()
     {
         return [
-            'priority' => $this->default_priority,
-            'delivery_methods' => $this->default_delivery_methods,
-            'email_from' => $this->email_from,
-            'email_footer' => $this->email_footer,
+            'default_priority' => $this->default_priority,
+            'default_delivery_methods' => $this->default_delivery_methods,
             'push_enabled' => $this->push_enabled,
             'display_count' => $this->dashboard_display_count
         ];
