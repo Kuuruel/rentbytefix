@@ -413,13 +413,11 @@
 
                                         // Close dropdown when clicking outside
                                         document.addEventListener('click', function(event) {
-                                            const container = document.querySelector('.dropdown-container');
-                                            const content = document.getElementById('dropdown-content');
-                                            const chevron = document.querySelector('.chevron');
+                                            const settingsContainer = document.querySelector('.dropdown-container-settings');
+                                            const settingsContent = document.getElementById('settings-dropdown-content');
 
-                                            if (!container.contains(event.target)) {
-                                                content.classList.add('hidden');
-                                                chevron.classList.remove('open');
+                                            if (settingsContainer && !settingsContainer.contains(event.target)) {
+                                                if (settingsContent) settingsContent.classList.add('hidden');
                                             }
                                         });
                                     </script>
@@ -613,6 +611,7 @@
                                                                             class="icon"></iconify-icon>
                                                                     </form>
 
+                                                                    <!-- Di dalam tab Archived, pastikan filter ini ada: -->
                                                                     <select id="archivedTargetFilter"
                                                                         class="form-select form-select-sm w-auto">
                                                                         <option value="">Filter by Target</option>
@@ -798,7 +797,7 @@
                                 </div>
                             </div>
                             <!-- Email Settings -->
-                            <h2 class="text-xl font-semibold text-gray-900 mb-6">Email Settings</h2>
+                            {{-- <h2 class="text-xl font-semibold text-gray-900 mb-6">Email Settings</h2>
 
                             <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-6 mb-8">
                                 <div class="col-span-12 sm:col-span-6">
@@ -821,7 +820,7 @@
                                             placeholder="Enter Email Footer">
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <!-- Push Notification Settings -->
                             <h2 class="text-xl font-semibold text-gray-900 mb-6">Push Notification Settings</h2>
@@ -868,8 +867,7 @@
 
                             <!-- Save Button -->
                             <div class="flex items-center justify-end gap-3">
-
-                                <button type="button"
+                                <button type="button" id="settingsSaveButton" onclick="handleSaveSettings()"
                                     class="btn btn-primary border border-primary-600 text-base px-14 py-3 rounded-lg">
                                     Save
                                 </button>
@@ -1658,18 +1656,86 @@
                                     submitBtn.innerHTML = 'Send';
                                 }
                             }
+                            // PERBAIKAN: Setup save button HANYA SEKALI
+                            function setupSaveButton() {
+                                console.log('Setting up save button...');
+
+                                // Method 1: Gunakan onclick langsung di HTML
+                                // Ini akan di-handle di HTML dengan onclick="handleSaveSettings()"
+
+                                // Method 2: Event delegation sebagai backup
+                                document.addEventListener('click', function(e) {
+                                    if (e.target.id === 'settingsSaveButton' ||
+                                        (e.target.textContent.trim() === 'Save' &&
+                                            e.target.closest('#notification-password'))) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log('Save button clicked via delegation');
+                                        handleSaveSettings();
+                                    }
+                                }, {
+                                    once: false
+                                }); // Tidak pakai once: true
+                            }
+
+                            // PERBAIKAN: Submit settings function yang dipanggil dari HTML
+                            function handleSaveSettings() {
+                                console.log('handleSaveSettings called');
+
+                                // Prevent multiple calls
+                                if (window.savingInProgress) {
+                                    console.log('Save already in progress, ignoring...');
+                                    return;
+                                }
+
+                                window.savingInProgress = true;
+
+                                const formData = {
+                                    default_priority: document.getElementById('default-priority').value,
+                                    default_delivery_methods: getSelectedSettingsDeliveryMethods(),
+                                    push_enabled: document.getElementById('notificationToggle').checked,
+                                    dashboard_display_count: parseInt(document.getElementById('displayNotifications').value)
+                                };
+
+                                console.log('Submitting settings:', formData);
+
+                                fetch('/admin/notifications/update-settings', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                        },
+                                        body: JSON.stringify(formData)
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        console.log('Settings response:', data);
+                                        if (data.success) {
+                                            currentSettings = data.data; // Update settings global
+                                            applyDefaultsToCreateForm(); // Apply ke create form
+                                            showAlert('Settings berhasil diperbarui', 'success');
+                                        } else {
+                                            console.error('Settings update failed:', data.errors);
+                                            showAlert('Gagal memperbarui settings', 'error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        showAlert('Terjadi kesalahan saat memperbarui settings', 'error');
+                                    })
+                                    .finally(() => {
+                                        window.savingInProgress = false;
+                                    });
+                            }
                         </script>
 
 
                         <script>
-                            // Settings dropdown functions with unique names to avoid conflicts
+                            // PERBAIKAN: Settings dropdown functions
                             function toggleSettingsDropdown() {
                                 const content = document.getElementById('settings-dropdown-content');
-                                const chevron = document.querySelector('.chevron-settings');
-
-                                content.classList.toggle('hidden');
-                                if (chevron) {
-                                    chevron.classList.toggle('open');
+                                if (content) {
+                                    content.classList.toggle('hidden');
                                 }
                             }
 
@@ -1682,14 +1748,8 @@
                             }
 
                             function updateSettingsSelection() {
-                                const checkboxes = document.querySelectorAll('#settings-dropdown-content input[type="checkbox"]');
-                                const selectedOptions = [];
-
-                                checkboxes.forEach(checkbox => {
-                                    if (checkbox.checked) {
-                                        selectedOptions.push(checkbox.value);
-                                    }
-                                });
+                                const checkboxes = document.querySelectorAll('#settings-dropdown-content input[type="checkbox"]:checked');
+                                const selectedOptions = Array.from(checkboxes).map(cb => cb.value);
 
                                 const selectedText = document.getElementById('settings-selected-text');
                                 if (selectedText) {
@@ -1815,7 +1875,6 @@
         </div>
     </div>
     <script>
-        // Global variables
         let currentPage = 1;
         let currentTab = 'active';
         let searchTerm = '';
@@ -1823,9 +1882,20 @@
         let targetFilter = '';
         let selectedNotifications = [];
 
+        // PERBAIKAN: Variabel global untuk menyimpan settings
+        let currentSettings = {
+            default_priority: 'Normal',
+            default_delivery_methods: ['Dashboard']
+        };
+
+        // PERBAIKAN: Flag untuk mencegah multiple event listeners
+        let saveButtonInitialized = false;
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Load default settings
+            console.log('DOM Content Loaded');
+
+            // Load default settings PERTAMA
             loadSettings();
 
             // Load tenants for dropdown
@@ -1837,55 +1907,131 @@
             // Setup event listeners
             setupEventListeners();
 
-            // Setup form submit
-            setupFormSubmit();
-
             // Load tenants from database
             loadTenantsFromDatabase();
+
+            // Setup save button HANYA SEKALI
+            if (!saveButtonInitialized) {
+                setupSaveButton();
+                saveButtonInitialized = true;
+            }
         });
 
-        // Load notification settings
+        // PERBAIKAN: Load notification settings
         function loadSettings() {
+            console.log('Loading settings...');
             fetch('/admin/notifications/get-settings')
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Settings loaded:', data);
                     if (data.success) {
+                        currentSettings = data.data; // Simpan ke variabel global
                         populateSettingsForm(data.data);
+
+                        // PERBAIKAN: Auto apply ke create form setiap kali load settings
+                        setTimeout(() => {
+                            applyDefaultsToCreateForm();
+                        }, 500);
                     }
                 })
                 .catch(error => console.error('Error loading settings:', error));
         }
 
-        // Populate settings form
+        // PERBAIKAN: Apply defaults ke create form
+        function applyDefaultsToCreateForm() {
+            console.log('Applying defaults to create form:', currentSettings);
+
+            // Set default priority
+            const prioritySelect = document.getElementById('desig');
+            if (prioritySelect && currentSettings.default_priority) {
+                prioritySelect.value = currentSettings.default_priority;
+                console.log('Priority set to:', currentSettings.default_priority);
+            }
+
+            // Set default delivery methods
+            if (currentSettings.default_delivery_methods && Array.isArray(currentSettings.default_delivery_methods)) {
+                // Reset semua checkbox
+                const deliveryCheckboxes = document.querySelectorAll('#dropdown-content input[type="checkbox"]');
+                deliveryCheckboxes.forEach(cb => cb.checked = false);
+
+                // Set checkbox berdasarkan settings
+                currentSettings.default_delivery_methods.forEach(method => {
+                    let checkbox = null;
+
+                    // Cari berdasarkan ID yang mungkin
+                    if (method === 'Dashboard') {
+                        checkbox = document.getElementById('dashboard');
+                    } else if (method === 'Push Notifications') {
+                        checkbox = document.getElementById('push');
+                    }
+
+                    // Fallback: cari berdasarkan value
+                    if (!checkbox) {
+                        deliveryCheckboxes.forEach(cb => {
+                            if (cb.value === method) {
+                                checkbox = cb;
+                            }
+                        });
+                    }
+
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        console.log('Delivery method checked:', method);
+                    }
+                });
+
+                // Update tampilan dropdown
+                updateSelection();
+            }
+        }
+
+        // PERBAIKAN: Populate settings form
         function populateSettingsForm(settings) {
+            console.log('Populating settings form with:', settings);
+
             // Default priority
-            document.getElementById('default-priority').value = settings.priority;
+            const defaultPrioritySelect = document.getElementById('default-priority');
+            if (defaultPrioritySelect) {
+                defaultPrioritySelect.value = settings.default_priority || 'Normal';
+            }
 
             // Default delivery methods
-            if (settings.delivery_methods && Array.isArray(settings.delivery_methods)) {
-                settings.delivery_methods.forEach(method => {
-                    const checkbox = document.getElementById(`settings-${method.toLowerCase().replace(' ', '-')}`);
+            if (settings.default_delivery_methods && Array.isArray(settings.default_delivery_methods)) {
+                // Reset semua checkbox settings
+                const settingsCheckboxes = document.querySelectorAll('#settings-dropdown-content input[type="checkbox"]');
+                settingsCheckboxes.forEach(cb => cb.checked = false);
+
+                // Set checkbox berdasarkan settings
+                settings.default_delivery_methods.forEach(method => {
+                    let checkbox = null;
+
+                    if (method === 'Dashboard') {
+                        checkbox = document.getElementById('settings-dashboard');
+                    } else if (method === 'Push Notifications') {
+                        checkbox = document.getElementById('settings-push');
+                    }
+
                     if (checkbox) {
                         checkbox.checked = true;
                     }
                 });
+
                 updateSettingsSelection();
             }
 
-            // Email settings
-            if (settings.email_from) {
-                document.getElementById('from-email').value = settings.email_from;
+            // Push settings
+            const notificationToggle = document.getElementById('notificationToggle');
+            const displayNotifications = document.getElementById('displayNotifications');
+
+            if (notificationToggle) {
+                notificationToggle.checked = settings.push_enabled || false;
             }
-            if (settings.email_footer) {
-                document.getElementById('email-footer').value = settings.email_footer;
+            if (displayNotifications) {
+                displayNotifications.value = settings.display_count || 5;
             }
 
-            // Push settings
-            document.getElementById('notificationToggle').checked = settings.push_enabled;
-            document.getElementById('displayNotifications').value = settings.display_count;
             updateToggleText();
         }
-
         // Load tenants untuk dropdown
         function loadTenants() {
             fetch('/admin/notifications/get-tenants')
@@ -2108,7 +2254,6 @@
             });
         }
 
-        // Setup event listeners
         function setupEventListeners() {
             // Tab switching
             setupTabSwitching();
@@ -2116,13 +2261,31 @@
             // Search inputs
             setupSearchInputs();
 
-            // Priority filters
-            setupPriorityFilters();
+            // Priority filters - panggil setelah delay untuk memastikan DOM sudah ready
+            setTimeout(() => {
+                setupPriorityFilters();
+            }, 100);
 
             // Select all checkboxes
             setupSelectAllCheckboxes();
         }
+        // Function untuk debug - pastikan element ada
+        function debugFilterElements() {
+            console.log('=== DEBUG FILTER ELEMENTS ===');
+            console.log('archivedTargetFilter:', document.getElementById('archivedTargetFilter'));
+            console.log('statusFilter:', document.getElementById('statusFilter'));
+            console.log('searchInput:', document.getElementById('searchInput'));
+            console.log('archivedSearchInput:', document.getElementById('archivedSearchInput'));
 
+            // Cek apakah tab archived sudah terbuka
+            const archivedTab = document.getElementById('styled-recentLead');
+            console.log('Archived tab visible:', archivedTab && !archivedTab.classList.contains('hidden'));
+        }
+
+        // Panggil function debug
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(debugFilterElements, 2000);
+        });
         // Setup search inputs
         function setupSearchInputs() {
             // Active search input
@@ -2167,20 +2330,10 @@
                 });
             }
 
-            // // Archived tab priority filter
-            // const archivedStatusFilter = document.getElementById('archivedStatusFilter');
-            // if (archivedStatusFilter) {
-            //     archivedStatusFilter.addEventListener('change', function() {
-            //         priorityFilter = this.value;
-            //         currentPage = 1;
-            //         console.log('Archived priority filter changed:', priorityFilter);
-            //         loadNotifications();
-            //     });
-            // }
-
             // PERBAIKAN UTAMA: Archived target filter
             const archivedTargetFilter = document.getElementById('archivedTargetFilter');
             if (archivedTargetFilter) {
+                console.log('archivedTargetFilter ditemukan:', archivedTargetFilter);
                 archivedTargetFilter.addEventListener('change', function() {
                     targetFilter = this.value;
                     currentPage = 1;
@@ -2188,7 +2341,7 @@
                     loadNotifications();
                 });
             } else {
-                console.warn('archivedTargetFilter element not found - pastikan ID di HTML benar');
+                console.error('archivedTargetFilter element tidak ditemukan!');
             }
         }
 
@@ -2348,7 +2501,6 @@
 
 
 
-
         // Update selected notifications untuk bulk actions
         function updateSelectedNotifications() {
             const checkboxClass = currentTab === 'active' ? '.notification-checkbox' : '.archived-notification-checkbox';
@@ -2374,23 +2526,25 @@
             }
         }
 
-        // Reset create form
+
+        // PERBAIKAN: Reset create form dengan apply defaults
         function resetCreateForm() {
             document.getElementById('name').value = '';
             document.getElementById('desc').value = '';
             document.getElementById('depart').value = 'all';
-            document.getElementById('desig').value = 'Normal';
-
-            // Reset delivery methods
-            const deliveryCheckboxes = document.querySelectorAll('#dropdown-content input[type="checkbox"]');
-            deliveryCheckboxes.forEach(cb => cb.checked = false);
-            updateSelection();
 
             // Reset tenant selection
             selectedTenants = [];
-            document.getElementById('tenantSelection').style.display = 'none';
-        }
+            const tenantSelection = document.getElementById('tenantSelection');
+            if (tenantSelection) {
+                tenantSelection.style.display = 'none';
+            }
 
+            // PENTING: Apply default settings setelah reset
+            setTimeout(() => {
+                applyDefaultsToCreateForm();
+            }, 100);
+        }
         // Update pagination
         function updatePagination(pagination) {
             const paginationInfoId = currentTab === 'active' ? 'paginationInfo' : 'archivedPaginationInfo';
@@ -2781,32 +2935,77 @@
         // Call check function after page load untuk debugging
         setTimeout(checkFilterElements, 1000)
 
-        function setupPriorityFilters() {
-            // Filter untuk tab Active
-            const activeStatusFilter = document.getElementById('statusFilter');
-            if (activeStatusFilter) {
-                activeStatusFilter.addEventListener('change', function() {
-                    priorityFilter = this.value;
-                    currentPage = 1;
-                    console.log('Active priority filter changed:', priorityFilter);
-                    loadNotifications();
-                });
+        // function setupPriorityFilters() {
+        //     // Filter untuk tab Active
+        //     const activeStatusFilter = document.getElementById('statusFilter');
+        //     if (activeStatusFilter) {
+        //         activeStatusFilter.addEventListener('change', function() {
+        //             priorityFilter = this.value;
+        //             currentPage = 1;
+        //             console.log('Active priority filter changed:', priorityFilter);
+        //             loadNotifications();
+        //         });
+        //     }
+
+        //     // Filter untuk tab Archived
+        //     const archivedTargetFilter = document.getElementById('archivedTargetFilter');
+        //     if (archivedTargetFilter) {
+        //         console.log('archivedTargetFilter ditemukan:', archivedTargetFilter); // Debugging
+        //         archivedTargetFilter.addEventListener('change', function() {
+        //             targetFilter = this.value;
+        //             currentPage = 1;
+        //             console.log('Archived target filter changed:', targetFilter); // Debugging
+        //             loadNotifications();
+        //         });
+        //     } else {
+        //         console.warn('archivedTargetFilter tidak ditemukan - pastikan ID di HTML benar');
+        //     }
+        // }
+
+        // Get selected delivery methods dari settings form
+        function getSelectedSettingsDeliveryMethods() {
+            const checkboxes = document.querySelectorAll('#settings-dropdown-content input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // PERBAIKAN: Reset create form dengan apply defaults
+        function resetCreateForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('desc').value = '';
+            document.getElementById('depart').value = 'all';
+
+            // Reset tenant selection
+            selectedTenants = [];
+            const tenantSelection = document.getElementById('tenantSelection');
+            if (tenantSelection) {
+                tenantSelection.style.display = 'none';
             }
 
-            // Filter untuk tab Archived
-            const archivedTargetFilter = document.getElementById('archivedTargetFilter');
-            if (archivedTargetFilter) {
-                console.log('archivedTargetFilter ditemukan:', archivedTargetFilter); // Debugging
-                archivedTargetFilter.addEventListener('change', function() {
-                    targetFilter = this.value;
-                    currentPage = 1;
-                    console.log('Archived target filter changed:', targetFilter); // Debugging
-                    loadNotifications();
-                });
-            } else {
-                console.warn('archivedTargetFilter tidak ditemukan - pastikan ID di HTML benar');
-            }
+            // PENTING: Apply default settings setelah reset
+            setTimeout(() => {
+                applyDefaultsToCreateForm();
+            }, 100);
         }
+
+        // Event listeners untuk real-time sync settings ke create form
+        document.addEventListener('change', function(e) {
+            // Ketika default priority di settings berubah
+            if (e.target.id === 'default-priority') {
+                currentSettings.default_priority = e.target.value;
+                const createPrioritySelect = document.getElementById('desig');
+                if (createPrioritySelect) {
+                    createPrioritySelect.value = e.target.value;
+                }
+            }
+
+            // Ketika delivery methods di settings berubah
+            if (e.target.closest('#settings-dropdown-content')) {
+                setTimeout(() => {
+                    currentSettings.default_delivery_methods = getSelectedSettingsDeliveryMethods();
+                    applyDefaultsToCreateForm();
+                }, 50);
+            }
+        });
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

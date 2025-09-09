@@ -140,6 +140,20 @@ class NotificationController extends Controller
             });
         }
 
+        // Filter berdasarkan target type
+        if ($request->has('target') && $request->target) {
+            if ($request->target === 'all') {
+                $query->where('target_type', 'all');
+            } elseif ($request->target === 'specific') {
+                $query->where('target_type', 'specific');
+            }
+        }
+
+        // Filter berdasarkan priority (opsional untuk archived)
+        if ($request->has('priority') && $request->priority) {
+            $query->where('priority', $request->priority);
+        }
+
         // Pagination
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
@@ -302,15 +316,13 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Update settings
+    // Update settings - PERBAIKAN
     public function updateSettings(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'default_priority' => 'required|in:Normal,Important,Critical',
             'default_delivery_methods' => 'required|array|min:1',
-            'default_delivery_methods.*' => 'in:Dashboard,Email,Push Notifications',
-            'email_from' => 'nullable|email',
-            'email_footer' => 'nullable|string|max:255',
+            'default_delivery_methods.*' => 'in:Dashboard,Push Notifications',
             'push_enabled' => 'boolean',
             'dashboard_display_count' => 'required|integer|min:1|max:20'
         ]);
@@ -322,7 +334,12 @@ class NotificationController extends Controller
             ], 422);
         }
 
-        $settings = NotificationSetting::updateSettings($request->all());
+        $settings = NotificationSetting::updateSettings([
+            'default_priority' => $request->default_priority,
+            'default_delivery_methods' => $request->default_delivery_methods,
+            'push_enabled' => $request->push_enabled ?? false,
+            'dashboard_display_count' => $request->dashboard_display_count
+        ]);
 
         return response()->json([
             'success' => true,
@@ -381,5 +398,4 @@ class NotificationController extends Controller
             'message' => count($request->notification_ids) . ' notifications deleted permanently'
         ]);
     }
-    
 }
