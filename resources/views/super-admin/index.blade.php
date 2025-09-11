@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-    $title = 'Dashboard';
+   $title = 'Dashboard';
     $subTitle = 'Admin';
     $script = '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>' . '<script src="' . asset('assets/js/lineChartPageChart.js') . '"></script>';
     $script .= '<script src="' . asset('assets/js/widgets.js') . '"></script>';
@@ -505,8 +505,7 @@
                             <div>
                                 <span class="text-secondary-light font-normal mb-3 text-xl">Total Transactions This
                                     Week</span>
-                                <h5 class="font-semibold mb-0">{{ $totalTransactionsThisWeek }}
-</h5>
+                                <h5 class="font-semibold mb-0">{{ $totalTransactionsThisWeek }}</h5>
                                 <small class="text-xs text-neutral-500">
                                     @if (($transactionPercentageChange ?? 0) >= 0)
                                         <span
