@@ -4,10 +4,9 @@
     </button>
     <div>
         <a href="{{ route('super-admin.index') }}" class="sidebar-logo">
-            Rentbyte
-            {{-- <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo"> --}}
-            <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon">
+            <img src="{{ asset('assets/images/renbyte-logos.png') }}" alt="site logo" class="light-logo">
+            <img src="{{ asset('assets/images/renbyte-logos.png') }}" alt="site logo" class="dark-logo">
+            <img src="{{ asset('assets/images/r-logos.png') }}" alt="site logo" class="logo-icon">
         </a>
     </div>
     <div class="sidebar-menu-area">
