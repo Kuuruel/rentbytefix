@@ -8,7 +8,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SuperAdminController extends Controller
 {
@@ -20,10 +20,10 @@ class SuperAdminController extends Controller
         $newTenantsCount = Tenants::where('created_at', '>=', now()->subDays(30))->count();
         $newTenantsToday = Tenants::whereDate('created_at', today())->count();
 
-        // ✅ ENHANCED: Recent Activities dengan berbagai jenis aktivitas
+        
         $recentActivities = collect();
 
-        // 1. Recent Tenant Registrations
+        
         $recentTenants = Tenants::with('user')
             ->select('id', 'name', 'created_at', 'user_id', 'country')
             ->orderBy('created_at', 'desc')
@@ -42,7 +42,7 @@ class SuperAdminController extends Controller
                 ];
             });
 
-        // 2. Recent Successful Payments (jika tabel ada)
+        
         try {
             $recentPayments = Transaction::with(['bill.tenant'])
                 ->where('status', Transaction::STATUS_SUCCESS)
@@ -66,7 +66,7 @@ class SuperAdminController extends Controller
             $recentPayments = collect();
         }
 
-        // 3. Recent Bill Creations (jika tabel ada)
+        
         try {
             $recentBills = Bill::with('tenant')
                 ->orderBy('created_at', 'desc')
@@ -89,7 +89,7 @@ class SuperAdminController extends Controller
             $recentBills = collect();
         }
 
-        // 4. Gabungkan semua aktivitas dan sort by created_at
+        
         $recentActivities = $recentTenants
             ->concat($recentPayments)
             ->concat($recentBills)
@@ -116,10 +116,10 @@ class SuperAdminController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
-        // NEW: Chart Data untuk Growth Comparison
+        
         $chartData = $this->getChartData();
 
-        // Tambahkan perhitungan untuk Monthly Billings dan Platform Revenue
+        
         $monthlyBillings = Bill::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');
@@ -195,10 +195,10 @@ class SuperAdminController extends Controller
         $search = $request->get('search');
         $perPage = $request->get('per_page', 10);
 
-        // Start query builder
+        
         $query = Tenants::query();
 
-        // Apply search filter if exists
+        
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
@@ -208,13 +208,13 @@ class SuperAdminController extends Controller
             });
         }
 
-        // Select fields and apply pagination
+        
         $tenants = $query->select('id', 'name', 'status', 'created_at', 'avatar', 'country', 'email')
             ->orderBy('id', 'desc')
             ->paginate($perPage)
             ->appends($request->query());
 
-        // Country stats
+        
         $topCountry = Tenants::select('country')
             ->selectRaw('COUNT(*) as tenant_count')
             ->whereNotNull('country')
@@ -226,7 +226,7 @@ class SuperAdminController extends Controller
         $countryName = $topCountry ? $topCountry->country : 'Indonesia';
         $countryCount = $topCountry ? $topCountry->tenant_count : 0;
 
-        // NEW: Hitung statistik real untuk setiap tenant
+        
         $tenantsWithStats = $tenants->map(function ($tenant) {
             return $this->calculateTenantStats($tenant);
         });
@@ -258,7 +258,7 @@ class SuperAdminController extends Controller
 
     public function index8($tenant_id)
     {
-        // Ambil tenant spesifik berdasarkan ID
+        
         $tenant = Tenants::select('id', 'name', 'email', 'status', 'created_at', 'avatar', 'country')
             ->where('id', $tenant_id)
             ->first();
@@ -267,7 +267,7 @@ class SuperAdminController extends Controller
             return redirect()->route('super-admin.index')->with('error', 'Tenant tidak ditemukan');
         }
 
-        // BILLING SUMMARY - Langsung pakai tenant_id
+        
         $pendingBills = Bill::where('tenant_id', $tenant->id)->where('status', 'pending')->count();
         $overdueBills = Bill::where('tenant_id', $tenant->id)
             ->where(function($query) {
@@ -279,7 +279,7 @@ class SuperAdminController extends Controller
             })->count();
         $paidBills = Bill::where('tenant_id', $tenant->id)->where('status', 'paid')->count();
 
-        // TRANSACTIONS - Langsung pakai tenant_id di transaction table
+        
         $transactionsThisMonth = Transaction::where('tenant_id', $tenant->id)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
@@ -294,7 +294,7 @@ class SuperAdminController extends Controller
             ? (($transactionsThisMonth - $transactionsLastMonth) / $transactionsLastMonth) * 100 
             : ($transactionsThisMonth > 0 ? 100 : 0);
 
-        // TOTAL SALES - Langsung pakai tenant_id
+        
         $salesThisMonth = Transaction::where('tenant_id', $tenant->id)
             ->where('status', Transaction::STATUS_SUCCESS)
             ->whereMonth('created_at', now()->month)
@@ -311,19 +311,19 @@ class SuperAdminController extends Controller
             ? (($salesThisMonth - $salesLastMonth) / $salesLastMonth) * 100 
             : ($salesThisMonth > 0 ? 100 : 0);
 
-        // AVERAGE PER TRANSACTION
+        
         $averagePerTransaction = $transactionsThisMonth > 0 ? $salesThisMonth / $transactionsThisMonth : 0;
         $lastMonthAverage = $transactionsLastMonth > 0 ? $salesLastMonth / $transactionsLastMonth : 0;
         $avgChange = $lastMonthAverage > 0 
             ? (($averagePerTransaction - $lastMonthAverage) / $lastMonthAverage) * 100 
             : ($averagePerTransaction > 0 ? 100 : 0);
 
-        // CHART DATA untuk Sales Overview
+        
         $chartData = $this->getTenantChartData($tenant->id);
 
-        // INCOME & EXPENSES untuk Sales Overview section
+        
         $income = $salesThisMonth;
-        $expenses = $income * 0.65; // Asumsi 65% dari income sebagai expenses
+        $expenses = $income * 0.65; 
 
         $lastMonthIncome = $salesLastMonth;
         $lastMonthExpenses = $lastMonthIncome * 0.65;
@@ -336,7 +336,7 @@ class SuperAdminController extends Controller
             ? (($expenses - $lastMonthExpenses) / $lastMonthExpenses) * 100 
             : ($expenses > 0 ? 100 : 0);
 
-    // Tambahkan sebelum return view
+    
 $totalTransactionsThisWeek = Transaction::where('tenant_id', $tenant->id)
     ->where('status', 'success')
     ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
@@ -351,9 +351,9 @@ $transactionPercentageChange = $totalTransactionsLastWeek > 0
     ? (($totalTransactionsThisWeek - $totalTransactionsLastWeek) / $totalTransactionsLastWeek) * 100 
     : ($totalTransactionsThisWeek > 0 ? 100 : 0);
 
-// Update return view
+
 return view('super-admin.index8', compact(
-    // ... variabel yang sudah ada ...,
+    
     
             'tenant',
             'pendingBills',
@@ -380,9 +380,6 @@ return view('super-admin.index8', compact(
         return view('super-admin.index9');
     }
 
-    /**
-     * Get chart data untuk Growth Comparison (Billing vs Payment)
-     */
     private function getChartData()
     {
         $currentYear = date('Y');
@@ -401,7 +398,7 @@ return view('super-admin.index8', compact(
                 $billingData[$monthIndex] = (float) $result->total;
             }
         } catch (\Exception $e) {
-            \Log::error('Error getting chart data: ' . $e->getMessage());
+            Log::error('Error getting chart data: ' . $e->getMessage());
         }
 
         return [
@@ -410,7 +407,7 @@ return view('super-admin.index8', compact(
         ];
     }
 
-    // Method untuk chart data tenant
+    
     private function getTenantChartData($tenant_id)
     {
         $currentYear = date('Y');
@@ -418,7 +415,7 @@ return view('super-admin.index8', compact(
         $data = array_fill(0, 12, 0);
 
         try {
-            // Langsung pakai tenant_id dari transaction table
+            
             $results = Transaction::where('tenant_id', $tenant_id)
                 ->where('status', Transaction::STATUS_SUCCESS)
                 ->whereYear('created_at', $currentYear)
@@ -428,10 +425,10 @@ return view('super-admin.index8', compact(
 
             foreach ($results as $result) {
                 $monthIndex = $result->month - 1;
-                $data[$monthIndex] = (float) ($result->total / 1000); // Konversi ke ribuan untuk chart
+                $data[$monthIndex] = (float) ($result->total / 1000); 
             }
         } catch (\Exception $e) {
-            \Log::error('Error getting tenant chart data: ' . $e->getMessage());
+            Log::error('Error getting tenant chart data: ' . $e->getMessage());
         }
 
         return [
@@ -440,20 +437,17 @@ return view('super-admin.index8', compact(
         ];
     }
 
-    /**
-     * FIXED: Calculate real statistics for each tenant - SATU METHOD SAJA
-     */
     private function calculateTenantStats($tenant)
     {
         try {
-            // Get current date and calculate date ranges
+            
             $now = Carbon::now();
             $startOfMonth = $now->copy()->startOfMonth();
             $startOfWeek = $now->copy()->startOfWeek();
             $lastWeekStart = $now->copy()->subWeek()->startOfWeek();
             $lastWeekEnd = $now->copy()->subWeek()->endOfWeek();
 
-            // 1. Monthly Revenue (Total pembayaran sukses bulan ini)
+            
             $monthlyRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
                 ->whereHas('bill', function ($q) use ($tenant) {
                     $q->where('tenant_id', $tenant->id);
@@ -462,10 +456,10 @@ return view('super-admin.index8', compact(
                 ->whereYear('paid_at', $startOfMonth->year)
                 ->sum('amount') ?? 0;
 
-            // 2. Total Bills Count
+            
             $billsCount = Bill::where('tenant_id', $tenant->id)->count();
 
-            // 3. Payment Success Rate (Persentase bill yang dibayar)
+            
             $totalBills = Bill::where('tenant_id', $tenant->id)->count();
             $paidBills = Bill::where('tenant_id', $tenant->id)
                 ->where('status', 'paid')
@@ -473,8 +467,8 @@ return view('super-admin.index8', compact(
             
             $paymentSuccessRate = $totalBills > 0 ? round(($paidBills / $totalBills) * 100, 1) : 0;
 
-            // 4. Weekly Change (Perubahan payment rate minggu ini vs minggu lalu)
-            // Success rate minggu ini
+            
+            
             $thisWeekBills = Bill::where('tenant_id', $tenant->id)
                 ->whereBetween('created_at', [$startOfWeek, $now])
                 ->count();
@@ -486,7 +480,7 @@ return view('super-admin.index8', compact(
 
             $thisWeekRate = $thisWeekBills > 0 ? ($thisWeekPaidBills / $thisWeekBills) * 100 : 0;
 
-            // Success rate minggu lalu
+            
             $lastWeekBills = Bill::where('tenant_id', $tenant->id)
                 ->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])
                 ->count();
@@ -498,14 +492,14 @@ return view('super-admin.index8', compact(
 
             $lastWeekRate = $lastWeekBills > 0 ? ($lastWeekPaidBills / $lastWeekBills) * 100 : 0;
 
-            // Calculate weekly change
+            
             $weeklyChange = $thisWeekRate - $lastWeekRate;
             $weeklyChange = round($weeklyChange, 1);
 
-            // 5. Generate chart data (9 data points untuk chart)
+            
             $chartData = $this->generateChartData($tenant->id);
 
-            // Add calculated stats to tenant object (clone untuk avoid modify original)
+            
             $tenantClone = clone $tenant;
             $tenantClone->monthly_revenue = $monthlyRevenue;
             $tenantClone->bills_count = $billsCount;
@@ -516,8 +510,8 @@ return view('super-admin.index8', compact(
             return $tenantClone;
 
         } catch (\Exception $e) {
-            // Jika ada error, return tenant dengan data default
-            \Log::error('Error calculating tenant stats for tenant ' . $tenant->id . ': ' . $e->getMessage());
+            
+            Log::error('Error calculating tenant stats for tenant ' . $tenant->id . ': ' . $e->getMessage());
             
             $tenantClone = clone $tenant;
             $tenantClone->monthly_revenue = 0;
@@ -530,43 +524,40 @@ return view('super-admin.index8', compact(
         }
     }
 
-    /**
-     * Generate chart data for tenant (9 points for the last 9 months)
-     */
     private function generateChartData($tenantId)
     {
         try {
             $data = [];
             $now = Carbon::now();
 
-            // Generate data for last 9 months
+            
             for ($i = 8; $i >= 0; $i--) {
                 $month = $now->copy()->subMonths($i);
                 
-                // Get bills for this month
+                
                 $monthBills = Bill::where('tenant_id', $tenantId)
                     ->whereMonth('created_at', $month->month)
                     ->whereYear('created_at', $month->year)
                     ->count();
                 
-                // Get paid bills for this month
+                
                 $monthPaidBills = Bill::where('tenant_id', $tenantId)
                     ->where('status', 'paid')
                     ->whereMonth('created_at', $month->month)
                     ->whereYear('created_at', $month->year)
                     ->count();
 
-                // Calculate success rate
+                
                 $rate = $monthBills > 0 ? ($monthPaidBills / $monthBills) * 100 : 0;
                 
-                // Convert to chart scale (35-55 range for better visual)
-                $chartValue = 35 + ($rate / 100 * 20); // Scale 0-100% to 35-55 range
-                $chartValue = max(30, min(60, $chartValue)); // Ensure bounds
+                
+                $chartValue = 35 + ($rate / 100 * 20); 
+                $chartValue = max(30, min(60, $chartValue)); 
                 
                 $data[] = round($chartValue, 0);
             }
 
-            // Jika semua data 0, return data default untuk visual yang lebih baik
+            
             if (array_sum($data) === 0) {
                 return [35, 40, 38, 42, 39, 44, 41, 45, 43];
             }
@@ -574,8 +565,8 @@ return view('super-admin.index8', compact(
             return $data;
 
         } catch (\Exception $e) {
-            \Log::error('Error generating chart data for tenant ' . $tenantId . ': ' . $e->getMessage());
-            // Return default data jika ada error
+            Log::error('Error generating chart data for tenant ' . $tenantId . ': ' . $e->getMessage());
+            
             return [35, 40, 38, 42, 39, 44, 41, 45, 43];
         }
     }

@@ -26,31 +26,26 @@ class MidtransSetting extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Accessor untuk server key (untuk keamanan)
     public function getServerKeyAttribute($value)
     {
         return $value;
     }
 
-    // Mutator untuk server key (enkripsi sederhana jika diperlukan)
     public function setServerKeyAttribute($value)
     {
         $this->attributes['server_key'] = $value;
     }
 
-    // Method untuk cek apakah environment production
     public function isProduction()
     {
         return $this->environment === 'production';
     }
 
-    // Method untuk cek apakah environment sandbox
     public function isSandbox()
     {
         return $this->environment === 'sandbox';
     }
 
-    // Method untuk mendapatkan base URL berdasarkan environment
     public function getBaseUrl()
     {
         return $this->environment === 'production'

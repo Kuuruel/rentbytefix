@@ -316,8 +316,7 @@ public function webhook(Request $request)
                 
                 $transactionData['status'] = Transaction::STATUS_PENDING;
                 $bill->update(['status' => 'pending']);
-                
-                // ⏳ NOTIFIKASI PENDING
+
                 $this->createPaymentNotification($bill, 'pending', $transactionStatus, [
                     'payment_type' => $request->payment_type ?? 'Unknown'
                 ]);

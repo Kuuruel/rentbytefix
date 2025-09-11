@@ -23,13 +23,13 @@ class BillController extends Controller
         ]);
 
         try {
-            // ✅ DUPLICATE PREVENTION: Check for existing bill
+            
             $existingBill = Bill::where('tenant_id', $validated['tenant_id'])
                 ->where('renter_id', $validated['renter_id'])
                 ->where('property_id', $validated['property_id'])
                 ->where('amount', $validated['amount'])
                 ->where('due_date', $validated['due_date'])
-                ->whereDate('created_at', today()) // Same day check
+                ->whereDate('created_at', today()) 
                 ->first();
 
             if ($existingBill) {
@@ -40,11 +40,11 @@ class BillController extends Controller
                 ], 422);
             }
 
-            // ✅ ADDITIONAL CHECK: Same tenant, property, and due_date
+            
             $duplicateCheck = Bill::where('tenant_id', $validated['tenant_id'])
                 ->where('property_id', $validated['property_id'])
                 ->where('due_date', $validated['due_date'])
-                ->where('status', '!=', 'paid') // Exclude already paid bills
+                ->where('status', '!=', 'paid') 
                 ->exists();
 
             if ($duplicateCheck) {
@@ -54,7 +54,7 @@ class BillController extends Controller
                 ], 422);
             }
 
-            // Create new bill
+            
             $bill = Bill::create([
                 'tenant_id' => $validated['tenant_id'],
                 'renter_id' => $validated['renter_id'],
@@ -108,7 +108,7 @@ class BillController extends Controller
 
         foreach ($validated['bills'] as $index => $billData) {
             try {
-                // ✅ DUPLICATE CHECK for each bill
+                
                 $existingBill = Bill::where('tenant_id', $billData['tenant_id'])
                     ->where('renter_id', $billData['renter_id'])
                     ->where('property_id', $billData['property_id'])
@@ -125,7 +125,7 @@ class BillController extends Controller
                     continue;
                 }
 
-                // Create bill if no duplicate
+                
                 $bill = Bill::create([
                     'tenant_id' => $billData['tenant_id'],
                     'renter_id' => $billData['renter_id'],

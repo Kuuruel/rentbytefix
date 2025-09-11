@@ -12,16 +12,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Data Tenants (existing)
+        
         $totalTenants = Tenants::count();
         $activeTenants = Tenants::where('status', 'Active')->count();
         $inactiveTenants = Tenants::where('status', 'Inactive')->count();
         $newTenantsToday = Tenants::whereDate('created_at', today())->count();
 
-        // ✅ FIXED: Recent Activities dengan berbagai jenis aktivitas
+        
         $recentActivities = collect();
 
-        // 1. Recent Tenant Registrations
+        
         $recentTenants = Tenants::with('user')
             ->select('id', 'name', 'created_at', 'user_id', 'country')
             ->orderBy('created_at', 'desc')
@@ -40,7 +40,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 2. Recent Successful Payments
+        
         $recentPayments = Transaction::with(['bill.tenant'])
             ->where('status', Transaction::STATUS_SUCCESS)
             ->whereNotNull('paid_at')
@@ -60,7 +60,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 3. Recent Bill Creations - ✅ FIXED: Add duplicate prevention
+        
         $recentBills = Bill::with('tenant')
             ->select('id', 'tenant_id', 'amount', 'due_date', 'created_at')
             ->orderBy('created_at', 'desc')
@@ -80,7 +80,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 4. Recent Failed Payments
+        
         $recentFailedPayments = Transaction::with(['bill.tenant'])
             ->where('status', Transaction::STATUS_FAILED)
             ->orderBy('created_at', 'desc')
@@ -99,15 +99,15 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 5. Gabungkan semua aktivitas dan sort by created_at
+        
         $recentActivities = $recentTenants
             ->concat($recentPayments)
             ->concat($recentBills)
             ->concat($recentFailedPayments)
             ->sortByDesc('created_at')
-            ->take(5); // Ambil 5 aktivitas terbaru
+            ->take(5); 
 
-        // Owner Distribution
+        
         $ownerDistribution = Tenants::select('country')
             ->selectRaw('COUNT(*) as count')
             ->whereNotNull('country')
@@ -116,35 +116,35 @@ class DashboardController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
-        // ✅ FIXED: Monthly Billings - Total amount, bukan count
+        
         $monthlyBillings = Bill::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
-            ->sum('amount'); // ✅ Changed from count() to sum('amount')
+            ->sum('amount'); 
 
-        // Data untuk Monthly Billings comparison
+        
         $billsThisMonth = Bill::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
-            ->sum('amount'); // ✅ Changed from count() to sum('amount')
+            ->sum('amount'); 
 
         $billsLastMonth = Bill::whereYear('created_at', now()->subMonth()->year)
             ->whereMonth('created_at', now()->subMonth()->month)
-            ->sum('amount'); // ✅ Changed from count() to sum('amount')
+            ->sum('amount'); 
 
         $billsDecrease = $billsThisMonth - $billsLastMonth;
 
-        // ✅ FIXED: Platform Revenue - Only last 30 days
+        
         $platformRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where('created_at', '>=', now()->subDays(30))
             ->sum('amount');
 
-        // Revenue comparison (30-60 days ago vs last 30 days)
+        
         $revenue30DaysAgo = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where('created_at', '>=', now()->subDays(60))
             ->where('created_at', '<', now()->subDays(30))
             ->sum('amount');
         $revenueIncrease = $platformRevenue - $revenue30DaysAgo;
 
-        // 3. Total Transactions This Week
+        
         $totalTransactionsThisWeek = Transaction::whereBetween('created_at', [
             now()->startOfWeek(),
             now()->endOfWeek()
@@ -157,17 +157,17 @@ class DashboardController extends Controller
 
         $transactionPercentageChange = $totalTransactionsLastWeek > 0
             ? (($totalTransactionsThisWeek - $totalTransactionsLastWeek) / $totalTransactionsLastWeek) * 100
-            : ($totalTransactionsThisWeek > 0 ? 100 : 0); // ✅ Handle division by zero
+            : ($totalTransactionsThisWeek > 0 ? 100 : 0); 
 
-        // 4. Payment Success Rate
+        
         $totalTransactionsForSuccessRate = Transaction::whereBetween('created_at', [
-            now()->subDays(30), // ✅ Only last 30 days
+            now()->subDays(30), 
             now()
         ])->count();
 
         $successfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->whereBetween('created_at', [
-                now()->subDays(30), // ✅ Only last 30 days  
+                now()->subDays(30), 
                 now()
             ])
             ->count();
@@ -176,27 +176,27 @@ class DashboardController extends Controller
             ? ($successfulTransactions / $totalTransactionsForSuccessRate) * 100
             : 0;
 
-        // ✅ FIXED: Average Transaction per Tenant - Only successful transactions
+        
         $totalSuccessfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->whereBetween('created_at', [
-                now()->subDays(30), // ✅ Only last 30 days
+                now()->subDays(30), 
                 now()
             ])
             ->count();
 
         $totalTransactionAmount = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->whereBetween('created_at', [
-                now()->subDays(30), // ✅ Only last 30 days
+                now()->subDays(30), 
                 now()
             ])
             ->sum('amount');
 
-        // ✅ FIXED: Calculate average per transaction, not per tenant
+        
         $averageTransactionPerTenant = $totalSuccessfulTransactions > 0
             ? $totalTransactionAmount / $totalSuccessfulTransactions
             : 0;
 
-        // NEW: Chart Data untuk Growth Comparison
+        
         $chartData = $this->getChartData();
 
         return view('super-admin.index', compact(
@@ -215,31 +215,28 @@ class DashboardController extends Controller
             'paymentSuccessRate',
             'averageTransactionPerTenant',
             'successfulTransactions',
-            'totalTransactionsForSuccessRate', // ✅ Pass correct total
+            'totalTransactionsForSuccessRate', 
             'chartData'
         ));
     }
 
-    /**
-     * ✅ FIXED: Get chart data untuk Growth Comparison
-     */
     private function getChartData()
     {
         $currentYear = date('Y');
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        // Initialize arrays
+        
         $billingData = array_fill(0, 12, 0);
 
-        // ✅ FIXED: Query untuk total billing per bulan dengan hasil yang benar
+        
         $billingResults = Bill::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
             ->whereYear('created_at', $currentYear)
             ->groupBy('month')
             ->get();
 
-        // ✅ FIXED: Mapping hasil billing ke array dengan konversi yang benar
+        
         foreach ($billingResults as $result) {
-            $monthIndex = $result->month - 1; // Convert 1-12 to 0-11
+            $monthIndex = $result->month - 1; 
             $billingData[$monthIndex] = (float) $result->total;
         }
 

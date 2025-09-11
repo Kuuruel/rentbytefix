@@ -14,13 +14,9 @@ use Illuminate\Support\Facades\Validator;
 
 class NotificationController extends Controller
 {
-    // Halaman utama notifications (sama seperti index7)
-    // ========== TAMBAH METHOD BARU UNTUK TENANT ==========
-
-    // Get notifications khusus untuk tenant
     public function getTenantNotifications(Request $request)
     {
-        // Pastikan tenant yang sedang login
+        
         if (!Auth::guard('tenant')->check()) {
             return response()->json([
                 'success' => false,
@@ -56,7 +52,6 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Mark notification sebagai read untuk tenant
     public function markAsReadTenant(Request $request, $id)
     {
         if (!Auth::guard('tenant')->check()) {
@@ -69,7 +64,7 @@ class NotificationController extends Controller
         $notification = Notification::findOrFail($id);
         $tenantId = Auth::guard('tenant')->id();
 
-        // Verifikasi notifikasi ini untuk tenant ini
+        
         if (!$notification->isForTenant($tenantId)) {
             return response()->json([
                 'success' => false,
@@ -92,19 +87,16 @@ class NotificationController extends Controller
         return view('super-admin.index7', compact('settings', 'tenants'));
     }
 
-    // Get notifications untuk dropdown navbar (AJAX)
     public function getNotifications(Request $request)
     {
         $user = Auth::user();
         $tenantId = null;
 
-        // Jika user bukan admin, ambil tenant_id dari relasi atau session
         if (!$user->isAdmin()) {
-            // Logika untuk mendapatkan tenant_id untuk user non-admin
-            // Sesuaikan dengan struktur aplikasi kamu
+            
+            
             $tenantId = $request->get('tenant_id');
         }
-
         $settings = NotificationSetting::getCurrentSettings();
         $limit = $settings->dashboard_display_count;
 
@@ -132,14 +124,14 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Get all notifications untuk halaman All Notifications (AJAX)
+    
     public function getAllNotifications(Request $request)
     {
         $query = Notification::with('creator')
             ->active()
             ->orderBy('created_at', 'desc');
 
-        // Filter berdasarkan search
+        
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -148,17 +140,17 @@ class NotificationController extends Controller
             });
         }
 
-        // Filter berdasarkan priority
+        
         if ($request->has('priority') && $request->priority) {
             $query->byPriority($request->priority);
         }
 
-        // Filter berdasarkan target type
+        
         if ($request->has('target_type') && $request->target_type) {
             $query->byTargetType($request->target_type);
         }
 
-        // Pagination
+        
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
 
@@ -193,14 +185,14 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Get archived notifications (AJAX)
+    
     public function getArchivedNotifications(Request $request)
     {
         $query = Notification::with('creator')
             ->archived()
-            ->orderBy('updated_at', 'desc'); // Urutkan berdasarkan kapan diarsip
+            ->orderBy('updated_at', 'desc'); 
 
-        // Filter berdasarkan search
+        
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -209,7 +201,7 @@ class NotificationController extends Controller
             });
         }
 
-        // Filter berdasarkan target type
+        
         if ($request->has('target') && $request->target) {
             if ($request->target === 'all') {
                 $query->where('target_type', 'all');
@@ -218,12 +210,12 @@ class NotificationController extends Controller
             }
         }
 
-        // Filter berdasarkan priority (opsional untuk archived)
+        
         if ($request->has('priority') && $request->priority) {
             $query->where('priority', $request->priority);
         }
 
-        // Pagination
+        
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
 
@@ -258,7 +250,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Store notification baru
+    
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -296,7 +288,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Archive notification
+    
     public function archive($id)
     {
         $notification = Notification::findOrFail($id);
@@ -308,7 +300,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Restore notification dari archive
+    
     public function restore($id)
     {
         $notification = Notification::findOrFail($id);
@@ -320,15 +312,15 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Delete notification permanent
+    
     public function destroy($id)
     {
         $notification = Notification::findOrFail($id);
 
-        // Hapus semua read records
+        
         $notification->reads()->delete();
 
-        // Hapus notification
+        
         $notification->delete();
 
         return response()->json([
@@ -337,7 +329,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Mark notification sebagai read
+    
     public function markAsRead(Request $request, $id)
     {
         $notification = Notification::findOrFail($id);
@@ -352,12 +344,12 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Get tenants untuk dropdown
+    
     public function getTenants(Request $request)
     {
         $query = Tenants::select('id', 'name', 'email', 'status');
 
-        // Filter berdasarkan search
+        
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -374,7 +366,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Get current settings
+    
     public function getSettings()
     {
         $settings = NotificationSetting::getCurrentSettings();
@@ -385,7 +377,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Update settings - PERBAIKAN
+    
     public function updateSettings(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -417,7 +409,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Bulk archive notifications
+    
     public function bulkArchive(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -441,7 +433,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    // Bulk delete notifications (dari archive)
+    
     public function bulkDelete(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -456,10 +448,10 @@ class NotificationController extends Controller
             ], 422);
         }
 
-        // Hapus read records dulu
+        
         NotificationRead::whereIn('notification_id', $request->notification_ids)->delete();
 
-        // Hapus notifications
+        
         Notification::whereIn('id', $request->notification_ids)->delete();
 
         return response()->json([

@@ -22,13 +22,13 @@ class MidtransDraft extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Accessor untuk mendapatkan data draft sebagai array
+    
     public function getDraftDataAttribute($value)
     {
         return json_decode($value, true);
     }
 
-    // Mutator untuk menyimpan data draft sebagai JSON
+    
     public function setDraftDataAttribute($value)
     {
         $this->attributes['draft_data'] = is_array($value) ? json_encode($value) : $value;

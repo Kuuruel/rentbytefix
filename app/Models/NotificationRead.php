@@ -21,20 +21,17 @@ class NotificationRead extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    // Relasi dengan Notification
+    
     public function notification()
     {
         return $this->belongsTo(Notification::class);
     }
-
-    // Relasi dengan User
+    
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
-    // Relasi dengan Tenant
+  
     public function tenant()
     {
         return $this->belongsTo(Tenants::class);

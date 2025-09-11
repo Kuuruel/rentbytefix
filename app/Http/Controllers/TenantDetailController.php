@@ -15,10 +15,10 @@ class TenantDetailController extends Controller
     {
         $tenant = User::findOrFail($id);
 
-        // Data untuk widget statistics
+        
         $statistics = $this->getTenantStatistics($id);
 
-        // Data untuk Sales Overview chart
+        
         $salesOverview = $this->getSalesOverviewData($id);
 
         return view('index8', compact('tenant', 'statistics', 'salesOverview'));
@@ -29,7 +29,7 @@ class TenantDetailController extends Controller
         $currentMonth = Carbon::now();
         $previousMonth = Carbon::now()->subMonth();
 
-        // Hitung Pending Bills
+        
         $pendingBills = Bill::where('tenant_id', $tenantId)
             ->where('status', 'pending')
             ->count();
@@ -42,7 +42,7 @@ class TenantDetailController extends Controller
 
         $pendingBillsPercentage = $this->calculatePercentageChange($pendingBills, $pendingBillsPrevious);
 
-        // Hitung Overdue Bills
+        
         $overdueBills = Bill::where('tenant_id', $tenantId)
             ->where('status', 'overdue')
             ->orWhere(function ($query) use ($tenantId) {
@@ -60,7 +60,7 @@ class TenantDetailController extends Controller
 
         $overdueBillsPercentage = $this->calculatePercentageChange($overdueBills, $overdueBillsPrevious);
 
-        // Hitung Paid Bills
+        
         $paidBills = Bill::where('tenant_id', $tenantId)
             ->where('status', 'paid')
             ->count();
@@ -73,7 +73,7 @@ class TenantDetailController extends Controller
 
         $paidBillsPercentage = $this->calculatePercentageChange($paidBills, $paidBillsPrevious);
 
-        // Hitung Total Transactions
+        
         $totalTransactions = Transaction::whereHas('bill', function ($query) use ($tenantId) {
             $query->where('tenant_id', $tenantId);
         })->count();
@@ -86,7 +86,7 @@ class TenantDetailController extends Controller
 
         $transactionsPercentage = $this->calculatePercentageChange($totalTransactions, $totalTransactionsPrevious);
 
-        // Hitung Total Sales (amount dari transactions yang sukses)
+        
         $totalSales = Transaction::where('status', 'success')
             ->whereHas('bill', function ($query) use ($tenantId) {
                 $query->where('tenant_id', $tenantId);
@@ -103,7 +103,7 @@ class TenantDetailController extends Controller
 
         $salesPercentage = $this->calculatePercentageChange($totalSales, $totalSalesPrevious);
 
-        // Hitung Average per Transaction
+        
         $averagePerTransaction = $totalTransactions > 0 ? $totalSales / $totalTransactions : 0;
         $averagePerTransactionPrevious = $totalTransactionsPrevious > 0 ? $totalSalesPrevious / $totalTransactionsPrevious : 0;
         $averagePercentage = $this->calculatePercentageChange($averagePerTransaction, $averagePerTransactionPrevious);
@@ -128,12 +128,12 @@ class TenantDetailController extends Controller
     {
         $currentYear = Carbon::now()->year;
 
-        // Income data (total amount dari bills yang paid per bulan)
+        
         $incomeData = [];
         $expenseData = [];
 
         for ($month = 1; $month <= 12; $month++) {
-            // Income: total amount dari transactions yang success
+            
             $income = Transaction::where('status', 'success')
                 ->whereHas('bill', function ($query) use ($tenantId) {
                     $query->where('tenant_id', $tenantId);
@@ -142,15 +142,15 @@ class TenantDetailController extends Controller
                 ->whereYear('created_at', $currentYear)
                 ->sum('amount');
 
-            $incomeData[] = (int)($income / 1000); // Convert ke ribuan untuk chart
+            $incomeData[] = (int)($income / 1000); 
 
-            // Expense: bisa dihitung dari fee atau cost lainnya (untuk contoh saya set random)
-            // Kamu bisa adjust sesuai logic bisnis
-            $expense = $income * 0.3; // Misalnya 30% dari income sebagai expense
+            
+            
+            $expense = $income * 0.3; 
             $expenseData[] = (int)($expense / 1000);
         }
 
-        // Total income dan expense tahun ini
+        
         $totalIncome = Transaction::where('status', 'success')
             ->whereHas('bill', function ($query) use ($tenantId) {
                 $query->where('tenant_id', $tenantId);
@@ -158,9 +158,9 @@ class TenantDetailController extends Controller
             ->whereYear('created_at', $currentYear)
             ->sum('amount');
 
-        $totalExpense = $totalIncome * 0.3; // 30% dari income
+        $totalExpense = $totalIncome * 0.3; 
 
-        // Hitung persentase vs tahun sebelumnya
+        
         $totalIncomePrevious = Transaction::where('status', 'success')
             ->whereHas('bill', function ($query) use ($tenantId) {
                 $query->where('tenant_id', $tenantId);

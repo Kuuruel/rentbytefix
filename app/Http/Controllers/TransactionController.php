@@ -83,7 +83,7 @@ class TransactionController extends Controller
                     'formatted_amount' => 'Rp ' . number_format($tx->amount, 0, ',', '.'),
                     'status'      => $tx->status,
                     'status_badge_class' => $this->getStatusBadgeClass($tx->status),
-                    // FORMAT TANGGAL DENGAN WIB
+                    
                     'created_at'  => $tx->created_at ? Carbon::parse($tx->created_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB' : null,
                     'created_at_iso'  => $tx->created_at ? Carbon::parse($tx->created_at)->setTimezone('Asia/Jakarta')->toISOString() : null,
                     'paid_at'     => $tx->paid_at ? Carbon::parse($tx->paid_at)->setTimezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB' : null,
@@ -148,7 +148,7 @@ class TransactionController extends Controller
     public function monthlyRevenue(Request $request)
     {
         try {
-            // SET TIMEZONE UNTUK QUERY
+            
             $year = $request->input('year', date('Y'));
             
             $monthlyRevenue = Transaction::selectRaw('
