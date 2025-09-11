@@ -129,9 +129,23 @@
                         class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 mb-4 flex items-center justify-between gap-2">
                         <div>
                             <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">
-                                {{ Auth::check() ? Auth::user()->name : 'Guest' }}</h6>
-                            <span
-                                class="text-neutral-500">{{ Auth::check() ? ucfirst(Auth::user()->role) : 'User' }}</span>
+                                @if (Auth::guard('web')->check())
+                                    {{ Auth::user()->name }}
+                                @elseif (Auth::guard('tenant')->check())
+                                    {{ Auth::guard('tenant')->user()->name }}
+                                @else
+                                    Guest
+                                @endif
+                            </h6>
+                            <span class="text-neutral-500">
+                                @if (Auth::guard('web')->check())
+                                    {{ ucfirst(Auth::user()->role) }}
+                                @elseif (Auth::guard('tenant')->check())
+                                    Tenant
+                                @else
+                                    User
+                                @endif
+                            </span>
                         </div>
                         <button id="closeProfileDropdown" type="button" class="hover:text-danger-600"
                             aria-label="Tutup">
@@ -218,7 +232,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ============= LOGOUT MODAL FUNCTIONALITY =============
+        
         const logoutButton = document.getElementById('logoutButton');
         const logoutModal = document.getElementById('logoutModal');
         const modalContent = document.getElementById('modalContent');
@@ -231,7 +245,7 @@
 
         function openModal() {
             logoutModal.classList.remove('hidden');
-            logoutModal.offsetHeight; // Force reflow
+            logoutModal.offsetHeight; 
             logoutModal.classList.remove('opacity-0');
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
@@ -297,7 +311,7 @@
             }
         });
 
-        // ============= NOTIFICATION FUNCTIONALITY =============
+        
 
         function loadNavbarNotifications() {
             const notificationList = document.getElementById('notificationList');
@@ -309,10 +323,10 @@
                 loadingElement.style.display = 'block';
             }
 
-            // Tentukan endpoint berdasarkan guard yang aktif
+            
             let endpoint = '/admin/notifications/get-notifications';
 
-            // Check if tenant is logged in
+            
             @if (Auth::guard('tenant')->check())
                 endpoint = '/tenant/notifications/get-notifications';
             @endif
@@ -328,7 +342,7 @@
                         populateNavbarNotifications(data.notifications);
                     }
 
-                    // Update counters
+                    
                     if (notificationCount) {
                         notificationCount.textContent = data.total_count || 0;
                     }
@@ -353,7 +367,7 @@
                     }
                 });
         }
-        // Populate navbar notification dropdown
+        
         function populateNavbarNotifications(notifications) {
             const notificationList = document.getElementById('notificationList');
 
@@ -377,14 +391,14 @@
             });
         }
 
-        // Create navbar notification item
+        
         function createNavbarNotificationItem(notification) {
             const item = document.createElement('div');
 
-            // Priority colors
+            
             const priorityColors = getPriorityColor(notification.priority);
 
-            // Background for read/unread status
+            
             const backgroundClass = !notification.is_read ? 'bg-gray-100 dark:bg-gray-800' :
                 'bg-white dark:bg-neutral-700';
 
@@ -440,7 +454,7 @@
             return item;
         }
 
-        // Get priority color
+        
         function getPriorityColor(priority) {
             switch (priority) {
                 case 'Critical':
@@ -465,7 +479,7 @@
 
 
         function markNotificationAsRead(notificationId) {
-            // Update UI immediately for instant feedback
+            
             const notificationElement = event.target.closest('div[class*="px-4 py-3"]');
             if (notificationElement) {
                 notificationElement.className = notificationElement.className.replace(
@@ -473,7 +487,7 @@
                     'bg-white dark:bg-neutral-700');
             }
 
-            // Tentukan endpoint berdasarkan guard yang aktif
+            
             let endpoint = `/admin/notifications/${notificationId}/mark-read`;
 
             @if (Auth::guard('tenant')->check())
@@ -491,10 +505,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Reload navbar notifications to update badge count and status
+                        
                         loadNavbarNotifications();
                     } else {
-                        // If failed, revert to original state
+                        
                         if (notificationElement) {
                             notificationElement.className = notificationElement.className.replace(
                                 'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
@@ -503,7 +517,7 @@
                 })
                 .catch(error => {
                     console.error('Error marking notification as read:', error);
-                    // If error, revert to original state
+                    
                     if (notificationElement) {
                         notificationElement.className = notificationElement.className.replace(
                             'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
@@ -511,22 +525,22 @@
                 });
         }
 
-        // Real-time notification with faster polling
+        
         function startNotificationAutoRefresh() {
-            // Poll every 5 seconds for real-time notifications
+            
             setInterval(() => {
                 loadNavbarNotifications();
-            }, 5000); // 5 seconds
+            }, 5000); 
         }
 
-        // Instant notification check for new notifications
+        
         function checkForNewNotifications() {
             loadNavbarNotifications();
         }
 
-        // WebSocket or Server-Sent Events listener (if available)
+        
         function initializeRealTimeNotifications() {
-            // If using WebSocket
+            
             if (typeof window.Echo !== 'undefined') {
                 window.Echo.channel('notifications')
                     .listen('NewNotification', (e) => {
@@ -534,7 +548,7 @@
                     });
             }
 
-            // Or using EventSource for Server-Sent Events
+            
             if (typeof EventSource !== 'undefined') {
                 const eventSource = new EventSource('/admin/notifications/stream');
                 eventSource.onmessage = function(event) {
@@ -543,18 +557,18 @@
             }
         }
 
-        // ============= INITIALIZATION =============
+        
 
-        // Load initial notifications
+        
         loadNavbarNotifications();
 
-        // Start auto refresh with faster interval
+        
         startNotificationAutoRefresh();
 
-        // Initialize real-time notifications
+        
         initializeRealTimeNotifications();
 
-        // Refresh notifications when dropdown is opened
+        
         const notificationButton = document.getElementById('notificationButton');
         if (notificationButton) {
             notificationButton.addEventListener('click', function() {
@@ -562,16 +576,16 @@
             });
         }
 
-        // Refresh when window gets focus (user returns to tab)
+        
         window.addEventListener('focus', function() {
             checkForNewNotifications();
         });
 
-        // Refresh when there's mouse/keyboard activity (user is active)
+        
         let lastActivity = Date.now();
         document.addEventListener('mousemove', function() {
             const now = Date.now();
-            if (now - lastActivity > 10000) { // 10 seconds since last activity
+            if (now - lastActivity > 10000) { 
                 checkForNewNotifications();
                 lastActivity = now;
             }
