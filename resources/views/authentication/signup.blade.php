@@ -10,7 +10,7 @@
     <section class="bg-white dark:bg-dark-2 flex flex-wrap min-h-[100vh]">
         <div class="lg:w-1/2 lg:block hidden">
             <div class="flex items-center flex-col h-full justify-center">
-                <img src="{{ asset('assets/images/auth/auth-img.png') }}" alt="">
+                <img src="{{ asset('assets/images/r-logos.png') }}" alt="">
             </div>
         </div>
         <div class="lg:w-1/2 py-8 px-6 flex flex-col justify-center">
@@ -125,19 +125,6 @@
                     </div>
                     <button type="submit" class="btn btn-primary justify-center text-sm btn-sm px-3 py-4 w-full rounded-xl mt-8">Create Tenant Account</button>
 
-                    <div class="mt-8 center-border-horizontal text-center relative before:absolute before:w-full before:h-[1px] before:top-1/2 before:-translate-y-1/2 before:bg-neutral-300 before:start-0">
-                        <span class="bg-white dark:bg-dark-2 z-[2] relative px-4">Or sign up with</span>
-                    </div>
-                    <div class="mt-8 flex items-center gap-3">
-                        <button type="button" class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
-                            <iconify-icon icon="ic:baseline-facebook" class="text-primary-600 text-xl line-height-1"></iconify-icon>
-                            Facebook
-                        </button>
-                        <button type="button" class="font-semibold text-neutral-600 dark:text-neutral-200 py-4 px-6 w-1/2 border rounded-xl text-base flex items-center justify-center gap-3 line-height-1 hover:bg-primary-50">
-                            <iconify-icon icon="logos:google-icon" class="text-primary-600 text-xl line-height-1"></iconify-icon>
-                            Google
-                        </button>
-                    </div>
                     <div class="mt-8 text-center text-sm">
                         <p class="mb-0">Already have an account? <a href="{{ route('showSigninForm') }}" class="text-primary-600 font-semibold hover:underline">Sign In</a></p>
                     </div>

@@ -8,7 +8,7 @@
     <section class="bg-white dark:bg-neutral-700 flex flex-wrap min-h-[100vh]">
         <div class="lg:w-1/2 lg:block hidden">
             <div class="flex items-center flex-col h-full justify-center">
-                <img src="{{ asset('assets/images/auth/forgot-pass-img.png') }}" alt="">
+                <img src="{{ asset('assets/images/r-logos.png') }}" alt="">
             </div>
         </div>
         <div class="lg:w-1/2 py-8 px-6 flex flex-col justify-center">
