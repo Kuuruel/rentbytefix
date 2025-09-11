@@ -69,8 +69,8 @@ class MidtransWebhookController extends Controller
 
             $bill->update(['status' => $billStatus]);
 
-            // INI YANG DIPERBAIKI - TAMBAH tenant_id dan amount
-            // Update existing transaction (yang udah dibuat pas bill creation)
+            
+            
             $transaction = Transaction::where('bill_id', $bill->id)->first();
             
             if ($transaction) {
@@ -83,7 +83,7 @@ class MidtransWebhookController extends Controller
                                 ($fraudStatus === 'accept' || $fraudStatus === null) ? now() : null,
                 ]);
             } else {
-                // Fallback kalau transaction belum ada (legacy data)
+                
                 Transaction::create([
                     'bill_id' => $bill->id,
                     'tenant_id' => $bill->tenant_id,

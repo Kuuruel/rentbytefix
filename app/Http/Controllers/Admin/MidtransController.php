@@ -15,13 +15,11 @@ class MidtransController extends Controller
     public function index()
     {
         try {
-            // Ambil data setting yang sudah disimpan (hanya 1 record global)
+            
             $midtrans_settings = MidtransSetting::first();
             
-            // Ambil draft data jika ada (untuk form yang belum disimpan)
             $draft_data = $this->getDraftData();
-
-            // Debug log
+            
             Log::info('Midtrans Index Debug', [
                 'has_settings' => $midtrans_settings ? 'yes' : 'no',
                 'has_draft' => $draft_data ? 'yes' : 'no',
@@ -29,8 +27,6 @@ class MidtransController extends Controller
                 'user_id' => Auth::id() ?? 'guest'
             ]);
 
-            // Prioritas: jika sudah ada settings di database, gunakan itu
-            // Jika belum ada settings tapi ada draft, gunakan draft untuk form
             $form_data = null;
             $has_draft = false;
 
@@ -59,7 +55,7 @@ class MidtransController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
+        
         $validated = $request->validate([
             'merchant_id' => 'required|string|max:255',
             'client_key' => 'required|string|max:255',
@@ -76,12 +72,11 @@ class MidtransController extends Controller
 
         try {
             DB::beginTransaction();
-
-            // Cek apakah sudah ada data
+            
             $midtrans_settings = MidtransSetting::first();
 
             if ($midtrans_settings) {
-                // Update data yang sudah ada
+                
                 $midtrans_settings->update([
                     'merchant_id' => $validated['merchant_id'],
                     'client_key' => $validated['client_key'],
@@ -97,7 +92,7 @@ class MidtransController extends Controller
                 $environmentType = $validated['environment'] === 'production' ? 'Production (Live)' : 'Sandbox (Testing)';
                 $message = 'Midtrans configuration updated successfully! Environment: ' . $environmentType . '. All payment processing will now use these credentials.';
             } else {
-                // Buat data baru
+                
                 $midtrans_settings = MidtransSetting::create([
                     'merchant_id' => $validated['merchant_id'],
                     'client_key' => $validated['client_key'],
@@ -112,8 +107,7 @@ class MidtransController extends Controller
                 $environmentType = $validated['environment'] === 'production' ? 'Production (Live)' : 'Sandbox (Testing)';
                 $message = 'Midtrans configuration saved successfully! Environment: ' . $environmentType . '. Your payment gateway is now ready for transactions.';
             }
-
-            // Hapus draft data setelah berhasil menyimpan
+            
             $this->clearDraftData();
 
             DB::commit();
@@ -133,9 +127,6 @@ class MidtransController extends Controller
         }
     }
 
-    /**
-     * Auto-save draft data via AJAX
-     */
     public function saveDraft(Request $request)
     {
         try {
@@ -147,7 +138,7 @@ class MidtransController extends Controller
                 'webhook_url'
             ]);
 
-            // Filter data yang tidak kosong
+            
             $filtered_data = array_filter($data, function($value) {
                 return !empty(trim($value));
             });
@@ -155,7 +146,7 @@ class MidtransController extends Controller
             if (!empty($filtered_data)) {
                 $user_id = Auth::id() ?? 'guest';
                 
-                // Simpan atau update draft
+                
                 MidtransDraft::updateOrCreate(
                     ['user_id' => $user_id],
                     [
@@ -177,9 +168,6 @@ class MidtransController extends Controller
         }
     }
 
-    /**
-     * Get draft data
-     */
     private function getDraftData()
     {
         try {
@@ -202,9 +190,6 @@ class MidtransController extends Controller
         }
     }
 
-    /**
-     * Clear draft data
-     */
     private function clearDraftData()
     {
         try {
@@ -219,9 +204,6 @@ class MidtransController extends Controller
         }
     }
 
-    /**
-     * Method untuk cek draft (untuk debugging)
-     */
     public function checkDraft()
     {
         try {

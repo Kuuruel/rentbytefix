@@ -29,43 +29,43 @@ class Notification extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Relasi dengan User (yang buat notification)
+    
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    // Relasi dengan notification reads
+    
     public function reads()
     {
         return $this->hasMany(NotificationRead::class);
     }
 
-    // Scope untuk notification aktif (tidak diarsip)
+    
     public function scopeActive($query)
     {
         return $query->where('is_archived', false);
     }
 
-    // Scope untuk notification yang diarsip
+    
     public function scopeArchived($query)
     {
         return $query->where('is_archived', true);
     }
 
-    // Scope untuk filter berdasarkan priority
+    
     public function scopeByPriority($query, $priority)
     {
         return $query->where('priority', $priority);
     }
 
-    // Scope untuk filter berdasarkan target type
+    
     public function scopeByTargetType($query, $type)
     {
         return $query->where('target_type', $type);
     }
 
-    // Cek apakah notification sudah dibaca oleh user tertentu
+    
     public function isReadBy($userId, $tenantId = null)
     {
         return $this->reads()
@@ -76,7 +76,7 @@ class Notification extends Model
             ->exists();
     }
 
-    // Mark notification sebagai dibaca
+    
     public function markAsReadBy($userId, $tenantId = null)
     {
         return $this->reads()->updateOrCreate(
@@ -90,7 +90,7 @@ class Notification extends Model
         );
     }
 
-    // Cek apakah notification berlaku untuk tenant tertentu
+    
     public function isForTenant($tenantId)
     {
         if ($this->target_type === 'all') {
@@ -104,7 +104,7 @@ class Notification extends Model
         return false;
     }
 
-    // Get target audience sebagai string
+    
     public function getTargetAudienceAttribute()
     {
         if ($this->target_type === 'all') {
@@ -114,7 +114,7 @@ class Notification extends Model
         if ($this->target_type === 'specific' && $this->target_tenant_ids) {
             $tenantNames = Tenants::whereIn('id', $this->target_tenant_ids)
                 ->pluck('name')
-                ->take(3) // Ambil 3 nama pertama
+                ->take(3) 
                 ->toArray();
 
             $count = count($this->target_tenant_ids);
@@ -130,7 +130,7 @@ class Notification extends Model
         return 'Unknown';
     }
 
-    // Get priority badge class
+    
     public function getPriorityBadgeAttribute()
     {
         return match ($this->priority) {
@@ -141,7 +141,7 @@ class Notification extends Model
         };
     }
 
-    // Get delivery methods sebagai string
+    
     public function getDeliveryMethodsStringAttribute()
     {
         return is_array($this->delivery_methods)
@@ -149,7 +149,7 @@ class Notification extends Model
             : $this->delivery_methods;
     }
 
-    // Get notifications untuk user tertentu
+    
     public static function getForUser($userId, $tenantId = null, $limit = 5)
     {
         return self::active()
@@ -168,26 +168,26 @@ class Notification extends Model
             ->get();
     }
 
-    // Get unread count untuk user
+    
     public static function getUnreadCountForUser($userId, $tenantId = null)
     {
-        $notifications = self::getForUser($userId, $tenantId, 100); // Get more for counting
+        $notifications = self::getForUser($userId, $tenantId, 100); 
 
         return $notifications->filter(function ($notification) use ($userId, $tenantId) {
             return !$notification->isReadBy($userId, $tenantId);
         })->count();
     }
-    // ========== TAMBAH METHOD BARU UNTUK TENANT ==========
+    
 
-    // Get notifications khusus untuk tenant
+    
     public static function getForTenant($tenantId, $limit = 5)
     {
         return self::active()
             ->where(function ($query) use ($tenantId) {
-                // Notifikasi untuk semua tenant
+                
                 $query->where('target_type', 'all');
 
-                // Atau notifikasi khusus untuk tenant ini
+                
                 $query->orWhere(function ($q) use ($tenantId) {
                     $q->where('target_type', 'specific')
                         ->whereJsonContains('target_tenant_ids', (int)$tenantId);
@@ -198,7 +198,7 @@ class Notification extends Model
             ->get();
     }
 
-    // Get unread count khusus untuk tenant
+    
     public static function getUnreadCountForTenant($tenantId)
     {
         $notifications = self::getForTenant($tenantId, 100);
@@ -208,21 +208,21 @@ class Notification extends Model
         })->count();
     }
 
-    // Cek apakah sudah dibaca oleh tenant
+    
     public function isReadByTenant($tenantId)
     {
         return $this->reads()
             ->where('tenant_id', $tenantId)
-            ->whereNull('user_id') // Khusus untuk tenant saja
+            ->whereNull('user_id') 
             ->exists();
     }
 
-    // Mark sebagai dibaca oleh tenant
+    
     public function markAsReadByTenant($tenantId)
     {
         return $this->reads()->updateOrCreate(
             [
-                'user_id' => null,  // Null untuk tenant
+                'user_id' => null,  
                 'tenant_id' => $tenantId
             ],
             [

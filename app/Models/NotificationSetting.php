@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class NotificationSetting extends Model
 {
@@ -25,13 +27,13 @@ class NotificationSetting extends Model
         'updated_at' => 'datetime',
     ];
 
-    // Relasi dengan User (yang update settings)
+    
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    // Get current settings atau buat default jika belum ada
+    
     public static function getCurrentSettings()
     {
         $settings = self::first();
@@ -42,28 +44,28 @@ class NotificationSetting extends Model
                 'default_delivery_methods' => ['Dashboard'],
                 'push_enabled' => true,
                 'dashboard_display_count' => 5,
-                'updated_by' => auth()->id() ?? 1
+                'updated_by' => Auth::id() ?? 1
             ]);
         }
 
         return $settings;
     }
 
-    // Update or create settings
+    
     public static function updateSettings($data)
     {
         $settings = self::first();
-        $data['updated_by'] = auth()->id();
+        $data['updated_by'] = Auth::id() ?? 1;
 
         if ($settings) {
             $settings->update($data);
-            return $settings->fresh(); // Refresh data dari database
+            return $settings->fresh(); 
         } else {
             return self::create($data);
         }
     }
 
-    // Get default values untuk form
+    
     public function getDefaultsForForm()
     {
         return [

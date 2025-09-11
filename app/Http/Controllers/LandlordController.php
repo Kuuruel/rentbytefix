@@ -13,13 +13,13 @@ class LandlordController extends Controller
 {
     public function index()
     {
-        // Get current authenticated tenant
+        
         $tenantId = Auth::user()->tenant_id ?? Auth::id();
         
-        // Calculate statistics
+        
         $statistics = $this->calculateStatistics($tenantId);
         
-        // Get monthly revenue data for chart
+        
         $monthlyRevenue = $this->getMonthlyRevenue($tenantId);
         
         return view('landlord.index', compact('statistics', 'monthlyRevenue'));
@@ -27,19 +27,19 @@ class LandlordController extends Controller
     
     private function calculateStatistics($tenantId)
     {
-        // Total Renters (Users)
+        
         $totalRenters = Renter::where('tenant_id', $tenantId)->count();
         $newRentersLast30Days = Renter::where('tenant_id', $tenantId)
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->count();
         
-        // Total Properties
+        
         $totalProperties = Property::where('tenant_id', $tenantId)->count();
         $newPropertiesLast30Days = Property::where('tenant_id', $tenantId)
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->count();
         
-        // Total Free Tenants (Renters without any bills)
+        
         $freeRenters = Renter::where('tenant_id', $tenantId)
             ->whereDoesntHave('bills')
             ->count();
@@ -48,7 +48,7 @@ class LandlordController extends Controller
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->count();
         
-        // Total Income (Paid Bills)
+        
         $totalIncome = Bill::where('tenant_id', $tenantId)
             ->where('status', 'paid')
             ->sum('amount');
@@ -57,7 +57,7 @@ class LandlordController extends Controller
             ->where('updated_at', '>=', Carbon::now()->subDays(30))
             ->sum('amount');
         
-        // Total Pending Bills (as expense placeholder)
+        
         $totalPending = Bill::where('tenant_id', $tenantId)
             ->where('status', 'pending')
             ->sum('amount');

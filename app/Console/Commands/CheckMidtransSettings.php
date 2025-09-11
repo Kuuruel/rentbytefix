@@ -7,23 +7,10 @@ use App\Models\MidtransSetting;
 
 class CheckMidtransSettings extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'midtrans:check';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Check Midtrans settings in database';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $this->info('🔍 Checking Midtrans Settings...');

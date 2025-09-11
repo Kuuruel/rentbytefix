@@ -351,4 +351,7 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         Route::get('/tenant/notifications/get-notifications', [App\Http\Controllers\Admin\NotificationController::class, 'getTenantNotifications']);
         Route::post('/tenant/notifications/{id}/mark-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsReadTenant']);
     });
+
+    // routes/web.php
+Route::get('/debug-revenue', [DashboardController::class, 'debugRevenue']);
 });

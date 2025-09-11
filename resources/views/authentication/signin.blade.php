@@ -8,15 +8,12 @@
     <section class="bg-white dark:bg-dark-2 flex flex-wrap min-h-[100vh]">
         <div class="lg:w-1/2 lg:block hidden">
             <div class="flex items-center flex-col h-full justify-center">
-                <img src="{{ asset('assets/images/auth/auth-img.png') }}" alt="">
+                <img src="{{ asset('assets/images/r-logos.png') }}" alt="">
             </div>
         </div>
         <div class="lg:w-1/2 py-8 px-6 flex flex-col justify-center">
             <div class="lg:max-w-[464px] mx-auto w-full">
                 <div>
-                    <a href="{{ route('super-admin.index') }}" class="mb-2.5 max-w-[290px]">
-                        <img src="{{ asset('assets/images/logo.png') }}" alt="">
-                    </a>
                     <h4 class="mb-1">Sign In to your Account</h4>
                     <p class="mb-8 text-secondary-light text-lg">Welcome back! Please enter your detail</p>
                 </div>

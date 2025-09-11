@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
 
-    // Tambahkan relasi ini di model User
     public function notifications()
     {
         return $this->hasMany(Notification::class, 'created_by');

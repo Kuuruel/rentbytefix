@@ -12,7 +12,6 @@
 
     <div class="grid grid-cols-12 gap-6">
 
-        <!-- Card Total Tenants -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-cyan-600/10 to-bg-white">
@@ -22,10 +21,15 @@
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Users</p>
                             <h6 class="mb-0 dark:text-white mt-2">{{ $totalTenants }}</h6>
                         </div>
+                        
                         <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
+                     <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-500 dark:bg-success-900 dark:text-success-600">
+                                   All registered accounts
+                                </span> 
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
                             <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $newTenantsToday }}
@@ -38,7 +42,7 @@
         </div>
 
 
-        <!-- Card Active Tenants -->
+
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-blue-600/10 to-bg-white w-full">
@@ -52,7 +56,10 @@
                             <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
-
+  <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-success-900 dark:text-success-600">
+                                 Currently logged-in or active status
+                                </span> 
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
                             <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -{{ $inactiveTenants }}
@@ -62,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <!-- Card Total Properties -->
+
         <!-- Card Monthly Billings -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
@@ -73,10 +80,17 @@
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Monthly Billings</p>
                             <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($monthlyBillings ?? 0) }}</h6>
                         </div>
-                        <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center">
+                        <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center ">
+                        
                             <iconify-icon icon="fa-solid:award" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
+                          <div class="mt-2">
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success-600 dark:bg-success-900 dark:text-success-600">
+                                    Sum of all tenant billings
+                                </span>
+                            </div>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @if (($billsDecrease ?? 0) < 0)
                             <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
@@ -85,7 +99,8 @@
                             </span>
                         @elseif(($billsDecrease ?? 0) > 0)
                             <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +Rp{{ number_format(abs($billsDecrease ?? 0)) }}
+                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
+                                +Rp{{ number_format(abs($billsDecrease ?? 0)) }}
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 text-info-600 dark:text-info-400">
@@ -97,8 +112,7 @@
                 </div>
             </div>
         </div>
-        <!-- Card Monthly Billings -->
-        <!-- Card Platform Revenue -->
+
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-success-600/10 to-bg-white w-full">
@@ -106,32 +120,81 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Platform Revenue</p>
-                            <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($platformRevenue ?? 0) }}
-                            </h6>
+                            <h6 class="mb-0 dark:text-white mt-2">Rp {{ number_format($platformRevenue ?? 0) }}</h6>
+
+                            <div class="mt-2">
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success-600 dark:bg-success-900 dark:text-success-600">
+                                    5% + Rp {{ number_format(2500) }} per transaction
+                                </span> 
+                            </div>
                         </div>
-                        <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center">
+                        <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center ">
                             <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
+
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @if (($revenueIncrease ?? 0) >= 0)
                             <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
                                 <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                                +Rp{{ number_format(abs($revenueIncrease ?? 0)) }}
+                                +Rp {{ number_format(abs($revenueIncrease ?? 0)) }}
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
                                 <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon>
-                                -Rp{{ number_format(abs($revenueIncrease ?? 0)) }}
+                                -Rp {{ number_format(abs($revenueIncrease ?? 0)) }}
                             </span>
                         @endif
                         30 days income
                     </p>
+
+                    @if (isset($revenueBreakdown))
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
+                            <details class="group">
+                                <summary
+                                    class="cursor-pointer text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300">
+                                    <span class="inline-flex items-center gap-1">
+                                        <iconify-icon icon="solar:info-circle-linear" class="text-sm"></iconify-icon>
+                                        Revenue Details
+                                        <iconify-icon icon="solar:alt-arrow-down-linear"
+                                            class="text-xs group-open:rotate-180 transition-transform"></iconify-icon>
+                                    </span>
+                                </summary>
+                                <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
+                                    <div class="flex justify-between">
+                                        <span>Total Transactions:</span>
+                                        <span
+                                            class="font-medium">{{ $revenueBreakdown['successful_transactions_count'] ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Transaction Value:</span>
+                                        <span class="font-medium">Rp
+                                            {{ number_format($revenueBreakdown['total_transaction_value_30_days'] ?? 0) }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Revenue Rate:</span>
+                                        <span
+                                            class="font-medium">{{ number_format($revenueBreakdown['revenue_percentage_of_total'] ?? 0, 1) }}%</span>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    @endif
+
+           
+                    @if (($platformRevenue ?? 0) == 0)
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
+                            <div class="flex items-center gap-2 text-warning-600 dark:text-warning-400 text-xs">
+                                <iconify-icon icon="solar:danger-triangle-linear" class="text-sm"></iconify-icon>
+                                <span>No revenue in last 30 days</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
 
-        <!-- Billing vs Payment Chart -->
         <div class="col-span-12 lg:col-span-8">
             <div class="card h-full p-0 border-0 overflow-hidden">
                 <div
@@ -144,7 +207,7 @@
             </div>
         </div>
 
-        <!-- Chart Data Script -->
+
         <script id="chart-data" type="application/json">
 @if(isset($chartData))
 {!! json_encode($chartData) !!}
@@ -494,74 +557,205 @@
         </script>
 
 
-        <!-- Statistics Start -->
-        <div class="col-span-12 lg:col-span-6 2xl:col-span-5">
-            <div class="card h-full rounded-lg border-0">
-                <div class="card-body p-6">
-                    <h6 class="mb-2 font-bold text-lg">Usage Snapshot</h6>
+    
+        {{-- 🔥 FIXED: Average Transaction per Tenant Card --}}
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div
+                class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-primary-600/10 to-bg-white w-full">
+                <div class="card-body p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Average Transaction</p>
 
-                    <div class="mt-6">
-                        <div class="flex items-center gap-1 justify-between mb-11">
-                            <div>
-                                <span class="text-secondary-light font-normal mb-3 text-xl">Total Transactions This
-                                    Week</span>
-                                <h5 class="font-semibold mb-0">{{ $totalTransactionsThisWeek }}</h5>
-                                <small class="text-xs text-neutral-500">
-                                    @if (($transactionPercentageChange ?? 0) >= 0)
-                                        <span
-                                            class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                                            <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +
-                                            {{ number_format($transactionPercentageChange ?? 0, 1) }}% </span> from last
-                                        week
-                                    @else
-                                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
-                                            <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -
-                                            {{ number_format($transactionPercentageChange ?? 0, 1) }}% </span>from last
-                                        week
-                                    @endif
-                                </small>
-                            </div>
-                            <div class="relative h-[70px]">
-                                <div id="semiCircleGauge"></div>
+                            {{-- 🎯 TAMPILKAN NILAI YANG BENAR --}}
+                            <h6 class="mb-0 dark:text-white mt-2">
+                                @if (($averageTransactionPerTenant ?? 0) > 0)
+                                    Rp {{ number_format($averageTransactionPerTenant) }}
+                                @else
+                                    <span class="text-neutral-400">No Data</span>
+                                @endif
+                            </h6>
 
-                                <span
-                                    class="w-9 h-9 rounded-full bg-neutral-100 flex justify-center items-center absolute left-1/2 -translate-x-1/2 translate-y-[16px] top-1/2">
-                                    <iconify-icon icon="mdi:emoji" class="text-primary-600 text-base mb-0"></iconify-icon>
+                            <div class="mt-2">
+                                @php
+                                    $totalTransactions = $successfulTransactions ?? 0;
+                                    $contextText =
+                                        $totalTransactions > 0
+                                            ? "Based on {$totalTransactions} successful transactions"
+                                            : 'No successful transactions in last 30 days';
+                                @endphp
+                                <span class="text-xs text-neutral-500 dark:text-neutral-400">
+                                    {{ $contextText }}
                                 </span>
                             </div>
                         </div>
-
-                        <div class="flex items-center gap-1 justify-between mb-11">
-                            <div>
-                                <span class="text-secondary-light font-normal mb-3 text-xl">Payment Success Rate</span>
-                                <h5 class="font-semibold mb-0">{{ number_format($paymentSuccessRate ?? 0, 1) }}%</h5>
-                                {{-- <small class="text-xs text-neutral-500">
-                                    {{ number_format($successfulTransactions ?? 0) }} of
-                                    {{ number_format($totalTransactions ?? 0) }} transactions
-                                </small> --}}
-                            </div>
-                            <div id="areaChart"></div>
-                        </div>
-
-                        <div class="flex items-center gap-1 justify-between">
-                            <div>
-                                <span class="text-secondary-light font-normal mb-3 text-xl">Average Transaction per
-                                    Tenant</span>
-                                <h6 class="font-semibold mb-0">
-                                    Rp {{ $averageTransactionPerTenant }}</h6>
-                                <small class="text-xs text-neutral-500">
-                                    Based on {{ $totalTenants ?? 0 }} tenants
-                                </small>
-                            </div>
-                            <div id="dailyIconBarChart"></div>
+                        <div class="w-[50px] h-[50px] bg-primary-600 rounded-full flex justify-center items-center">
+                            <iconify-icon icon="solar:calculator-bold" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
 
+                    <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
+                        @php
+                            // Hitung trend berdasarkan data yang ada
+                            $currentValue = $averageTransactionPerTenant ?? 0;
+                            $isPositive = $currentValue > 0;
+                            $trendClass = $isPositive
+                                ? 'text-success-600 dark:text-success-400'
+                                : 'text-neutral-500 dark:text-neutral-400';
+                            $trendIcon = $isPositive ? 'bxs:up-arrow' : 'solar:minus-linear';
+                        @endphp
+
+                        <span class="inline-flex items-center gap-1 {{ $trendClass }}">
+                            <iconify-icon icon="{{ $trendIcon }}" class="text-xs"></iconify-icon>
+                            @if ($currentValue > 0)
+                                Active transactions
+                            @else
+                                No recent activity
+                            @endif
+                        </span>
+                        last 30 days
+                    </p>
+{{-- 
+                    @if (config('app.debug') && isset($averageTransactionPerTenant))
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
+                            <details class="group">
+                                <summary
+                                    class="cursor-pointer text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300">
+                                    <span class="inline-flex items-center gap-1">
+                                        <iconify-icon icon="solar:bug-linear" class="text-sm"></iconify-icon>
+                                        Debug Info
+                                        <iconify-icon icon="solar:alt-arrow-down-linear"
+                                            class="text-xs group-open:rotate-180 transition-transform"></iconify-icon>
+                                    </span>
+                                </summary>
+                                <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
+                                    <div class="flex justify-between">
+                                        <span>Successful Transactions:</span>
+                                        <span class="font-medium">{{ $successfulTransactions ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Total Trans. for Success Rate:</span>
+                                        <span class="font-medium">{{ $totalTransactionsForSuccessRate ?? 0 }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Raw Average Value:</span>
+                                        <span class="font-medium">{{ $averageTransactionPerTenant ?? 0 }}</span>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    @endif --}}
+
+                    @if (($averageTransactionPerTenant ?? 0) > 0 && ($averageTransactionPerTenant ?? 0) < 100000)
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
+                            <div class="flex items-center gap-2 text-warning-600 dark:text-warning-400 text-xs">
+                                <iconify-icon icon="solar:danger-triangle-linear" class="text-sm"></iconify-icon>
+                                <span>Unusually low average - check calculation</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
+   
+        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+            <div
+                class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-warning-600/10 to-bg-white w-full">
+                <div class="card-body p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-neutral-900 dark:text-white mb-1">Payment Success Rate</p>
 
-        <!-- Recent Activities - Enhanced Version -->
+                      
+                            <h6
+                                class="mb-0 mt-2 {{ ($paymentSuccessRate ?? 0) >= 80 ? 'text-success-600 dark:text-success-400' : (($paymentSuccessRate ?? 0) >= 60 ? 'text-warning-600 dark:text-warning-400' : 'text-danger-600 dark:text-danger-400') }}">
+                                {{ number_format($paymentSuccessRate ?? 0, 1) }}%
+                            </h6>
+
+                            <div class="mt-2">
+                                @php
+                                    $successRate = $paymentSuccessRate ?? 0;
+                                    $badgeClass =
+                                        $successRate >= 80
+                                            ? 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200'
+                                            : ($successRate >= 60
+                                                ? 'bg-warning-100 text-warning-600 dark:bg-warning-900 dark:text-warning-600'
+                                                : 'bg-danger-100 text-danger-600 dark:bg-danger-900 dark:text-danger-600');
+                                    $badgeText =
+                                        $successRate >= 80
+                                            ? 'Excellent'
+                                            : ($successRate >= 60
+                                                ? 'Good'
+                                                : 'Needs Attention');
+                                @endphp
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $badgeClass }}">
+                                    {{ $badgeText }}
+                                </span>
+                            </div>
+                        </div>
+                        <div
+                            class="w-[50px] h-[50px] {{ ($paymentSuccessRate ?? 0) >= 80 ? 'bg-success-600' : (($paymentSuccessRate ?? 0) >= 60 ? 'bg-warning-600' : 'bg-danger-600') }} rounded-full flex justify-center items-center">
+                            <iconify-icon
+                                icon="{{ ($paymentSuccessRate ?? 0) >= 80 ? 'solar:check-circle-bold' : (($paymentSuccessRate ?? 0) >= 60 ? 'solar:danger-triangle-bold' : 'solar:close-circle-bold') }}"
+                                class="text-white text-2xl"></iconify-icon>
+                        </div>
+                    </div>
+
+         
+                    <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3">
+                        <span class="inline-flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-2 h-2 bg-success-500 rounded-full"></span>
+                                {{ $successfulTransactions ?? 0 }} successful
+                            </span>
+                            <span class="text-neutral-400">/</span>
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-2 h-2 bg-neutral-400 rounded-full"></span>
+                                {{ $totalTransactionsForSuccessRate ?? 0 }} total
+                            </span>
+                        </span>
+                    </p>
+
+                    <div class="mt-3 text-xs text-neutral-500 dark:text-neutral-400">
+                        Last 30 days •
+                        @php
+                            $failedCount = ($totalTransactionsForSuccessRate ?? 0) - ($successfulTransactions ?? 0);
+                        @endphp
+                        {{ $failedCount }} failed/pending
+                    </div>
+
+            
+                    {{-- @if (($paymentSuccessRate ?? 0) < 70)
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
+                            <div class="flex items-start gap-2 text-warning-600 dark:text-warning-400 text-xs">
+                                <iconify-icon icon="solar:lightbulb-linear"
+                                    class="text-sm mt-0.5 flex-shrink-0"></iconify-icon>
+                                <div>
+                                    <div class="font-medium mb-1">Improvement Tips:</div>
+                                    <ul class="space-y-1 text-neutral-600 dark:text-neutral-400">
+                                        <li>• Check for duplicate bills</li>
+                                        <li>• Review payment gateway issues</li>
+                                        <li>• Send payment reminders</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    @endif --}}
+
+        
+                    @if (($paymentSuccessRate ?? 0) >= 80)
+                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
+                            <div class="flex items-center gap-2 text-success-600 dark:text-success-400 text-xs">
+                                <iconify-icon icon="solar:star-bold" class="text-sm"></iconify-icon>
+                                <span>Above industry average (80%)</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+ 
         <div class="col-span-12 lg:col-span-6">
             <div class="card h-full border-0">
                 <div class="card-body">
