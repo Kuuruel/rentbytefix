@@ -71,7 +71,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Monthly Billings</p>
-                            <h6 class="mb-0 dark:text-white mt-2">{{ number_format($monthlyBillings ?? 0) }}</h6>
+                            <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($monthlyBillings ?? 0) }}</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="fa-solid:award" class="text-white text-2xl"></iconify-icon>
@@ -85,7 +85,7 @@
                             </span>
                         @elseif(($billsDecrease ?? 0) > 0)
                             <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
-                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +Rp{{ number_format(abs($billsDecrease ?? 0), 0, ',', '.') }}
+                                <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +Rp{{ number_format(abs($billsDecrease ?? 0)) }}
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 text-info-600 dark:text-info-400">
@@ -106,7 +106,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Platform Revenue</p>
-                            <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($platformRevenue ?? 0, 0, ',', '.') }}
+                            <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($platformRevenue ?? 0) }}
                             </h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center">
@@ -117,12 +117,12 @@
                         @if (($revenueIncrease ?? 0) >= 0)
                             <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
                                 <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                                +Rp{{ number_format(abs($revenueIncrease ?? 0), 0, ',', '.') }}
+                                +Rp{{ number_format(abs($revenueIncrease ?? 0)) }}
                             </span>
                         @else
                             <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
                                 <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon>
-                                -Rp{{ number_format(abs($revenueIncrease ?? 0), 0, ',', '.') }}
+                                -Rp{{ number_format(abs($revenueIncrease ?? 0)) }}
                             </span>
                         @endif
                         30 days income
@@ -568,11 +568,11 @@
                 <div class="card-body">
                     <div class="flex items-center justify-between mb-8">
                         <h6 class="font-bold text-lg">Recent Activities</h6>
-                        <a href="{{ route('super-admin.index2') }}"
+                        {{-- <a href="{{ route('super-admin.index2') }}"
                             class="text-primary-600 dark:text-primary-600 flex items-center gap-1">
                             View All
                             <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                        </a>
+                        </a> --}}
                     </div>
 
                     <div class="space-y-4">
