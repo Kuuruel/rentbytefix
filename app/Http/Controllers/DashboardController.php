@@ -7,9 +7,14 @@ use App\Models\Bill;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    // 🎯 KONSTANTA UNTUK PLATFORM FEE
+    const PLATFORM_FEE_PERCENTAGE = 5; // 5% dari setiap transaksi sukses
+    const PAYMENT_GATEWAY_FEE = 2500; // Rp 2.500 per transaksi (flat fee)
+
     public function index()
     {
         
@@ -135,13 +140,37 @@ class DashboardController extends Controller
         
         $platformRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where('created_at', '>=', now()->subDays(30))
-            ->sum('amount');
+            ->get();
+
+        // 2. Hitung platform revenue berdasarkan fee model
+        $platformRevenue = 0;
+        $totalTransactionValue = 0;
+
+        foreach ($successfulTransactionsLast30Days as $transaction) {
+            $transactionAmount = $transaction->amount;
+            $totalTransactionValue += $transactionAmount;
+
+            // Platform fee: 5% dari nilai transaksi + Rp 2.500 flat fee
+            $percentageFee = ($transactionAmount * self::PLATFORM_FEE_PERCENTAGE) / 100;
+            $flatFee = self::PAYMENT_GATEWAY_FEE;
+
+            $platformRevenue += ($percentageFee + $flatFee);
+        }
 
         
         $revenue30DaysAgo = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where('created_at', '>=', now()->subDays(60))
             ->where('created_at', '<', now()->subDays(30))
-            ->sum('amount');
+            ->get();
+
+        $revenue30DaysAgo = 0;
+        foreach ($successfulTransactions30_60DaysAgo as $transaction) {
+            $transactionAmount = $transaction->amount;
+            $percentageFee = ($transactionAmount * self::PLATFORM_FEE_PERCENTAGE) / 100;
+            $flatFee = self::PAYMENT_GATEWAY_FEE;
+            $revenue30DaysAgo += ($percentageFee + $flatFee);
+        }
+
         $revenueIncrease = $platformRevenue - $revenue30DaysAgo;
 
         
@@ -199,6 +228,16 @@ class DashboardController extends Controller
         
         $chartData = $this->getChartData();
 
+        // 🎯 TAMBAHAN: Revenue Breakdown untuk debugging
+        $revenueBreakdown = [
+            'total_transaction_value_30_days' => $totalTransactionValue,
+            'platform_revenue_30_days' => $platformRevenue,
+            'platform_fee_percentage' => self::PLATFORM_FEE_PERCENTAGE,
+            'payment_gateway_fee' => self::PAYMENT_GATEWAY_FEE,
+            'successful_transactions_count' => count($successfulTransactionsLast30Days),
+            'revenue_percentage_of_total' => $totalTransactionValue > 0 ? ($platformRevenue / $totalTransactionValue) * 100 : 0
+        ];
+
         return view('super-admin.index', compact(
             'totalTenants',
             'activeTenants',
@@ -215,8 +254,9 @@ class DashboardController extends Controller
             'paymentSuccessRate',
             'averageTransactionPerTenant',
             'successfulTransactions',
-            'totalTransactionsForSuccessRate', 
-            'chartData'
+            'totalTransactionsForSuccessRate',
+            'chartData',
+            'revenueBreakdown'
         ));
     }
 
@@ -227,6 +267,7 @@ class DashboardController extends Controller
 
         
         $billingData = array_fill(0, 12, 0);
+        $revenueData = array_fill(0, 12, 0); // 🔥 TAMBAH: Platform revenue per bulan
 
         
         $billingResults = Bill::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
@@ -234,15 +275,40 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->get();
 
-        
+        // 🔥 NEW: Query untuk platform revenue per bulan
+        $revenueResults = Transaction::selectRaw('
+                MONTH(created_at) as month, 
+                SUM(amount) as total_transaction_value,
+                COUNT(*) as transaction_count
+            ')
+            ->where('status', Transaction::STATUS_SUCCESS)
+            ->whereYear('created_at', $currentYear)
+            ->groupBy('month')
+            ->get();
+
+        // ✅ FIXED: Mapping hasil billing ke array
         foreach ($billingResults as $result) {
             $monthIndex = $result->month - 1; 
             $billingData[$monthIndex] = (float) $result->total;
         }
 
+        // 🔥 NEW: Mapping hasil revenue ke array
+        foreach ($revenueResults as $result) {
+            $monthIndex = $result->month - 1;
+            $totalTransactionValue = $result->total_transaction_value;
+            $transactionCount = $result->transaction_count;
+
+            // Hitung platform revenue untuk bulan ini
+            $percentageFee = ($totalTransactionValue * self::PLATFORM_FEE_PERCENTAGE) / 100;
+            $flatFees = $transactionCount * self::PAYMENT_GATEWAY_FEE;
+
+            $revenueData[$monthIndex] = (float) ($percentageFee + $flatFees);
+        }
+
         return [
             'months' => $months,
             'billing' => $billingData,
+            'revenue' => $revenueData, // 🔥 TAMBAH: Platform revenue chart
         ];
     }
 }
