@@ -8,32 +8,18 @@ use Illuminate\Support\Facades\DB;
 
 class CleanDuplicateBills extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
+
     protected $signature = 'bills:clean-duplicates {--dry-run : Show what would be deleted without actually deleting}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Clean duplicate bills from database';
 
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle()
     {
         $isDryRun = $this->option('dry-run');
 
         $this->info('🔍 Scanning for duplicate bills...');
 
-        // Find duplicates
+        
         $duplicates = Bill::select('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
             ->selectRaw('COUNT(*) as duplicate_count, GROUP_CONCAT(id ORDER BY created_at) as ids')
             ->groupBy('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
@@ -52,7 +38,7 @@ class CleanDuplicateBills extends Command
 
         foreach ($duplicates as $duplicate) {
             $ids = explode(',', $duplicate->ids);
-            $keepId = array_shift($ids); // Keep the oldest one
+            $keepId = array_shift($ids); 
             $totalToDelete += count($ids);
 
             $this->line("📋 Tenant: {$duplicate->tenant_id}, Amount: {$duplicate->amount}, Due: {$duplicate->due_date}");

@@ -30,41 +30,41 @@ class Bill extends Model
         'updated_at' => 'datetime'
     ];
 
-    // 🔥 ANTI-DUPLICATE: Validation sebelum save
+    
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($bill) {
-            // Generate order_id jika kosong
+            
             if (empty($bill->order_id)) {
                 $bill->order_id = 'BILL-' . uniqid();
             }
             
-            // 🎯 CEK DUPLICATE SEBELUM INSERT
+            
             $existingBill = static::where('tenant_id', $bill->tenant_id)
                 ->where('renter_id', $bill->renter_id)
                 ->where('property_id', $bill->property_id)
                 ->where('amount', $bill->amount)
                 ->whereDate('due_date', Carbon::parse($bill->due_date)->format('Y-m-d'))
-                ->whereIn('status', ['pending', 'paid']) // Cek yang belum expired/failed
+                ->whereIn('status', ['pending', 'paid']) 
                 ->first();
 
             if ($existingBill) {
-                // 🚨 JANGAN INSERT DUPLICATE!
+                
                 throw new \Exception("Duplicate bill detected for tenant {$bill->tenant_id}. Existing bill ID: {$existingBill->id}");
             }
         });
 
         static::updating(function ($bill) {
-            // Cek duplicate saat update juga (kecuali untuk record yang sama)
+            
             $existingBill = static::where('tenant_id', $bill->tenant_id)
                 ->where('renter_id', $bill->renter_id)
                 ->where('property_id', $bill->property_id)
                 ->where('amount', $bill->amount)
                 ->whereDate('due_date', Carbon::parse($bill->due_date)->format('Y-m-d'))
                 ->whereIn('status', ['pending', 'paid'])
-                ->where('id', '!=', $bill->id) // Exclude current record
+                ->where('id', '!=', $bill->id) 
                 ->first();
 
             if ($existingBill) {
@@ -73,7 +73,7 @@ class Bill extends Model
         });
     }
 
-    // 🎯 STATIC METHOD: Cek duplicate sebelum create (untuk controller)
+    
     public static function checkDuplicate($tenantId, $renterId, $propertyId, $amount, $dueDate)
     {
         return static::where('tenant_id', $tenantId)
@@ -85,7 +85,7 @@ class Bill extends Model
             ->exists();
     }
 
-    // 🎯 STATIC METHOD: Create dengan validasi duplicate
+    
     public static function createSafely(array $data)
     {
         if (static::checkDuplicate(
@@ -138,7 +138,7 @@ class Bill extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    // 🎯 HELPER: Cari transaction yang berhasil
+    
     public function transaction()
     {
         return $this->hasOne(Transaction::class);
@@ -204,7 +204,7 @@ class Bill extends Model
             ->get();
     }
 
-    // 🎯 SCOPE: Untuk debugging duplicate bills
+    
     public function scopeDuplicates($query)
     {
         return $query->select('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
@@ -213,7 +213,7 @@ class Bill extends Model
             ->having('duplicate_count', '>', 1);
     }
 
-    // 🎯 METHOD: Clean existing duplicates
+    
     public static function cleanDuplicates()
     {
         $duplicates = static::select('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
@@ -225,9 +225,9 @@ class Bill extends Model
         $deletedCount = 0;
         foreach ($duplicates as $duplicate) {
             $ids = explode(',', $duplicate->ids);
-            $keepId = array_shift($ids); // Keep first one
+            $keepId = array_shift($ids); 
             
-            // Delete the rest
+            
             static::whereIn('id', $ids)->delete();
             $deletedCount += count($ids);
         }

@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    // 🎯 KONSTANTA UNTUK PLATFORM FEE
-    const PLATFORM_FEE_PERCENTAGE = 5; // 5% dari setiap transaksi sukses
-    const PAYMENT_GATEWAY_FEE = 2500; // Rp 2.500 per transaksi (flat fee)
+    
+    const PLATFORM_FEE_PERCENTAGE = 5; 
+    const PAYMENT_GATEWAY_FEE = 2500; 
 
     public function index()
     {
@@ -142,7 +142,7 @@ class DashboardController extends Controller
             ->where('created_at', '>=', now()->subDays(30))
             ->get();
 
-        // 2. Hitung platform revenue berdasarkan fee model
+        
         $platformRevenue = 0;
         $totalTransactionValue = 0;
 
@@ -150,7 +150,7 @@ class DashboardController extends Controller
             $transactionAmount = $transaction->amount;
             $totalTransactionValue += $transactionAmount;
 
-            // Platform fee: 5% dari nilai transaksi + Rp 2.500 flat fee
+            
             $percentageFee = ($transactionAmount * self::PLATFORM_FEE_PERCENTAGE) / 100;
             $flatFee = self::PAYMENT_GATEWAY_FEE;
 
@@ -228,7 +228,7 @@ class DashboardController extends Controller
         
         $chartData = $this->getChartData();
 
-        // 🎯 TAMBAHAN: Revenue Breakdown untuk debugging
+        
         $revenueBreakdown = [
             'total_transaction_value_30_days' => $totalTransactionValue,
             'platform_revenue_30_days' => $platformRevenue,
@@ -267,7 +267,7 @@ class DashboardController extends Controller
 
         
         $billingData = array_fill(0, 12, 0);
-        $revenueData = array_fill(0, 12, 0); // 🔥 TAMBAH: Platform revenue per bulan
+        $revenueData = array_fill(0, 12, 0); 
 
         
         $billingResults = Bill::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
@@ -275,7 +275,7 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->get();
 
-        // 🔥 NEW: Query untuk platform revenue per bulan
+        
         $revenueResults = Transaction::selectRaw('
                 MONTH(created_at) as month, 
                 SUM(amount) as total_transaction_value,
@@ -286,19 +286,19 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->get();
 
-        // ✅ FIXED: Mapping hasil billing ke array
+        
         foreach ($billingResults as $result) {
             $monthIndex = $result->month - 1; 
             $billingData[$monthIndex] = (float) $result->total;
         }
 
-        // 🔥 NEW: Mapping hasil revenue ke array
+        
         foreach ($revenueResults as $result) {
             $monthIndex = $result->month - 1;
             $totalTransactionValue = $result->total_transaction_value;
             $transactionCount = $result->transaction_count;
 
-            // Hitung platform revenue untuk bulan ini
+            
             $percentageFee = ($totalTransactionValue * self::PLATFORM_FEE_PERCENTAGE) / 100;
             $flatFees = $transactionCount * self::PAYMENT_GATEWAY_FEE;
 
@@ -308,7 +308,7 @@ class DashboardController extends Controller
         return [
             'months' => $months,
             'billing' => $billingData,
-            'revenue' => $revenueData, // 🔥 TAMBAH: Platform revenue chart
+            'revenue' => $revenueData, 
         ];
     }
 }

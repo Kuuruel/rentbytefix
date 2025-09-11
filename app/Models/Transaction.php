@@ -14,9 +14,9 @@ class Transaction extends Model
     const STATUS_SUCCESS = 'success';
     const STATUS_FAILED = 'failed';
 
-    // 🔥 PLATFORM FEE CONSTANTS
-    const PLATFORM_FEE_PERCENTAGE = 5; // 5%
-    const PAYMENT_GATEWAY_FEE = 2500; // Rp 2.500
+    
+    const PLATFORM_FEE_PERCENTAGE = 5; 
+    const PAYMENT_GATEWAY_FEE = 2500; 
 
     protected $fillable = [
         'bill_id',
@@ -76,11 +76,6 @@ class Transaction extends Model
         return $this->hasOneThrough(Renter::class, Bill::class, 'id', 'id', 'bill_id', 'renter_id');
     }
 
-    // 🔥 NEW: Platform Revenue Methods
-
-    /**
-     * Hitung platform fee untuk transaksi ini
-     */
     public function getPlatformFeeAttribute()
     {
         if ($this->status !== self::STATUS_SUCCESS) {
@@ -93,17 +88,11 @@ class Transaction extends Model
         return $percentageFee + $flatFee;
     }
 
-    /**
-     * Hitung platform fee dengan format rupiah
-     */
     public function getFormattedPlatformFeeAttribute()
     {
         return 'Rp ' . number_format($this->platform_fee, 0, ',', '.');
     }
 
-    /**
-     * Static method: Total platform revenue untuk periode tertentu
-     */
     public static function getPlatformRevenue($startDate = null, $endDate = null)
     {
         $query = static::where('status', self::STATUS_SUCCESS);
@@ -126,9 +115,6 @@ class Transaction extends Model
         return $totalRevenue;
     }
 
-    /**
-     * Static method: Platform revenue summary untuk dashboard
-     */
     public static function getRevenueSummary()
     {
         $last30Days = static::getPlatformRevenue(now()->subDays(30), now());
@@ -165,9 +151,6 @@ class Transaction extends Model
         ];
     }
 
-    /**
-     * Static method: Platform revenue per bulan untuk chart
-     */
     public static function getMonthlyPlatformRevenue($year = null)
     {
         $year = $year ?? date('Y');
@@ -207,17 +190,11 @@ class Transaction extends Model
         return $monthlyRevenue;
     }
 
-    /**
-     * Scope: Only successful transactions
-     */
     public function scopeSuccessful($query)
     {
         return $query->where('status', self::STATUS_SUCCESS);
     }
 
-    /**
-     * Scope: Last N days
-     */
     public function scopeLastDays($query, $days = 30)
     {
         return $query->where('created_at', '>=', now()->subDays($days));
