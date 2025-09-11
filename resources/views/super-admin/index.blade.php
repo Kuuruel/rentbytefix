@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-   $title = 'Dashboard';
+    $title = 'Dashboard';
     $subTitle = 'Admin';
     $script = '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>' . '<script src="' . asset('assets/js/lineChartPageChart.js') . '"></script>';
     $script .= '<script src="' . asset('assets/js/widgets.js') . '"></script>';
@@ -21,15 +21,17 @@
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Users</p>
                             <h6 class="mb-0 dark:text-white mt-2">{{ $totalTenants }}</h6>
                         </div>
-                        
+
                         <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
-                     <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-500 dark:bg-success-900 dark:text-success-600">
-                                   All registered accounts
-                                </span> 
+                    <span
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+         bg-neutral-100 text-neutral-500 
+         dark:bg-neutral-600 dark:text-neutral-300">
+                        All registered accounts
+                    </span>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
                             <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $newTenantsToday }}
@@ -40,8 +42,6 @@
                 </div>
             </div>
         </div>
-
-
 
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
@@ -56,10 +56,10 @@
                             <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
-  <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-success-900 dark:text-success-600">
-                                 Currently logged-in or active status
-                                </span> 
+                    <span
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-neutral-600 dark:text-white">
+                        Currently logged-in or active status
+                    </span>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
                             <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -{{ $inactiveTenants }}
@@ -70,7 +70,6 @@
             </div>
         </div>
 
-        <!-- Card Monthly Billings -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-purple-600/10 to-bg-white w-full">
@@ -81,16 +80,16 @@
                             <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($monthlyBillings ?? 0) }}</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center ">
-                        
+
                             <iconify-icon icon="fa-solid:award" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
-                          <div class="mt-2">
-                                <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success-600 dark:bg-success-900 dark:text-success-600">
-                                    Sum of all tenant billings
-                                </span>
-                            </div>
+                    <div class="mt-2">
+                        <span
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-neutral-600 dark:text-white">
+                            Currently logged-in or active status
+                        </span>
+                    </div>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @if (($billsDecrease ?? 0) < 0)
                             <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
@@ -124,12 +123,14 @@
 
                             <div class="mt-2">
                                 <span
-                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-success-100 text-success-600 dark:bg-success-900 dark:text-success-600">
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
+         bg-success-100 text-success-600 
+         dark:bg-success-600/25 dark:text-success-400">
                                     5% + Rp {{ number_format(2500) }} per transaction
-                                </span> 
+                                </span>
                             </div>
                         </div>
-                        <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center ">
+                        <div class="w-[50px] h-[50px] bg-success-600 rounded-full flex justify-center items-center  ">
                             <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
@@ -182,7 +183,7 @@
                         </div>
                     @endif
 
-           
+
                     @if (($platformRevenue ?? 0) == 0)
                         <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
                             <div class="flex items-center gap-2 text-warning-600 dark:text-warning-400 text-xs">
@@ -221,9 +222,8 @@
 </script>
 
         <script>
-            // =========================== Line Chart With Data labels Start ===============================
             document.addEventListener('DOMContentLoaded', function() {
-                // Ambil data dari controller
+
                 const chartData = JSON.parse(document.getElementById('chart-data').textContent);
 
                 var options = {
@@ -242,7 +242,7 @@
                             show: false
                         },
                     },
-                    colors: ['#487FFF'], // Set the color of the series
+                    colors: ['#487FFF'],
                     dataLabels: {
                         enabled: true
                     },
@@ -267,7 +267,7 @@
                             opacity: 0,
                         },
                     },
-                    // Customize the circle marker color on hover
+
                     markers: {
                         colors: '#487FFF',
                         strokeWidth: 3,
@@ -305,27 +305,25 @@
                 var chart = new ApexCharts(document.querySelector("#lineDataLabel"), options);
                 chart.render();
             });
-            // =========================== Line Chart With Data labels End ===============================
         </script>
 
 
-        <!-- Owner Distribution - Fully Responsive -->
         <div class="col-span-12 lg:col-span-4">
             <div class="card h-full rounded-xl border-0 overflow-hidden shadow-sm">
                 <div class="card-body p-4 sm:p-6">
-                    <!-- Header -->
+
                     <div class="flex items-center justify-between mb-4">
                         <h6 class="font-bold text-base sm:text-lg text-neutral-900 dark:text-white">Owner Distribution</h6>
                     </div>
 
-                    <!-- Chart Container -->
+
                     <div class="flex justify-center mb-6">
                         <div id="userOverviewDonutChart" class="apexcharts-tooltip-z-none"
                             style="min-height: 200px; height: clamp(200px, 30vw, 280px); width: 280px; margin: 0 auto ;">
                         </div>
                     </div>
 
-                    <!-- Legend Section -->
+
                     <div class="legend-wrapper">
                         @if (isset($ownerDistribution) && $ownerDistribution->count() > 0)
                             <div
@@ -363,144 +361,9 @@
             </div>
         </div>
 
-        <style>
-            /* Chart Container */
-            .chart-container {
-                width: 100% !important;
-                max-width: 280px !important;
-                height: 250px !important;
-                margin: 0 auto !important;
-            }
-
-            /* Legend Grid */
-            .legend-grid {
-                display: grid !important;
-                gap: 4px !important;
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
-
-            /* Responsive Legend */
-            @media (min-width: 640px) {
-                .legend-grid {
-                    grid-template-columns: repeat(2, 1fr) !important;
-                }
-            }
-
-            @media (min-width: 1024px) {
-                .legend-grid {
-                    grid-template-columns: repeat(1, 1fr) !important;
-                }
-            }
-
-            @media (min-width: 1280px) {
-                .legend-grid {
-                    grid-template-columns: repeat(2, 1fr) !important;
-                }
-            }
-
-            /* Legend Item */
-            .legend-item {
-                display: flex !important;
-                align-items: center !important;
-                gap: 8px !important;
-                min-width: 0 !important;
-                padding: 4px 8px !important;
-            }
-
-            /* Legend Color */
-            .legend-color {
-                width: 12px !important;
-                height: 12px !important;
-                border-radius: 2px !important;
-                flex-shrink: 0 !important;
-                border: 1px solid #e5e7eb !important;
-            }
-
-            /* Legend Text */
-            .legend-text {
-                font-size: 12px !important;
-                color: #6b7280 !important;
-                truncate: true !important;
-                min-width: 0 !important;
-            }
-
-            @media (min-width: 640px) {
-                .legend-text {
-                    font-size: 14px !important;
-                }
-            }
-
-            /* Country Name */
-            .country-name {
-                white-space: nowrap !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-            }
-
-            /* Country Count */
-            .country-count {
-                color: #9ca3af !important;
-                margin-left: 4px !important;
-            }
-
-            /* Scrollable Legend */
-            .legend-scrollable {
-                max-height: 160px !important;
-                overflow-y: auto !important;
-                padding-right: 8px !important;
-            }
-
-            /* Custom Scrollbar */
-            .legend-scrollable::-webkit-scrollbar {
-                width: 4px !important;
-            }
-
-            .legend-scrollable::-webkit-scrollbar-track {
-                background: transparent !important;
-            }
-
-            .legend-scrollable::-webkit-scrollbar-thumb {
-                background: rgba(156, 163, 175, 0.3) !important;
-                border-radius: 2px !important;
-            }
-
-            .legend-scrollable::-webkit-scrollbar-thumb:hover {
-                background: rgba(156, 163, 175, 0.5) !important;
-            }
-
-            /* Dark Mode */
-            .dark .legend-color {
-                border-color: #6b7280 !important;
-            }
-
-            .dark .legend-text {
-                color: #d1d5db !important;
-            }
-
-            .dark .country-count {
-                color: #6b7280 !important;
-            }
-
-            /* Mobile Specific */
-            @media (max-width: 639px) {
-                .chart-container {
-                    max-width: 280px !important;
-                    height: 280px !important;
-                }
-
-                .legend-grid {
-                    gap: 2px !important;
-                }
-
-                .legend-item {
-                    padding: 3px 6px !important;
-                }
-            }
-        </style>
-        <!-- JavaScript for Enhanced Responsiveness -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Auto-adjust chart height based on container
+
                 function adjustChartHeight() {
                     const chartContainer = document.getElementById('userOverviewDonutChart');
                     const cardBody = chartContainer?.closest('.card-body');
@@ -512,33 +375,32 @@
                     }
                 }
 
-                // Handle window resize
+
                 let resizeTimer;
                 window.addEventListener('resize', function() {
                     clearTimeout(resizeTimer);
                     resizeTimer = setTimeout(adjustChartHeight, 250);
                 });
 
-                // Initial adjustment
+
                 adjustChartHeight();
 
-                // Auto-scroll legend if too many items
+
                 const legendContainer = document.querySelector('.legend-container');
                 if (legendContainer && legendContainer.children.length > 8) {
                     legendContainer.classList.add('legend-scrollable');
                 }
 
-                // Handle legend item clicks (if chart interaction needed)
+
                 document.querySelectorAll('.legend-container > div').forEach((item, index) => {
                     item.addEventListener('click', function() {
-                        // Toggle chart series visibility
+
                         if (typeof ApexCharts !== 'undefined' && window.userOverviewChart) {
                             window.userOverviewChart.toggleSeries(`series-${index}`);
                         }
                     });
                 });
 
-                // Intersection Observer for lazy loading optimization
                 if ('IntersectionObserver' in window) {
                     const observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
@@ -557,8 +419,8 @@
         </script>
 
 
-    
-        {{-- 🔥 FIXED: Average Transaction per Tenant Card --}}
+
+
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-primary-600/10 to-bg-white w-full">
@@ -567,7 +429,7 @@
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Average Transaction</p>
 
-                            {{-- 🎯 TAMPILKAN NILAI YANG BENAR --}}
+
                             <h6 class="mb-0 dark:text-white mt-2">
                                 @if (($averageTransactionPerTenant ?? 0) > 0)
                                     Rp {{ number_format($averageTransactionPerTenant) }}
@@ -596,7 +458,7 @@
 
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @php
-                            // Hitung trend berdasarkan data yang ada
+
                             $currentValue = $averageTransactionPerTenant ?? 0;
                             $isPositive = $currentValue > 0;
                             $trendClass = $isPositive
@@ -615,7 +477,7 @@
                         </span>
                         last 30 days
                     </p>
-{{-- 
+                    {{-- 
                     @if (config('app.debug') && isset($averageTransactionPerTenant))
                         <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
                             <details class="group">
@@ -657,7 +519,7 @@
                 </div>
             </div>
         </div>
-   
+
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-warning-600/10 to-bg-white w-full">
@@ -666,7 +528,7 @@
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Payment Success Rate</p>
 
-                      
+
                             <h6
                                 class="mb-0 mt-2 {{ ($paymentSuccessRate ?? 0) >= 80 ? 'text-success-600 dark:text-success-400' : (($paymentSuccessRate ?? 0) >= 60 ? 'text-warning-600 dark:text-warning-400' : 'text-danger-600 dark:text-danger-400') }}">
                                 {{ number_format($paymentSuccessRate ?? 0, 1) }}%
@@ -680,7 +542,7 @@
                                             ? 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200'
                                             : ($successRate >= 60
                                                 ? 'bg-warning-100 text-warning-600 dark:bg-warning-900 dark:text-warning-600'
-                                                : 'bg-danger-100 text-danger-600 dark:bg-danger-900 dark:text-danger-600');
+                                                : 'bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400');
                                     $badgeText =
                                         $successRate >= 80
                                             ? 'Excellent'
@@ -702,7 +564,7 @@
                         </div>
                     </div>
 
-         
+
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3">
                         <span class="inline-flex items-center gap-2">
                             <span class="inline-flex items-center gap-1">
@@ -725,7 +587,7 @@
                         {{ $failedCount }} failed/pending
                     </div>
 
-            
+
                     {{-- @if (($paymentSuccessRate ?? 0) < 70)
                         <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
                             <div class="flex items-start gap-2 text-warning-600 dark:text-warning-400 text-xs">
@@ -743,7 +605,7 @@
                         </div>
                     @endif --}}
 
-        
+
                     @if (($paymentSuccessRate ?? 0) >= 80)
                         <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
                             <div class="flex items-center gap-2 text-success-600 dark:text-success-400 text-xs">
@@ -755,7 +617,7 @@
                 </div>
             </div>
         </div>
- 
+
         <div class="col-span-12 lg:col-span-6">
             <div class="card h-full border-0">
                 <div class="card-body">
@@ -839,7 +701,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Timestamp -->
+
                                 <div class="text-right shrink-0">
                                     <span class="text-xs text-neutral-500 dark:text-neutral-400">
                                         {{ $activity->created_at->diffForHumans() }}
@@ -861,25 +723,22 @@
 
     </div>
 
-    <!-- ApexCharts Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ================================ Users Overview Donut chart Start ================================ 
+
             try {
                 console.log('Initializing donut chart...');
 
-                // Get data from PHP
                 var ownerData = @json($ownerDistribution ?? []);
                 console.log('Owner Data:', ownerData);
 
-                // Check if element exists
                 var chartElement = document.querySelector("#userOverviewDonutChart");
                 if (!chartElement) {
                     console.error('Chart element not found');
                     return;
                 }
 
-                // Check if data exists and is valid
+
                 if (!ownerData || !Array.isArray(ownerData) || ownerData.length === 0) {
                     console.log('No owner distribution data available');
                     chartElement.innerHTML =
@@ -887,7 +746,7 @@
                     return;
                 }
 
-                // Process data
+
                 var series = ownerData.map(function(item) {
                     return parseInt(item.count) || 0;
                 });
@@ -899,7 +758,7 @@
                 console.log('Processed Series:', series);
                 console.log('Processed Labels:', labels);
 
-                // Validate processed data
+
                 if (series.length === 0 || labels.length === 0) {
                     console.log('No valid data to display');
                     chartElement.innerHTML =
@@ -907,16 +766,12 @@
                     return;
                 }
 
-                // ✅ UPDATED: Dynamic color generation for unlimited countries
+
                 function generateColors(count) {
                     const baseColors = [
-                        // Baris 1
+
                         '#487FFF', '#FF9F29', '#E4F1FF', '#FFD580', '#28A745',
-
-                        // Baris 2 (variasi tone sedikit lebih tua/soft)
                         '#335FCC', '#CC6F1F', '#CFE4FF', '#FFC966', '#218838',
-
-                        // Baris 3 (variasi lagi biar beda tapi tetap tone sama)
                         '#1E3A8A', '#B45309', '#BFDBFE', '#FACC15', '#15803D'
 
 
@@ -928,10 +783,10 @@
                         if (i < baseColors.length) {
                             colors.push(baseColors[i]);
                         } else {
-                            // Generate HSL colors with good contrast for additional countries
-                            const hue = (i * 137.508) % 360; // Golden angle approximation
-                            const saturation = 60 + (i % 3) * 15; // Vary saturation: 60%, 75%, 90%
-                            const lightness = 45 + (i % 4) * 10; // Vary lightness: 45%, 55%, 65%, 75%
+
+                            const hue = (i * 137.508) % 360;
+                            const saturation = 60 + (i % 3) * 15;
+                            const lightness = 45 + (i % 4) * 10;
                             colors.push(`hsl(${Math.round(hue)}, ${saturation}%, ${lightness}%)`);
                         }
                     }
@@ -941,7 +796,6 @@
                 const dynamicColors = generateColors(ownerData.length);
                 console.log(`Generated ${dynamicColors.length} colors for ${ownerData.length} countries`);
 
-                // Chart configuration
                 var options = {
                     series: series,
                     colors: dynamicColors,
@@ -993,14 +847,14 @@
                     }]
                 };
 
-                // Create and render chart
+
                 console.log('Creating ApexChart with options:', options);
                 var chart = new ApexCharts(chartElement, options);
 
                 chart.render().then(function() {
                     console.log('Chart rendered successfully');
 
-                    // ✅ UPDATED: Update legend colors for all countries
+
                     dynamicColors.forEach(function(color, index) {
                         const legendElement = document.getElementById('legend-color-' + index);
                         if (legendElement) {
@@ -1020,7 +874,7 @@
                         '<div class="flex items-center justify-center h-64"><div class="text-center text-red-500">Error loading chart</div></div>';
                 }
             }
-            // ================================ Users Overview Donut chart End ================================
+
         });
     </script>
 

@@ -10,7 +10,7 @@ class NotificationSettingSeeder extends Seeder
 {
     public function run()
     {
-        // Cari admin user atau buat default
+
         $adminUser = User::where('role', 'admin')->first();
         $adminId = $adminUser ? $adminUser->id : 1;
 

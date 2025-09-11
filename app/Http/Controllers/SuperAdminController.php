@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\DB;
 
 class SuperAdminController extends Controller
 {
-    // 🎯 KONSTANTA PLATFORM FEE
-    const PLATFORM_FEE_PERCENTAGE = 5; // 5% dari setiap transaksi sukses
-    const PAYMENT_GATEWAY_FEE = 2500; // Rp 2.500 per transaksi (flat fee)
+
+    const PLATFORM_FEE_PERCENTAGE = 5; // ni tu 5% dari setiap transaksi sukses, inget beb yang udh sukses jadi yang paid ga masuk 
+    const PAYMENT_GATEWAY_FEE = 2500; // Rp 2.500 per transaksi (flat fee) ya gt jadi rumusnya gt 
 
     public function index()
     {
@@ -24,7 +24,7 @@ class SuperAdminController extends Controller
         $newTenantsCount = Tenants::where('created_at', '>=', now()->subDays(30))->count();
         $newTenantsToday = Tenants::whereDate('created_at', today())->count();
 
-        // Recent Activities
+
         $recentActivities = collect();
 
         $recentTenants = Tenants::with('user')
@@ -48,9 +48,9 @@ class SuperAdminController extends Controller
         try {
             $recentPayments = Transaction::with(['bill.tenant'])
                 ->where('status', Transaction::STATUS_SUCCESS)
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->whereNotNull('paid_at')
-                          ->orWhereNotNull('created_at');
+                        ->orWhereNotNull('created_at');
                 })
                 ->orderBy(DB::raw('COALESCE(paid_at, created_at)'), 'desc')
                 ->limit(3)
@@ -121,7 +121,6 @@ class SuperAdminController extends Controller
 
         $chartData = $this->getChartData();
 
-        // Monthly Billings (tetap sama)
         $monthlyBillings = Bill::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');
@@ -134,23 +133,22 @@ class SuperAdminController extends Controller
             ? $monthlyBillings - $lastMonthBillings
             : $monthlyBillings;
 
-        // 🔥 FIXED: Platform Revenue - BULAN INI dengan fallback
         $successfulTransactionsThisMonth = Transaction::where('status', Transaction::STATUS_SUCCESS)
-            ->where(function($query) {
-                $query->where(function($q) {
+            ->where(function ($query) {
+                $query->where(function ($q) {
                     $q->whereNotNull('paid_at')
-                      ->whereMonth('paid_at', now()->month)
-                      ->whereYear('paid_at', now()->year);
-                })->orWhere(function($q) {
+                        ->whereMonth('paid_at', now()->month)
+                        ->whereYear('paid_at', now()->year);
+                })->orWhere(function ($q) {
                     $q->whereNull('paid_at')
-                      ->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                        ->whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year);
                 });
             })->get();
 
         $platformRevenue = 0;
         $totalTransactionValueThisMonth = 0;
-        
+
         foreach ($successfulTransactionsThisMonth as $transaction) {
             $transactionAmount = $transaction->amount;
             $totalTransactionValueThisMonth += $transactionAmount;
@@ -159,17 +157,16 @@ class SuperAdminController extends Controller
             $platformRevenue += ($percentageFee + $flatFee);
         }
 
-        // Revenue comparison bulan lalu
         $successfulTransactionsLastMonth = Transaction::where('status', Transaction::STATUS_SUCCESS)
-            ->where(function($query) {
-                $query->where(function($q) {
+            ->where(function ($query) {
+                $query->where(function ($q) {
                     $q->whereNotNull('paid_at')
-                      ->whereMonth('paid_at', now()->subMonth()->month)
-                      ->whereYear('paid_at', now()->subMonth()->year);
-                })->orWhere(function($q) {
+                        ->whereMonth('paid_at', now()->subMonth()->month)
+                        ->whereYear('paid_at', now()->subMonth()->year);
+                })->orWhere(function ($q) {
                     $q->whereNull('paid_at')
-                      ->whereMonth('created_at', now()->subMonth()->month)
-                      ->whereYear('created_at', now()->subMonth()->year);
+                        ->whereMonth('created_at', now()->subMonth()->month)
+                        ->whereYear('created_at', now()->subMonth()->year);
                 });
             })->get();
 
@@ -185,49 +182,45 @@ class SuperAdminController extends Controller
             ? $platformRevenue - $lastMonthRevenue
             : $platformRevenue;
 
-        // 🔥 FIXED: Weekly transactions dengan fallback
         $totalTransactionsThisWeek = Transaction::where('status', Transaction::STATUS_SUCCESS)
-            ->where(function($query) {
-                $query->where(function($q) {
+            ->where(function ($query) {
+                $query->where(function ($q) {
                     $q->whereNotNull('paid_at')
-                      ->whereBetween('paid_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                })->orWhere(function($q) {
+                        ->whereBetween('paid_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                })->orWhere(function ($q) {
                     $q->whereNull('paid_at')
-                      ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
                 });
             })
             ->count();
 
-        // 🔥 FIXED: Payment Success Rate - BULAN INI
         $totalTransactionsForSuccessRate = Transaction::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
-            
+
         $successfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)
-            ->where(function($query) {
-                $query->where(function($q) {
+            ->where(function ($query) {
+                $query->where(function ($q) {
                     $q->whereNotNull('paid_at')
-                      ->whereMonth('paid_at', now()->month)
-                      ->whereYear('paid_at', now()->year);
-                })->orWhere(function($q) {
+                        ->whereMonth('paid_at', now()->month)
+                        ->whereYear('paid_at', now()->year);
+                })->orWhere(function ($q) {
                     $q->whereNull('paid_at')
-                      ->whereMonth('created_at', now()->month)
-                      ->whereYear('created_at', now()->year);
+                        ->whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year);
                 });
             })
             ->count();
-            
-        $paymentSuccessRate = $totalTransactionsForSuccessRate > 0 ? 
+
+        $paymentSuccessRate = $totalTransactionsForSuccessRate > 0 ?
             round(($successfulTransactions / $totalTransactionsForSuccessRate) * 100, 1) : 0;
 
-        // 🔥 FIXED: Average Transaction - BULAN INI
         $totalSuccessfulTransactions = $successfulTransactions;
-        $totalTransactionAmount = $totalTransactionValueThisMonth; // Sudah dihitung di atas
-        
-        $averageTransactionPerTenant = $totalSuccessfulTransactions > 0 ? 
+        $totalTransactionAmount = $totalTransactionValueThisMonth;
+
+        $averageTransactionPerTenant = $totalSuccessfulTransactions > 0 ?
             round($totalTransactionAmount / $totalSuccessfulTransactions, 0) : 0;
 
-        // 🎯 DEBUG INFO untuk SuperAdminController
         $revenueBreakdown = [
             'total_transaction_value_this_month' => $totalTransactionValueThisMonth,
             'platform_revenue_this_month' => $platformRevenue,
@@ -275,13 +268,12 @@ class SuperAdminController extends Controller
             'totalTransactionsThisWeek',
             'paymentSuccessRate',
             'averageTransactionPerTenant',
-            'successfulTransactions', // Tambahan untuk debug
-            'totalTransactionsForSuccessRate', // Tambahan untuk debug
-            'revenueBreakdown' // Debug info
+            'successfulTransactions',
+            'totalTransactionsForSuccessRate',
+            'revenueBreakdown'
         ));
     }
 
-    // Method lain tetap sama...
     public function index2()
     {
         $tenants = Tenants::with('user')->orderBy('id', 'desc')->get();
@@ -366,12 +358,12 @@ class SuperAdminController extends Controller
 
         $pendingBills = Bill::where('tenant_id', $tenant->id)->where('status', 'pending')->count();
         $overdueBills = Bill::where('tenant_id', $tenant->id)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('status', 'overdue')
-                      ->orWhere(function($q) {
-                          $q->where('due_date', '<', now())
+                    ->orWhere(function ($q) {
+                        $q->where('due_date', '<', now())
                             ->where('status', 'pending');
-                      });
+                    });
             })->count();
         $paidBills = Bill::where('tenant_id', $tenant->id)->where('status', 'paid')->count();
 
@@ -385,8 +377,8 @@ class SuperAdminController extends Controller
             ->whereYear('created_at', now()->subMonth()->year)
             ->count();
 
-        $transactionsChange = $transactionsLastMonth > 0 
-            ? (($transactionsThisMonth - $transactionsLastMonth) / $transactionsLastMonth) * 100 
+        $transactionsChange = $transactionsLastMonth > 0
+            ? (($transactionsThisMonth - $transactionsLastMonth) / $transactionsLastMonth) * 100
             : ($transactionsThisMonth > 0 ? 100 : 0);
 
         $salesThisMonth = Transaction::where('tenant_id', $tenant->id)
@@ -401,14 +393,14 @@ class SuperAdminController extends Controller
             ->whereYear('created_at', now()->subMonth()->year)
             ->sum('amount');
 
-        $salesChange = $salesLastMonth > 0 
-            ? (($salesThisMonth - $salesLastMonth) / $salesLastMonth) * 100 
+        $salesChange = $salesLastMonth > 0
+            ? (($salesThisMonth - $salesLastMonth) / $salesLastMonth) * 100
             : ($salesThisMonth > 0 ? 100 : 0);
 
         $averagePerTransaction = $transactionsThisMonth > 0 ? $salesThisMonth / $transactionsThisMonth : 0;
         $lastMonthAverage = $transactionsLastMonth > 0 ? $salesLastMonth / $transactionsLastMonth : 0;
-        $avgChange = $lastMonthAverage > 0 
-            ? (($averagePerTransaction - $lastMonthAverage) / $lastMonthAverage) * 100 
+        $avgChange = $lastMonthAverage > 0
+            ? (($averagePerTransaction - $lastMonthAverage) / $lastMonthAverage) * 100
             : ($averagePerTransaction > 0 ? 100 : 0);
 
         $chartData = $this->getTenantChartData($tenant->id);
@@ -419,12 +411,12 @@ class SuperAdminController extends Controller
         $lastMonthIncome = $salesLastMonth;
         $lastMonthExpenses = $lastMonthIncome * 0.65;
 
-        $incomeChange = $lastMonthIncome > 0 
-            ? (($income - $lastMonthIncome) / $lastMonthIncome) * 100 
+        $incomeChange = $lastMonthIncome > 0
+            ? (($income - $lastMonthIncome) / $lastMonthIncome) * 100
             : ($income > 0 ? 100 : 0);
 
-        $expensesChange = $lastMonthExpenses > 0 
-            ? (($expenses - $lastMonthExpenses) / $lastMonthExpenses) * 100 
+        $expensesChange = $lastMonthExpenses > 0
+            ? (($expenses - $lastMonthExpenses) / $lastMonthExpenses) * 100
             : ($expenses > 0 ? 100 : 0);
 
         $totalTransactionsThisWeek = Transaction::where('tenant_id', $tenant->id)
@@ -433,18 +425,18 @@ class SuperAdminController extends Controller
             ->count();
 
         $totalTransactionsLastWeek = Transaction::where('tenant_id', $tenant->id)
-            ->where('status', 'success') 
+            ->where('status', 'success')
             ->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()])
             ->count();
 
-        $transactionPercentageChange = $totalTransactionsLastWeek > 0 
-            ? (($totalTransactionsThisWeek - $totalTransactionsLastWeek) / $totalTransactionsLastWeek) * 100 
+        $transactionPercentageChange = $totalTransactionsLastWeek > 0
+            ? (($totalTransactionsThisWeek - $totalTransactionsLastWeek) / $totalTransactionsLastWeek) * 100
             : ($totalTransactionsThisWeek > 0 ? 100 : 0);
 
         return view('super-admin.index8', compact(
             'tenant',
             'pendingBills',
-            'overdueBills', 
+            'overdueBills',
             'paidBills',
             'transactionsThisMonth',
             'transactionsChange',
@@ -506,7 +498,6 @@ class SuperAdminController extends Controller
 
                 $revenueData[$monthIndex] = (float) ($percentageFee + $flatFees);
             }
-
         } catch (\Exception $e) {
             \Log::error('Error getting chart data: ' . $e->getMessage());
         }
@@ -569,13 +560,13 @@ class SuperAdminController extends Controller
             $paidBills = Bill::where('tenant_id', $tenant->id)
                 ->where('status', 'paid')
                 ->count();
-            
+
             $paymentSuccessRate = $totalBills > 0 ? round(($paidBills / $totalBills) * 100, 1) : 0;
 
             $thisWeekBills = Bill::where('tenant_id', $tenant->id)
                 ->whereBetween('created_at', [$startOfWeek, $now])
                 ->count();
-            
+
             $thisWeekPaidBills = Bill::where('tenant_id', $tenant->id)
                 ->where('status', 'paid')
                 ->whereBetween('created_at', [$startOfWeek, $now])
@@ -586,7 +577,7 @@ class SuperAdminController extends Controller
             $lastWeekBills = Bill::where('tenant_id', $tenant->id)
                 ->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])
                 ->count();
-            
+
             $lastWeekPaidBills = Bill::where('tenant_id', $tenant->id)
                 ->where('status', 'paid')
                 ->whereBetween('created_at', [$lastWeekStart, $lastWeekEnd])
@@ -607,10 +598,9 @@ class SuperAdminController extends Controller
             $tenantClone->chart_data = $chartData;
 
             return $tenantClone;
-
         } catch (\Exception $e) {
             \Log::error('Error calculating tenant stats for tenant ' . $tenant->id . ': ' . $e->getMessage());
-            
+
             $tenantClone = clone $tenant;
             $tenantClone->monthly_revenue = 0;
             $tenantClone->bills_count = 0;
@@ -630,12 +620,12 @@ class SuperAdminController extends Controller
 
             for ($i = 8; $i >= 0; $i--) {
                 $month = $now->copy()->subMonths($i);
-                
+
                 $monthBills = Bill::where('tenant_id', $tenantId)
                     ->whereMonth('created_at', $month->month)
                     ->whereYear('created_at', $month->year)
                     ->count();
-                
+
                 $monthPaidBills = Bill::where('tenant_id', $tenantId)
                     ->where('status', 'paid')
                     ->whereMonth('created_at', $month->month)
@@ -643,10 +633,10 @@ class SuperAdminController extends Controller
                     ->count();
 
                 $rate = $monthBills > 0 ? ($monthPaidBills / $monthBills) * 100 : 0;
-                
+
                 $chartValue = 35 + ($rate / 100 * 20);
                 $chartValue = max(30, min(60, $chartValue));
-                
+
                 $data[] = round($chartValue, 0);
             }
 
@@ -655,7 +645,6 @@ class SuperAdminController extends Controller
             }
 
             return $data;
-
         } catch (\Exception $e) {
             \Log::error('Error generating chart data for tenant ' . $tenantId . ': ' . $e->getMessage());
             return [35, 40, 38, 42, 39, 44, 41, 45, 43];

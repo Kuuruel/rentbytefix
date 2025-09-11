@@ -344,14 +344,14 @@
                 <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" alt=""
                     class="w-full object-fit-cover hidden">
                 <div class="pb-6 ms-6 mb-6 me-6 -mt-[100px]">
-                    <!-- Manage Button - positioned at top left -->
+
                     <div class="flex justify-end mb-4" style="padding-top: 120px">
 
                     </div>
 
                     <div class="text-center border-b border-neutral-200 dark:border-neutral-600">
-                        <img src="{{ asset('assets/images/tenants/' . $tenant->avatar) }}" 
-                                        class="w-[120px] h-[120px] ms-auto me-auto rounded-full object-cover object-center border-white border-[8px]">
+                        <img src="{{ asset('assets/images/tenants/' . $tenant->avatar) }}"
+                            class="w-[120px] h-[120px] ms-auto me-auto rounded-full object-cover object-center border-white border-[8px]">
                         <div class="flex items-center justify-center gap-2">
                             <h6 class="mb-0 mt-4">{{ $tenant->name }}</h6>
                             <button type="button" title="Edit Tenant"
@@ -362,7 +362,7 @@
                         </div>
 
 
-                        <!-- Email jadi block -->
+
                         <div class="text-secondary-light mb-2">{{ $tenant->email }}</div>
 
                         <div class="text-center w-full mb-6">
@@ -466,9 +466,7 @@
                     <div class="col-span-12 mb-6">
                         <h6 class="mb-4">Tenant Statistics</h6>
                         <div class="gap-6 grid grid-cols-1 sm:grid-cols-12">
-                            <!-- Dashboard Widget Start -->
 
-                            <!-- Card 1: Transactions -->
                             <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-success-600/10 to-bg-white">
@@ -506,7 +504,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Card 2: Total Sales -->
+
                             <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-warning-600/10 to-bg-white">
@@ -546,7 +544,7 @@
                                 </div>
                             </div>
 
-                            <!-- Card 3: Average per Transaction -->
+
                             <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-purple-600/10 to-bg-white">
@@ -588,7 +586,7 @@
 
                         </div>
                     </div>
-                    {{-- Line Chart --}}
+
                     <div class="card h-full p-0 border-0 overflow-hidden">
                         <div
                             class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
@@ -640,15 +638,9 @@
                             </div>
                             <div class="card-body p-2">
                                 <div id="defaultLineChart" class="apexcharts-tooltip-style-1"></div>
-
                             </div>
-
                         </div>
-
                     </div>
-
-
-                    {{-- end Line Card --}}
                 </div>
             </div>
         </div>
@@ -656,24 +648,20 @@
     <script>
         // =========================== Dynamic Line Chart Start ===============================
         document.addEventListener('DOMContentLoaded', function() {
-            // Get chart data from controller
-            var chartData = @json($chartData ?? ['months' => [], 'data' => []]);
 
-            // Pastikan element chart ada
+            var chartData = @json($chartData ?? ['months' => [], 'data' => []]);
             var chartElement = document.querySelector("#defaultLineChart");
             if (!chartElement) {
                 console.error('Chart element #defaultLineChart not found');
                 return;
             }
-
-            // Pastikan data valid
             var chartDataArray = chartData.data && Array.isArray(chartData.data) ?
-                chartData.data :
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                chartData.data : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
             var chartMonths = chartData.months && Array.isArray(chartData.months) ?
-                chartData.months :
-                ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                chartData.months : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
+                    'Dec'
+                ];
 
             console.log('Chart data:', chartDataArray);
             console.log('Chart months:', chartMonths);
@@ -743,7 +731,7 @@
                     labels: {
                         formatter: function(value) {
                             if (value === 0) return "0";
-                            return "Rp" + value ;
+                            return "Rp" + value;
                         },
                         style: {
                             fontSize: "14px",

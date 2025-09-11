@@ -41,7 +41,7 @@
                         <div class="user-grid-card">
                             <div
                                 class="relative border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden">
-                                {{-- Tenant info --}}
+
                                 <div class="pe-6 pb-4 ps-6 text-center mt--50 pt-5">
                                     @if ($tenant->avatar && $tenant->avatar !== 'NULL')
                                         <img src="{{ asset('assets/images/tenants/' . $tenant->avatar) }}"
@@ -66,7 +66,6 @@
                                         @endif
                                     </div>
 
-                                    {{-- Statistik dari $tenantsWithStats --}}
                                     <div class="p-4">
                                         @if (strtolower($tenant->status) == 'active')
                                             <div
@@ -92,8 +91,10 @@
                                                         {{ number_format($tenant->monthly_revenue) }}</div>
                                                     <div class="text-gray-500 dark:text-white">This Month's Income</div>
                                                 </div>
-                                                <div class="text-center p-2 border border-0 bg-gray-50 dark:bg-neutral-600 rounded dark:text-white dark:border-neutral-500 rounded-lg">
-                                                    <div class="font-semibold text-gray-800 dark:text-white">{{ $tenant->bills_count }}
+                                                <div
+                                                    class="text-center p-2 border border-0 bg-gray-50 dark:bg-neutral-600 rounded dark:text-white dark:border-neutral-500 rounded-lg">
+                                                    <div class="font-semibold text-gray-800 dark:text-white">
+                                                        {{ $tenant->bills_count }}
                                                     </div>
                                                     <div class="text-gray-500 dark:text-white">Total Bills</div>
                                                 </div>
@@ -147,7 +148,6 @@
                 @endif
             </div>
 
-            {{-- Pagination pakai $tenants --}}
             <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
                 <span id="paginationInfo">
                     @if ($tenants->total() > 0)
@@ -164,7 +164,7 @@
 
                 @if ($tenants->hasPages())
                     <ul class="pagination flex flex-wrap items-center gap-2 justify-center">
-                        {{-- Previous Button --}}
+
                         <li class="page-item">
                             @if ($tenants->onFirstPage())
                                 <button disabled class="page-link opacity-50 cursor-not-allowed">‹</button>
@@ -173,7 +173,7 @@
                             @endif
                         </li>
 
-                        {{-- Page Numbers --}}
+
                         @foreach ($tenants->getUrlRange(1, $tenants->lastPage()) as $page => $url)
                             <li class="page-item">
                                 @if ($page == $tenants->currentPage())
@@ -184,7 +184,6 @@
                             </li>
                         @endforeach
 
-                        {{-- Next Button --}}
                         <li class="page-item">
                             @if ($tenants->hasMorePages())
                                 <a href="{{ $tenants->nextPageUrl() }}" class="page-link">›</a>
@@ -199,12 +198,11 @@
 
     </div>
 
-    {{-- SCRIPT UNTUK CHARTS ONLY (Search removed because it's handled server-side now) --}}
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Chart script loaded');
 
-            // Initialize charts for each tenant
             initializeCharts();
 
             // ================================== CHART FUNCTIONS START =================================
@@ -212,10 +210,10 @@
                 @if (isset($tenants) && count($tenants) > 0)
                     @foreach ($tenants as $tenant)
                         @if (strtolower($tenant->status) == 'active')
-                            // Active tenant charts - SEMUA HIJAU
+
                             createWidgetChart('active-user-chart-{{ $tenant->id }}', '#45b369');
                         @else
-                            // Inactive tenant charts - SEMUA MERAH
+
                             createWidgetChart('inactive-user-chart-{{ $tenant->id }}', '#dc2626');
                         @endif
                     @endforeach
@@ -235,7 +233,7 @@
                         width: 100,
                         height: 42,
                         sparkline: {
-                            enabled: true // Remove whitespace
+                            enabled: true
                         },
                         toolbar: {
                             show: false
@@ -288,19 +286,19 @@
                     },
                     fill: {
                         type: 'gradient',
-                        colors: [chartColor], // Set the starting color (top color) here
+                        colors: [chartColor],
                         gradient: {
-                            shade: 'light', // Gradient shading type
-                            type: 'vertical', // Gradient direction (vertical)
-                            shadeIntensity: 0.5, // Intensity of the gradient shading
-                            gradientToColors: [`${chartColor}00`], // Bottom gradient color (with transparency)
-                            inverseColors: false, // Do not invert colors
-                            opacityFrom: .75, // Starting opacity
-                            opacityTo: 0.3, // Ending opacity
+                            shade: 'light',
+                            type: 'vertical',
+                            shadeIntensity: 0.5,
+                            gradientToColors: [`${chartColor}00`],
+                            inverseColors: false,
+                            opacityFrom: .75,
+                            opacityTo: 0.3,
                             stops: [0, 100],
                         },
                     },
-                    // Customize the circle marker color on hover
+
                     markers: {
                         colors: [chartColor],
                         strokeWidth: 2,
@@ -346,7 +344,7 @@
             console.log('Charts initialized successfully');
         });
 
-        // Search form auto-submit with delay
+
         let searchTimeout;
         const searchInput = document.getElementById('searchInput');
 
@@ -355,7 +353,7 @@
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
                     this.form.submit();
-                }, 500); // Submit after 500ms of no typing
+                }, 500);
             });
         }
     </script>

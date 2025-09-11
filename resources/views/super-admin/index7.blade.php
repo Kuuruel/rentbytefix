@@ -76,11 +76,8 @@
                         </li>
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
-                                // Cek URL untuk mengaktifkan tab yang tepat
                                 if (window.location.hash === '#change-password' ||
                                     new URLSearchParams(window.location.search).get('tab') === 'all-notifications') {
-
-                                    // Klik tab All Notifications
                                     document.getElementById('change-password-tab').click();
                                 }
                             });
@@ -132,23 +129,21 @@
                                             </select>
                                         </div>
 
-                                        <!-- Tenant Selection Section (Hidden by default) -->
+
                                         <div id="tenantSelection" class="mb-5" style="display: none;">
                                             <label
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">
                                                 Select Tenants
                                             </label>
 
-                                            <!-- Search Input -->
                                             <div class="mb-3">
                                                 <input type="text" id="tenantSearch" class="form-control rounded-lg"
                                                     placeholder="Search tenants..." onkeyup="searchTenants()">
                                             </div>
 
-                                            <!-- Tenant List -->
                                             <div id="tenantList"
                                                 class="form-control rounded-lg max-h-60 overflow-y-auto p-2 bg-white">
-                                                <!-- Dynamic tenant items will be populated here -->
+
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +196,7 @@
                         </div>
 
                         <div class="hidden" id="change-password" role="tabpanel" aria-labelledby="change-password-tab">
-                            <!-- Latest Performance Start -->
+
                             <div class="lg:col-span-12 2xl:col-span-6">
                                 <div class="card h-full border-0 overflow-hidden">
                                     <div
@@ -234,7 +229,7 @@
 
                                     <div class="card-body p-0 mt-5">
                                         <div id="default-styled-tab-content">
-                                            <!-- Active Tab -->
+
                                             <div class="hidden rounded-lg" id="styled-todoList" role="tabpanel">
                                                 <div class="grid grid-cols-12">
                                                     <div class="col-span-12">
@@ -355,7 +350,8 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Archived Tab -->
+
+
                                             <div class="hidden rounded-lg bg-gray-50 dark:bg-gray-800"
                                                 id="styled-recentLead" role="tabpanel">
                                                 <div class="grid grid-cols-12">
@@ -483,13 +479,11 @@
                             </div>
                         </div>
 
-                        <!-- Notification Settings Tab -->
+
                         <div class="hidden" id="notification-password" role="tabpanel"
                             aria-labelledby="notification-password-tab">
-                            <!-- General Settings -->
                             <h2 class="text-xl font-semibold text-gray-900 mb-6">General Settings</h2>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                                <!-- Default Priority -->
                                 <div class="col-span-1">
                                     <div class="mb-0">
                                         <label for="default-priority"
@@ -505,7 +499,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Default Delivery Method -->
+
+
                                 <div class="col-span-1">
                                     <div class="mb-0">
                                         <label
@@ -544,7 +539,7 @@
                                 </div>
                             </div>
 
-                            <!-- Push Notification Settings -->
+
                             <h2 class="text-xl font-semibold text-gray-900 mb-6">Push Notification Settings</h2>
 
                             <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-6 mb-8">
@@ -586,8 +581,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Save Button -->
                             <div class="flex items-center justify-end gap-3">
                                 <button type="button" id="settingsSaveButton" onclick="handleSaveSettings()"
                                     class="btn btn-primary border border-primary-600 text-base px-14 py-3 rounded-lg">
@@ -596,7 +589,6 @@
                             </div>
                         </div>
 
-                        <!-- Modal Delete Notification -->
                         <div id="deleteModal"
                             class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
                             <div class="bg-white rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
@@ -623,7 +615,6 @@
                             </div>
                         </div>
 
-                        <!-- Modal Restore Notification -->
                         <div id="restoreModal"
                             class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
                             <div class="bg-white rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
@@ -650,7 +641,7 @@
                             </div>
                         </div>
 
-                        <!-- Modal Archive Notification -->
+
                         <div id="archiveModal"
                             class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
                             <div class="bg-white rounded-2xl shadow-xl p-6 w-96 transform transition-all scale-95 opacity-0"
@@ -684,176 +675,11 @@
                             </div>
                         </div>
 
-                        <!-- Toast Container -->
                         <div id="toastContainer" class="toast-container"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Styles -->
-    <style>
-        .dropdown-item:hover {
-            background-color: #f3f4f6;
-        }
-
-        .dark .dropdown-item:hover {
-            background-color: #4b5563;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .chevron.open {
-            transform: rotate(180deg);
-        }
-
-        .dark #dropdown-content {
-            background-color: #374151;
-            border-color: #4b5563;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            background-color: white;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .form-select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
-        }
-
-        .text-danger-600 {
-            color: #dc2626;
-        }
-
-        .chevron-settings.open {
-            transform: rotate(180deg);
-        }
-
-        .dark .settings-dropdown {
-            background-color: #374151;
-            border-color: #4b5563;
-        }
-
-        input[type="checkbox"] {
-            transition: all 0.2s ease;
-        }
-
-        input[type="checkbox"]:checked {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
-        }
-
-        input[type="checkbox"]:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: rgba(59, 130, 246, 0.5);
-        }
-
-        .dark input[type="checkbox"] {
-            background-color: #374151;
-            border-color: #6b7280;
-        }
-
-        .dark input[type="checkbox"]:checked {
-            background-color: #60a5fa;
-            border-color: #60a5fa;
-        }
-
-        /* Toast Notification Styles */
-        .toast-container {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 9999;
-            pointer-events: none;
-        }
-
-        .notification-toast {
-            pointer-events: auto;
-        }
-
-        /* Loading Animation */
-        .loading-spinner {
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid transparent;
-            border-top: 2px solid currentColor;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Button Styles */
-        .btn-delete {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-delete:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            box-shadow: 0 6px 8px -1px rgba(239, 68, 68, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .btn-delete:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-archive {
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
-        }
-
-        .btn-archive:hover {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            box-shadow: 0 6px 8px -1px rgba(245, 158, 11, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .btn-restore {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.3);
-        }
-
-        .btn-restore:hover {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            box-shadow: 0 6px 8px -1px rgba(34, 197, 94, 0.4);
-            transform: translateY(-1px);
-        }
-    </style>
-
-    <!-- Load the external JavaScript file -->
     <script src="{{ asset('assets/js/notifications.js') }}"></script>
 @endsection

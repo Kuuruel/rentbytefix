@@ -275,7 +275,7 @@
                 }, 4500);
             }, 10);
         </script>
-    @endif{{-- Alert Messages --}}
+    @endif
     @if (session('success'))
         <div id="success-toast"
             style="
@@ -519,28 +519,6 @@
                                     Midtrans credential configuration for payment processing
                                 </p>
                             </div>
-
-                            {{-- Status Badge --}}
-                            {{-- @if ($hasData)
-                                <div class="flex items-center gap-2">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <i class="ri-check-circle-line mr-1"></i>
-                                        Configured
-                                    </span>
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        {{ $midtrans_settings->environment === 'production' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                        {{ ucfirst($midtrans_settings->environment) }}
-                                    </span>
-                                </div>
-                            @else
-                                <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                    <i class="ri-settings-line mr-1"></i>
-                                    Not Configured
-                                </span>
-                            @endif --}}
                         </div>
                     </div>
 
@@ -550,7 +528,7 @@
                             <form action="{{ route('admin.midtrans.store') }}" method="POST" id="midtransForm">
                                 @csrf
                                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-x-6">
-                                    {{-- Merchant ID --}}
+
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
                                             <label for="merchant_id"
@@ -569,7 +547,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- Client Key --}}
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
                                             <label for="client_key"
@@ -588,7 +565,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- Server Key --}}
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
                                             <label for="server_key"
@@ -602,7 +578,7 @@
                                                     placeholder="Masukkan Server Key" maxlength="255"
                                                     {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
 
-                                                <!-- Eye toggle button -->
+
                                                 <button type="button"
                                                     class="toggle-password absolute right-0 top-0 h-full flex items-center px-3 text-gray-500 hover:text-gray-700"
                                                     data-toggle="#server_key">
@@ -615,8 +591,6 @@
                                             @enderror
                                         </div>
                                     </div>
-
-                                    {{-- Environment --}}
                                     <div class="col-span-12 sm:col-span-6">
                                         <div class="mb-5">
                                             <label for="environment"
@@ -628,7 +602,7 @@
                                                 id="environment" name="environment"
                                                 {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
                                                 <option value="">Select Environment</option>
-                                                <option  value="sandbox"
+                                                <option value="sandbox"
                                                     {{ old('environment', $midtrans_settings->environment ?? '') == 'sandbox' ? 'selected' : '' }}>
                                                     Sandbox (Testing)
                                                 </option>
@@ -643,14 +617,12 @@
                                         </div>
                                     </div>
 
-                                    {{-- Webhook URL --}}
 
                                     <div class="col-span-12">
                                         <div class="mb-5">
                                             <label for="webhook_url"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">
                                                 Webhook / Notification URL
-                                                {{-- <span class="text-gray-400 text-xs">(Opsional)</span> --}}
                                             </label>
                                             <textarea name="webhook_url"
                                                 class="form-control rounded-lg text-primary-600 @error('webhook_url') border-danger-600 @enderror"
@@ -667,38 +639,24 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                {{-- Buttons --}}
                                 <div class="flex items-center justify-end gap-3 mt-6">
                                     @if ($hasData && !$isEditMode)
-                                        {{-- View Mode Buttons --}}
                                         <div id="viewMode">
-                                            {{-- <button type="button"
-                                                class="border border-gray-300 bg-white text-gray-700 text-base px-6 py-[10px] rounded-lg hover:bg-gray-50"
-                                                onclick="window.history.back()">
-                                                <i class="ri-arrow-left-line me-1"></i>
-                                                Back
-                                            </button> --}}
+
                                             <button type="button" id="editBtn"
                                                 class="btn btn-primary border border-primary-600 text-base px-6 py-[10px] rounded-lg">
                                                 <i class="ri-edit-line me-1"></i>
                                                 Edit Configuration
                                             </button>
                                         </div>
-
-                                        {{-- Edit Mode Buttons (Hidden by default) --}}
                                         <div id="editMode" class="d-none">
-                                            {{-- <button type="button" id="cancelBtn"
-                                                class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg hover:bg-danger-50">
-                                                Cancel
-                                            </button> --}}
+
                                             <button type="submit" id="submitBtn"
                                                 class="btn btn-primary border border-primary-600 text-base px-10 py-[10px] rounded-lg">
                                                 Update Configuration
                                             </button>
                                         </div>
                                     @else
-                                        {{-- New/Edit Mode Buttons --}}
                                         <button type="button"
                                             class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-base px-10 py-[10px] rounded-lg hover:bg-danger-50"
                                             onclick="window.history.back()">

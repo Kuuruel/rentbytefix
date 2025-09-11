@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    // 🎯 KONSTANTA UNTUK PLATFORM FEE
-    const PLATFORM_FEE_PERCENTAGE = 5; // 5% dari setiap transaksi sukses
-    const PAYMENT_GATEWAY_FEE = 2500; // Rp 2.500 per transaksi (flat fee)
+
+    const PLATFORM_FEE_PERCENTAGE = 5; 
+    const PAYMENT_GATEWAY_FEE = 2500; 
 
     public function index()
     {

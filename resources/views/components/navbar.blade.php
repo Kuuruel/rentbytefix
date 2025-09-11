@@ -193,8 +193,6 @@
         </div>
     </div>
 </div>
-
-<!-- Logout Confirmation Modal -->
 <div id="logoutModal"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] hidden opacity-0 transition-opacity duration-300 p-4">
     <div id="modalContent"
@@ -225,7 +223,6 @@
     </div>
 </div>
 
-<!-- Hidden Logout Form -->
 <form id="logoutForm" method="POST" action="{{ route('logout') }}" class="hidden">
     @csrf
 </form>

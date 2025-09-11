@@ -1,4 +1,3 @@
-// Global Variables
 let currentPage = 1;
 let currentTab = 'active';
 let searchTerm = '';
@@ -10,42 +9,31 @@ let deleteId = null;
 let archiveId = null;
 let restoreId = null;
 
-// Settings variables
 let currentSettings = {
     default_priority: 'Normal',
     default_delivery_methods: ['Dashboard']
 };
 
-// Flag untuk mencegah multiple event listeners
+
 let saveButtonInitialized = false;
 
-// ======================== DOM Ready =====================
+
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM Content Loaded');
 
-    // Load default settings PERTAMA
     loadSettings();
-
-    // Load tenants for dropdown
     loadTenants();
-
-    // Load notifications
     loadNotifications();
-
-    // Setup event listeners
     setupEventListeners();
-
-    // Load tenants from database
     loadTenantsFromDatabase();
 
-    // Setup save button HANYA SEKALI
     if (!saveButtonInitialized) {
         setupSaveButton();
         saveButtonInitialized = true;
     }
 });
 
-// ======================== Settings Functions =====================
+
 function loadSettings() {
     console.log('Loading settings...');
     fetch('/admin/notifications/get-settings')
@@ -67,14 +55,12 @@ function loadSettings() {
 function applyDefaultsToCreateForm() {
     console.log('Applying defaults to create form:', currentSettings);
 
-    // Set default priority
     const prioritySelect = document.getElementById('desig');
     if (prioritySelect && currentSettings.default_priority) {
         prioritySelect.value = currentSettings.default_priority;
         console.log('Priority set to:', currentSettings.default_priority);
     }
 
-    // Set default delivery methods
     if (currentSettings.default_delivery_methods && Array.isArray(currentSettings.default_delivery_methods)) {
         const deliveryCheckboxes = document.querySelectorAll('#dropdown-content input[type="checkbox"]');
         deliveryCheckboxes.forEach(cb => cb.checked = false);
@@ -109,13 +95,11 @@ function applyDefaultsToCreateForm() {
 function populateSettingsForm(settings) {
     console.log('Populating settings form with:', settings);
 
-    // Default priority
     const defaultPrioritySelect = document.getElementById('default-priority');
     if (defaultPrioritySelect) {
         defaultPrioritySelect.value = settings.default_priority || 'Normal';
     }
 
-    // Default delivery methods
     if (settings.default_delivery_methods && Array.isArray(settings.default_delivery_methods)) {
         const settingsCheckboxes = document.querySelectorAll('#settings-dropdown-content input[type="checkbox"]');
         settingsCheckboxes.forEach(cb => cb.checked = false);
@@ -137,7 +121,6 @@ function populateSettingsForm(settings) {
         updateSettingsSelection();
     }
 
-    // Push settings
     const notificationToggle = document.getElementById('notificationToggle');
     const displayNotifications = document.getElementById('displayNotifications');
 
@@ -216,7 +199,6 @@ function handleSaveSettings() {
         });
 }
 
-// ======================== Tenant Functions =====================
 function loadTenants() {
     fetch('/admin/notifications/get-tenants')
         .then(response => response.json())
@@ -360,7 +342,6 @@ function toggleTenantSelection(tenantId) {
     console.log('Selected tenants:', selectedTenants);
 }
 
-// ======================== Dropdown Functions =====================
 function toggleDropdown() {
     const content = document.getElementById('dropdown-content');
     const chevron = document.querySelector('.chevron');
@@ -437,7 +418,6 @@ function updateToggleText() {
     }
 }
 
-// ======================== Notifications Loading =====================
 function loadNotifications(page = 1) {
     const endpoint = currentTab === 'active' ?
         '/admin/notifications/get-all-notifications' :
@@ -459,7 +439,7 @@ function loadNotifications(page = 1) {
         target: targetFilter
     });
 
-    // Show loading state
+
     showLoadingState();
 
     fetch(`${endpoint}?${params}`)
@@ -506,7 +486,7 @@ function showLoadingState() {
 }
 
 function hideLoadingState() {
-    // Loading akan otomatis hilang ketika populateTable() dipanggil
+
 }
 
 function showErrorState() {
@@ -630,12 +610,12 @@ function getActionButtons(notif) {
         return `
             <div class="flex items-center justify-center gap-2">
                 <button onclick="archiveNotification(${notif.id})" 
-                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-warning-100 text-warning-600 hover:bg-warning-200 transition-colors"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-warning-100 text-warning-600 hover:bg-warning-200 dark:bg-warning-600/25 dark:text-warning-400 transition-colors"
                         title="Archive">
                     <iconify-icon icon="lucide:archive" class="text-sm"></iconify-icon>
                 </button>
                 <button onclick="deleteNotification(${notif.id})" 
-                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 transition-colors"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 dark:bg-danger-600/25 dark:text-danger-400 transition-colors"
                         title="Delete Permanently">
                     <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
                 </button>
@@ -645,12 +625,12 @@ function getActionButtons(notif) {
         return `
             <div class="flex items-center justify-center gap-2">
                 <button onclick="restoreNotification(${notif.id})" 
-                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-success-100 text-success-600 hover:bg-success-200 transition-colors"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-success-100 text-success-600 hover:bg-success-200 dark:bg-success-600/25 dark:text-success-400 transition-colors"
                         title="Restore">
                     <iconify-icon icon="lucide:rotate-ccw" class="text-sm"></iconify-icon>
                 </button>
                 <button onclick="deleteNotification(${notif.id})" 
-                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 transition-colors"
+                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 dark:bg-danger-600/25 dark:text-danger-400 transition-colors"
                         title="Delete Permanently">
                     <iconify-icon icon="lucide:trash-2" class="text-sm"></iconify-icon>
                 </button>
@@ -659,7 +639,7 @@ function getActionButtons(notif) {
     }
 }
 
-// ======================== Pagination =====================
+
 function updatePagination(pagination) {
     const paginationInfoId = currentTab === 'active' ? 'paginationInfo' : 'archivedPaginationInfo';
     const pageNumbersId = currentTab === 'active' ? 'pageNumbers' : 'archivedPageNumbers';
@@ -724,7 +704,7 @@ function createPageButton(text, page, isActive = false) {
     return button;
 }
 
-// ======================== Event Listeners =====================
+
 function setupEventListeners() {
     setupTabSwitching();
     setupSearchInputs();
@@ -877,7 +857,7 @@ function updateSelectedNotifications() {
     }
 }
 
-// ======================== Form Functions =====================
+
 function submitNotification() {
     const submitBtn = document.querySelector('button[onclick="submitNotification()"]');
     if (submitBtn.disabled) {
@@ -980,7 +960,7 @@ function getSelectedSettingsDeliveryMethods() {
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
-// ======================== Modal Functions =====================
+
 function deleteNotification(id) {
     deleteId = id;
     const modal = document.getElementById('deleteModal');
@@ -1044,7 +1024,6 @@ function closeRestoreModal() {
     }, 200);
 }
 
-// ======================== Modal Event Listeners =====================
 document.addEventListener('DOMContentLoaded', function () {
     // Delete confirmation
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
@@ -1083,7 +1062,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Archive confirmation
     const confirmArchiveBtn = document.getElementById('confirmArchiveBtn');
     if (confirmArchiveBtn) {
         confirmArchiveBtn.addEventListener('click', () => {
@@ -1125,7 +1103,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Restore confirmation
     const confirmRestoreBtn = document.getElementById('confirmRestoreBtn');
     if (confirmRestoreBtn) {
         confirmRestoreBtn.addEventListener('click', () => {
@@ -1163,7 +1140,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// ======================== Alert System =====================
 function showAlert(message, type = 'info', duration = 4000) {
     document.querySelectorAll('.notification-toast').forEach(n => n.remove());
 
@@ -1314,41 +1290,35 @@ function showAlert(message, type = 'info', duration = 4000) {
     }, timeout);
 }
 
-// ======================== URL Parameter Handling =====================
-// ======================== URL Parameter Handling =====================
 document.addEventListener('DOMContentLoaded', function () {
-    // Tunggu lebih lama untuk memastikan semua script tab sudah loaded
     setTimeout(function () {
         const urlParams = new URLSearchParams(window.location.search);
         const activeTab = urlParams.get('tab');
 
-        console.log('URL Params:', activeTab); // Debug
+        console.log('URL Params:', activeTab);
 
         if (activeTab === 'all-notifications') {
             const allNotificationsTab = document.getElementById('change-password-tab');
-            console.log('Tab element found:', allNotificationsTab); // Debug
+            console.log('Tab element found:', allNotificationsTab);
 
             if (allNotificationsTab) {
-                // Coba beberapa cara untuk memastikan tab aktif
                 allNotificationsTab.click();
 
-                // Jika click pertama tidak berhasil, coba lagi
                 setTimeout(() => {
                     allNotificationsTab.click();
-                    console.log('Second click attempt'); // Debug
+                    console.log('Second click attempt');
                 }, 100);
 
-                // Force trigger event jika masih belum berhasil
                 setTimeout(() => {
                     allNotificationsTab.dispatchEvent(new Event('click', { bubbles: true }));
-                    console.log('Force event trigger'); // Debug
+                    console.log('Force event trigger');
                 }, 200);
             }
         }
-    }, 10); // Delay 1 detik untuk memastikan semua sudah loaded
+    }, 10);
 });
 
-// ======================== Real-time Settings Sync =====================
+
 document.addEventListener('change', function (e) {
     if (e.target.id === 'default-priority') {
         currentSettings.default_priority = e.target.value;
@@ -1366,7 +1336,7 @@ document.addEventListener('change', function (e) {
     }
 });
 
-// ======================== Debug Functions =====================
+
 function debugFilterElements() {
     console.log('=== DEBUG FILTER ELEMENTS ===');
     console.log('archivedTargetFilter:', document.getElementById('archivedTargetFilter'));
@@ -1387,6 +1357,5 @@ function checkFilterElements() {
     console.log('Active searchInput:', document.getElementById('searchInput'));
 }
 
-// Call debug functions
 setTimeout(debugFilterElements, 2000);
 setTimeout(checkFilterElements, 1000);
