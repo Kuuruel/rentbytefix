@@ -97,9 +97,6 @@
                 </div>
             </div>
         </div>
-
-
-
         <!-- Card Monthly Billings -->
         <!-- Card Platform Revenue -->
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">

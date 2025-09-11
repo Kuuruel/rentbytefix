@@ -17,7 +17,8 @@
         </div>
         <div class="col-auto">
             <div class="flex flex-wrap items-center gap-3">
-                <button type="button" id="theme-toggle" class="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center">
+                <button type="button" id="theme-toggle"
+                    class="w-10 h-10 bg-neutral-200 dark:bg-neutral-700 dark:text-white rounded-full flex justify-center items-center">
                     <span id="theme-toggle-dark-icon" class="hidden">
                         <i class="ri-sun-line"></i>
                     </span>
@@ -26,18 +27,25 @@
                     </span>
                 </button>
 
-                <div id="dropdownMessage" class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
-                    <div class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 m-4 flex items-center justify-between gap-2">
+                <div id="dropdownMessage"
+                    class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
+                    <div
+                        class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 m-4 flex items-center justify-between gap-2">
                         <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">Message</h6>
-                        <span class="w-10 h-10 bg-white dark:bg-neutral-600 text-primary-600 dark:text-white font-bold flex justify-center items-center rounded-full">05</span>
+                        <span
+                            class="w-10 h-10 bg-white dark:bg-neutral-600 text-primary-600 dark:text-white font-bold flex justify-center items-center rounded-full">05</span>
                     </div>
                     <div class="scroll-sm !border-t-0">
                         <div class="max-h-[400px] overflow-y-auto">
-                            <a href="javascript:void(0)" class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 justify-between gap-1">
+                            <a href="javascript:void(0)"
+                                class="flex px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 justify-between gap-1">
                                 <div class="flex items-center gap-3">
                                     <div class="flex-shrink-0 relative">
-                                        <img class="rounded-full w-11 h-11" src="{{ asset('assets/images/notification/profile-3.png') }}" alt="Joseph image">
-                                        <span class="absolute end-[2px] bottom-[2px] w-2.5 h-2.5 bg-success-500 border border-white rounded-full dark:border-gray-600"></span>
+                                        <img class="rounded-full w-11 h-11"
+                                            src="{{ asset('assets/images/notification/profile-3.png') }}"
+                                            alt="Joseph image">
+                                        <span
+                                            class="absolute end-[2px] bottom-[2px] w-2.5 h-2.5 bg-success-500 border border-white rounded-full dark:border-gray-600"></span>
                                     </div>
                                     <div>
                                         <h6 class="text-sm fw-semibold mb-1">Kathryn Murphy</h6>
@@ -46,12 +54,15 @@
                                 </div>
                                 <div class="shrink-0 flex flex-col items-end gap-1">
                                     <span class="text-sm text-neutral-500">12:30 PM</span>
-                                    <span class="w-4 h-4 text-xs bg-warning-600 text-white rounded-full flex justify-center items-center">8</span>
+                                    <span
+                                        class="w-4 h-4 text-xs bg-warning-600 text-white rounded-full flex justify-center items-center">8</span>
                                 </div>
                             </a>
                         </div>
                         <div class="text-center py-3 px-4">
-                            <a href="javascript:void(0)" class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">See All Message</a>
+                            <a href="javascript:void(0)"
+                                class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">See
+                                All Message</a>
                         </div>
                     </div>
                 </div>
@@ -63,10 +74,13 @@
                     <span id="notificationBadge"
                         class="absolute -top-1 -right-1 w-5 h-5 bg-danger-600 text-white rounded-full text-xs flex items-center justify-center hidden">0</span>
                 </button>
-                <div id="dropdownNotification" class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
-                    <div class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 m-4 flex items-center justify-between gap-2">
+                <div id="dropdownNotification"
+                    class="z-10 hidden bg-white dark:bg-neutral-700 rounded-2xl overflow-hidden shadow-lg max-w-[394px] w-full">
+                    <div
+                        class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 m-4 flex items-center justify-between gap-2">
                         <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">Notification</h6>
-                        <span id="notificationCount" class="w-10 h-10 bg-white dark:bg-neutral-600 text-primary-600 dark:text-white font-bold flex justify-center items-center rounded-full">0</span>
+                        <span id="notificationCount"
+                            class="w-10 h-10 bg-white dark:bg-neutral-600 text-primary-600 dark:text-white font-bold flex justify-center items-center rounded-full">0</span>
                     </div>
                     <div class="scroll-sm !border-t-0">
                         <div class="max-h-[400px] overflow-y-auto" id="notificationList">
@@ -75,58 +89,62 @@
                             </div>
                         </div>
                         <div class="text-center py-3 px-4">
-                            <a href="/super-admin/index7?tab=all-notifications" class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">
-                                See All Notifications
-                            </a>
+                            @if (Auth::guard('web')->check() && Auth::user()->role === 'admin')
+                                <a href="/super-admin/index7?tab=all-notifications"
+                                    class="text-primary-600 dark:text-primary-600 font-semibold hover:underline text-center">
+                                    See All Notifications
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
 
-                <button data-dropdown-toggle="dropdownProfile" class="flex justify-center items-center rounded-full" type="button">
-                    @if(Auth::guard('web')->check())
-                        @if(Auth::user()->img)
-                            <img src="{{ asset('assets/images/super-admin/' . Auth::user()->img) }}"
-                                alt="image"
+                <button data-dropdown-toggle="dropdownProfile" class="flex justify-center items-center rounded-full"
+                    type="button">
+                    @if (Auth::guard('web')->check())
+                        @if (Auth::user()->img)
+                            <img src="{{ asset('assets/images/super-admin/' . Auth::user()->img) }}" alt="image"
                                 class="w-10 h-10 object-cover rounded-full">
                         @else
-                            <img src="{{ asset('assets/images/user.png') }}"
-                                alt="image"
+                            <img src="{{ asset('assets/images/user.png') }}" alt="image"
                                 class="w-10 h-10 object-cover rounded-full">
                         @endif
                     @elseif(Auth::guard('tenant')->check())
-                        @if(Auth::guard('tenant')->user()->avatar)
+                        @if (Auth::guard('tenant')->user()->avatar)
                             <img src="{{ asset('assets/images/tenants/' . Auth::guard('tenant')->user()->avatar) }}"
-                                alt="image"
-                                class="w-10 h-10 object-cover rounded-full">
+                                alt="image" class="w-10 h-10 object-cover rounded-full">
                         @else
-                            <img src="{{ asset('assets/images/user.png') }}"
-                                alt="image"
+                            <img src="{{ asset('assets/images/user.png') }}" alt="image"
                                 class="w-10 h-10 object-cover rounded-full">
                         @endif
                     @else
-                        <img src="{{ asset('assets/images/user.png') }}"
-                            alt="image"
+                        <img src="{{ asset('assets/images/user.png') }}" alt="image"
                             class="w-10 h-10 object-cover rounded-full">
                     @endif
                 </button>
 
-                <div id="dropdownProfile" class="z-10 hidden bg-white dark:bg-neutral-700 rounded-lg shadow-lg dropdown-menu-sm p-3">
-                    <div class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 mb-4 flex items-center justify-between gap-2">
+                <div id="dropdownProfile"
+                    class="z-10 hidden bg-white dark:bg-neutral-700 rounded-lg shadow-lg dropdown-menu-sm p-3">
+                    <div
+                        class="py-3 px-4 rounded-lg bg-primary-50 dark:bg-primary-600/25 mb-4 flex items-center justify-between gap-2">
                         <div>
-                            <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</h6>
-                            <span class="text-neutral-500">{{ Auth::check() ? ucfirst(Auth::user()->role) : 'User' }}</span>
+                            <h6 class="text-lg text-neutral-900 dark:text-neutral-200 font-semibold mb-0">
+                                {{ Auth::check() ? Auth::user()->name : 'Guest' }}</h6>
+                            <span
+                                class="text-neutral-500">{{ Auth::check() ? ucfirst(Auth::user()->role) : 'User' }}</span>
                         </div>
-                        <button id="closeProfileDropdown" type="button" class="hover:text-danger-600" aria-label="Tutup">
+                        <button id="closeProfileDropdown" type="button" class="hover:text-danger-600"
+                            aria-label="Tutup">
                             <iconify-icon icon="radix-icons:cross-1" class="icon text-xl"></iconify-icon>
                         </button>
                     </div>
 
                     <div class="max-h-[400px] overflow-y-auto scroll-sm pe-2">
                         <ul class="flex flex-col">
-                            @if(Auth::guard('web')->check())
+                            @if (Auth::guard('web')->check())
                                 <li>
                                     <a class="text-black dark:text-white px-0 py-2 hover:text-primary-600 flex items-center gap-4"
-                                    href="{{ route('viewProfileAdmin', ['id' => Auth::user()->id]) }}">
+                                        href="{{ route('viewProfileAdmin', ['id' => Auth::user()->id]) }}">
                                         <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
                                         My Profile
                                     </a>
@@ -134,7 +152,7 @@
                             @elseif(Auth::guard('tenant')->check())
                                 <li>
                                     <a class="text-black dark:text-white px-0 py-2 hover:text-primary-600 flex items-center gap-4"
-                                    href="{{ route('viewProfileTenant', ['id' => Auth::guard('tenant')->user()->id]) }}">
+                                        href="{{ route('viewProfileTenant', ['id' => Auth::guard('tenant')->user()->id]) }}">
                                         <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
                                         My Profile
                                     </a>
@@ -142,14 +160,15 @@
                             @else
                                 <li>
                                     <a class="text-black dark:text-white px-0 py-2 hover:text-primary-600 flex items-center gap-4"
-                                    href="{{ route('viewProfile') }}">
+                                        href="{{ route('viewProfile') }}">
                                         <iconify-icon icon="solar:user-linear" class="icon text-xl"></iconify-icon>
                                         My Profile
                                     </a>
                                 </li>
                             @endif
                             <li>
-                                <button id="logoutButton" class="text-black dark:text-white px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left bg-transparent border-0">
+                                <button id="logoutButton"
+                                    class="text-black dark:text-white px-0 py-2 hover:text-danger-600 flex items-center gap-4 w-full text-left bg-transparent border-0">
                                     <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
                                 </button>
                             </li>
@@ -162,31 +181,30 @@
 </div>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] hidden opacity-0 transition-opacity duration-300 p-4">
-    <div id="modalContent" class="bg-white dark:bg-neutral-800 rounded-lg p-4 sm:p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
+<div id="logoutModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] hidden opacity-0 transition-opacity duration-300 p-4">
+    <div id="modalContent"
+        class="bg-white dark:bg-neutral-800 rounded-lg p-4 sm:p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
         <div class="flex items-center gap-3 mb-4">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+            <div
+                class="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0">
                 <iconify-icon icon="lucide:log-out" class="text-red-600 text-base sm:text-lg"></iconify-icon>
             </div>
-            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white leading-tight">Konfirmasi Logout</h2>
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white leading-tight">Konfirmasi Logout
+            </h2>
         </div>
-        
-        <p class="mb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Apakah kamu yakin ingin keluar dari Rentbyte?</p>
-        
+
+        <p class="mb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Apakah kamu yakin ingin
+            keluar dari Rentbyte?</p>
+
         <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
-            <button 
-                id="cancelButton" 
-                type="button"
-                class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-white transition-colors text-sm sm:text-base font-medium"
-            >
+            <button id="cancelButton" type="button"
+                class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-white transition-colors text-sm sm:text-base font-medium">
                 Batal
             </button>
-            
-            <button 
-                id="confirmLogout" 
-                type="button"
-                class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-sm sm:text-base font-medium"
-            >
+
+            <button id="confirmLogout" type="button"
+                class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-sm sm:text-base font-medium">
                 Ya, Keluar
             </button>
         </div>
@@ -199,176 +217,183 @@
 </form>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // ============= LOGOUT MODAL FUNCTIONALITY =============
-    const logoutButton = document.getElementById('logoutButton');
-    const logoutModal = document.getElementById('logoutModal');
-    const modalContent = document.getElementById('modalContent');
-    const cancelButton = document.getElementById('cancelButton');
-    const confirmLogout = document.getElementById('confirmLogout');
-    const logoutForm = document.getElementById('logoutForm');
-    const dropdownProfile = document.getElementById('dropdownProfile');
-    const closeProfileBtn = document.getElementById('closeProfileDropdown');
-    const profileToggleBtn = document.querySelector('[data-dropdown-toggle="dropdownProfile"]');
+    document.addEventListener('DOMContentLoaded', function() {
+        // ============= LOGOUT MODAL FUNCTIONALITY =============
+        const logoutButton = document.getElementById('logoutButton');
+        const logoutModal = document.getElementById('logoutModal');
+        const modalContent = document.getElementById('modalContent');
+        const cancelButton = document.getElementById('cancelButton');
+        const confirmLogout = document.getElementById('confirmLogout');
+        const logoutForm = document.getElementById('logoutForm');
+        const dropdownProfile = document.getElementById('dropdownProfile');
+        const closeProfileBtn = document.getElementById('closeProfileDropdown');
+        const profileToggleBtn = document.querySelector('[data-dropdown-toggle="dropdownProfile"]');
 
-    function openModal() {
-        logoutModal.classList.remove('hidden');
-        logoutModal.offsetHeight; // Force reflow
-        logoutModal.classList.remove('opacity-0');
-        modalContent.classList.remove('scale-95');
-        modalContent.classList.add('scale-100');
-        document.body.style.overflow = 'hidden';
-    }
+        function openModal() {
+            logoutModal.classList.remove('hidden');
+            logoutModal.offsetHeight; // Force reflow
+            logoutModal.classList.remove('opacity-0');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+            document.body.style.overflow = 'hidden';
+        }
 
-    function closeModal() {
-        logoutModal.classList.add('opacity-0');
-        modalContent.classList.remove('scale-100');
-        modalContent.classList.add('scale-95');
-        document.body.style.overflow = '';
-        setTimeout(() => {
-            logoutModal.classList.add('hidden');
-        }, 300);
-    }
+        function closeModal() {
+            logoutModal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                logoutModal.classList.add('hidden');
+            }, 300);
+        }
 
-    if (closeProfileBtn && dropdownProfile) {
-        closeProfileBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownProfile.classList.add('hidden');
-            if (profileToggleBtn) profileToggleBtn.setAttribute('aria-expanded', 'false');
-        });
-    }
-
-    document.addEventListener('click', function(e) {
-        if (!dropdownProfile.classList.contains('hidden')) {
-            if (!dropdownProfile.contains(e.target) && !profileToggleBtn.contains(e.target)) {
+        if (closeProfileBtn && dropdownProfile) {
+            closeProfileBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
                 dropdownProfile.classList.add('hidden');
                 if (profileToggleBtn) profileToggleBtn.setAttribute('aria-expanded', 'false');
-            }
+            });
         }
-    });
 
-    if (logoutButton) {
-        logoutButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            openModal();
+        document.addEventListener('click', function(e) {
+            if (!dropdownProfile.classList.contains('hidden')) {
+                if (!dropdownProfile.contains(e.target) && !profileToggleBtn.contains(e.target)) {
+                    dropdownProfile.classList.add('hidden');
+                    if (profileToggleBtn) profileToggleBtn.setAttribute('aria-expanded', 'false');
+                }
+            }
         });
-    }
-    
-    if (cancelButton) {
-        cancelButton.addEventListener('click', closeModal);
-    }
 
-    if (logoutModal) {
-        logoutModal.addEventListener('click', function(e) {
-            if (e.target === logoutModal) {
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal();
+            });
+        }
+
+        if (cancelButton) {
+            cancelButton.addEventListener('click', closeModal);
+        }
+
+        if (logoutModal) {
+            logoutModal.addEventListener('click', function(e) {
+                if (e.target === logoutModal) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (confirmLogout) {
+            confirmLogout.addEventListener('click', function() {
+                logoutForm.submit();
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
                 closeModal();
             }
         });
-    }
 
-    if (confirmLogout) {
-        confirmLogout.addEventListener('click', function() {
-            logoutForm.submit();
-        });
-    }
+        // ============= NOTIFICATION FUNCTIONALITY =============
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !logoutModal.classList.contains('hidden')) {
-            closeModal();
-        }
-    });
+        function loadNavbarNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            const notificationCount = document.getElementById('notificationCount');
+            const notificationBadge = document.getElementById('notificationBadge');
+            const loadingElement = document.getElementById('notificationLoading');
 
-    // ============= NOTIFICATION FUNCTIONALITY =============
-    
-    // Load notifications for dropdown navbar
-    function loadNavbarNotifications() {
-        const notificationList = document.getElementById('notificationList');
-        const notificationCount = document.getElementById('notificationCount');
-        const notificationBadge = document.getElementById('notificationBadge');
-        const loadingElement = document.getElementById('notificationLoading');
+            if (loadingElement) {
+                loadingElement.style.display = 'block';
+            }
 
-        if (loadingElement) {
-            loadingElement.style.display = 'block';
-        }
+            // Tentukan endpoint berdasarkan guard yang aktif
+            let endpoint = '/admin/notifications/get-notifications';
 
-        fetch('/admin/notifications/get-notifications')
-            .then(response => response.json())
-            .then(data => {
-                if (loadingElement) {
-                    loadingElement.style.display = 'none';
-                }
+            // Check if tenant is logged in
+            @if (Auth::guard('tenant')->check())
+                endpoint = '/tenant/notifications/get-notifications';
+            @endif
 
-                if (data.notifications && notificationList) {
-                    populateNavbarNotifications(data.notifications);
-                }
-
-                // Update counters
-                if (notificationCount) {
-                    notificationCount.textContent = data.total_count || 0;
-                }
-
-                if (notificationBadge) {
-                    if (data.unread_count > 0) {
-                        notificationBadge.textContent = data.unread_count;
-                        notificationBadge.classList.remove('hidden');
-                    } else {
-                        notificationBadge.classList.add('hidden');
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none';
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error loading navbar notifications:', error);
-                if (loadingElement) {
-                    loadingElement.style.display = 'none';
-                }
-                if (notificationList) {
-                    notificationList.innerHTML =
-                        '<div class="text-center py-4"><span class="text-sm text-red-500">Error loading notifications</span></div>';
-                }
-            });
-    }
 
-    // Populate navbar notification dropdown
-    function populateNavbarNotifications(notifications) {
-        const notificationList = document.getElementById('notificationList');
+                    if (data.notifications && notificationList) {
+                        populateNavbarNotifications(data.notifications);
+                    }
 
-        if (!notificationList) return;
+                    // Update counters
+                    if (notificationCount) {
+                        notificationCount.textContent = data.total_count || 0;
+                    }
 
-        if (notifications.length === 0) {
-            notificationList.innerHTML = `
+                    if (notificationBadge) {
+                        if (data.unread_count > 0) {
+                            notificationBadge.textContent = data.unread_count;
+                            notificationBadge.classList.remove('hidden');
+                        } else {
+                            notificationBadge.classList.add('hidden');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading navbar notifications:', error);
+                    if (loadingElement) {
+                        loadingElement.style.display = 'none';
+                    }
+                    if (notificationList) {
+                        notificationList.innerHTML =
+                            '<div class="text-center py-4"><span class="text-sm text-red-500">Error loading notifications</span></div>';
+                    }
+                });
+        }
+        // Populate navbar notification dropdown
+        function populateNavbarNotifications(notifications) {
+            const notificationList = document.getElementById('notificationList');
+
+            if (!notificationList) return;
+
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
             <div class="text-center py-8">
                 <iconify-icon icon="lucide:bell-off" class="text-4xl text-gray-400 mb-2"></iconify-icon>
                 <p class="text-sm text-gray-500 dark:text-gray-400">No notifications</p>
             </div>
         `;
-            return;
+                return;
+            }
+
+            notificationList.innerHTML = '';
+
+            notifications.forEach(notification => {
+                const notificationItem = createNavbarNotificationItem(notification);
+                notificationList.appendChild(notificationItem);
+            });
         }
 
-        notificationList.innerHTML = '';
+        // Create navbar notification item
+        function createNavbarNotificationItem(notification) {
+            const item = document.createElement('div');
 
-        notifications.forEach(notification => {
-            const notificationItem = createNavbarNotificationItem(notification);
-            notificationList.appendChild(notificationItem);
-        });
-    }
+            // Priority colors
+            const priorityColors = getPriorityColor(notification.priority);
 
-    // Create navbar notification item
-    function createNavbarNotificationItem(notification) {
-        const item = document.createElement('div');
+            // Background for read/unread status
+            const backgroundClass = !notification.is_read ? 'bg-gray-100 dark:bg-gray-800' :
+                'bg-white dark:bg-neutral-700';
 
-        // Priority colors
-        const priorityColors = getPriorityColor(notification.priority);
+            item.className =
+                `px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-all duration-200 ${backgroundClass}`;
 
-        // Background for read/unread status
-        const backgroundClass = !notification.is_read ? 'bg-gray-100 dark:bg-gray-800' : 'bg-white dark:bg-neutral-700';
+            item.onclick = () => markNotificationAsRead(notification.id);
 
-        item.className =
-            `px-4 py-3 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0 transition-all duration-200 ${backgroundClass}`;
-
-        item.onclick = () => markNotificationAsRead(notification.id);
-
-        item.innerHTML = `
+            item.innerHTML = `
         <div class="flex items-start gap-3">
             <div class="flex-shrink-0 mt-1 relative">
                 <div class="w-6 h-6 rounded-full flex items-center justify-center">
@@ -412,136 +437,146 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     `;
 
-        return item;
-    }
-
-    // Get priority color
-    function getPriorityColor(priority) {
-        switch (priority) {
-            case 'Critical':
-                return {
-                    bg: 'bg-danger-100',
-                    icon: 'bg-danger-500'
-                };
-            case 'Important':
-                return {
-                    bg: 'bg-warning-100',
-                    icon: 'bg-warning-500'
-                };
-            case 'Normal':
-            default:
-                return {
-                    bg: 'bg-primary-100',
-                    icon: 'bg-primary-500'
-                };
-        }
-    }
-
-    // Mark notification as read
-    function markNotificationAsRead(notificationId) {
-        // Update UI immediately for instant feedback
-        const notificationElement = event.target.closest('div[class*="px-4 py-3"]');
-        if (notificationElement) {
-            notificationElement.className = notificationElement.className.replace('bg-blue-100 dark:bg-blue-900/40',
-                'bg-white dark:bg-neutral-700');
+            return item;
         }
 
-        fetch(`/admin/notifications/${notificationId}/mark-read`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Reload navbar notifications to update badge count and status
-                    loadNavbarNotifications();
-                } else {
-                    // If failed, revert to original state
+        // Get priority color
+        function getPriorityColor(priority) {
+            switch (priority) {
+                case 'Critical':
+                    return {
+                        bg: 'bg-danger-100',
+                            icon: 'bg-danger-500'
+                    };
+                case 'Important':
+                    return {
+                        bg: 'bg-warning-100',
+                            icon: 'bg-warning-500'
+                    };
+                case 'Normal':
+                default:
+                    return {
+                        bg: 'bg-primary-100',
+                            icon: 'bg-primary-500'
+                    };
+            }
+        }
+
+
+
+        function markNotificationAsRead(notificationId) {
+            // Update UI immediately for instant feedback
+            const notificationElement = event.target.closest('div[class*="px-4 py-3"]');
+            if (notificationElement) {
+                notificationElement.className = notificationElement.className.replace(
+                    'bg-blue-100 dark:bg-blue-900/40',
+                    'bg-white dark:bg-neutral-700');
+            }
+
+            // Tentukan endpoint berdasarkan guard yang aktif
+            let endpoint = `/admin/notifications/${notificationId}/mark-read`;
+
+            @if (Auth::guard('tenant')->check())
+                endpoint = `/tenant/notifications/${notificationId}/mark-read`;
+            @endif
+
+            fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                            'content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload navbar notifications to update badge count and status
+                        loadNavbarNotifications();
+                    } else {
+                        // If failed, revert to original state
+                        if (notificationElement) {
+                            notificationElement.className = notificationElement.className.replace(
+                                'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking notification as read:', error);
+                    // If error, revert to original state
                     if (notificationElement) {
                         notificationElement.className = notificationElement.className.replace(
                             'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
                     }
-                }
-            })
-            .catch(error => {
-                console.error('Error marking notification as read:', error);
-                // If error, revert to original state
-                if (notificationElement) {
-                    notificationElement.className = notificationElement.className.replace(
-                        'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
-                }
-            });
-    }
-
-    // Real-time notification with faster polling
-    function startNotificationAutoRefresh() {
-        // Poll every 5 seconds for real-time notifications
-        setInterval(() => {
-            loadNavbarNotifications();
-        }, 5000); // 5 seconds
-    }
-
-    // Instant notification check for new notifications
-    function checkForNewNotifications() {
-        loadNavbarNotifications();
-    }
-
-    // WebSocket or Server-Sent Events listener (if available)
-    function initializeRealTimeNotifications() {
-        // If using WebSocket
-        if (typeof window.Echo !== 'undefined') {
-            window.Echo.channel('notifications')
-                .listen('NewNotification', (e) => {
-                    checkForNewNotifications();
                 });
         }
 
-        // Or using EventSource for Server-Sent Events
-        if (typeof EventSource !== 'undefined') {
-            const eventSource = new EventSource('/admin/notifications/stream');
-            eventSource.onmessage = function(event) {
-                checkForNewNotifications();
-            };
+        // Real-time notification with faster polling
+        function startNotificationAutoRefresh() {
+            // Poll every 5 seconds for real-time notifications
+            setInterval(() => {
+                loadNavbarNotifications();
+            }, 5000); // 5 seconds
         }
-    }
 
-    // ============= INITIALIZATION =============
-    
-    // Load initial notifications
-    loadNavbarNotifications();
+        // Instant notification check for new notifications
+        function checkForNewNotifications() {
+            loadNavbarNotifications();
+        }
 
-    // Start auto refresh with faster interval
-    startNotificationAutoRefresh();
+        // WebSocket or Server-Sent Events listener (if available)
+        function initializeRealTimeNotifications() {
+            // If using WebSocket
+            if (typeof window.Echo !== 'undefined') {
+                window.Echo.channel('notifications')
+                    .listen('NewNotification', (e) => {
+                        checkForNewNotifications();
+                    });
+            }
 
-    // Initialize real-time notifications
-    initializeRealTimeNotifications();
+            // Or using EventSource for Server-Sent Events
+            if (typeof EventSource !== 'undefined') {
+                const eventSource = new EventSource('/admin/notifications/stream');
+                eventSource.onmessage = function(event) {
+                    checkForNewNotifications();
+                };
+            }
+        }
 
-    // Refresh notifications when dropdown is opened
-    const notificationButton = document.getElementById('notificationButton');
-    if (notificationButton) {
-        notificationButton.addEventListener('click', function() {
+        // ============= INITIALIZATION =============
+
+        // Load initial notifications
+        loadNavbarNotifications();
+
+        // Start auto refresh with faster interval
+        startNotificationAutoRefresh();
+
+        // Initialize real-time notifications
+        initializeRealTimeNotifications();
+
+        // Refresh notifications when dropdown is opened
+        const notificationButton = document.getElementById('notificationButton');
+        if (notificationButton) {
+            notificationButton.addEventListener('click', function() {
+                checkForNewNotifications();
+            });
+        }
+
+        // Refresh when window gets focus (user returns to tab)
+        window.addEventListener('focus', function() {
             checkForNewNotifications();
         });
-    }
 
-    // Refresh when window gets focus (user returns to tab)
-    window.addEventListener('focus', function() {
-        checkForNewNotifications();
+        // Refresh when there's mouse/keyboard activity (user is active)
+        let lastActivity = Date.now();
+        document.addEventListener('mousemove', function() {
+            const now = Date.now();
+            if (now - lastActivity > 10000) { // 10 seconds since last activity
+                checkForNewNotifications();
+                lastActivity = now;
+            }
+        });
     });
-
-    // Refresh when there's mouse/keyboard activity (user is active)
-    let lastActivity = Date.now();
-    document.addEventListener('mousemove', function() {
-        const now = Date.now();
-        if (now - lastActivity > 10000) { // 10 seconds since last activity
-            checkForNewNotifications();
-            lastActivity = now;
-        }
-    });
-});
 </script>
 
 <style>

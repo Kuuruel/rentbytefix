@@ -346,4 +346,9 @@ Route::middleware(['auth:web,tenant'])->group(function () {
         Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
         Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
     });
+    // Routes untuk tenant notifications
+    Route::middleware(['auth:tenant'])->group(function () {
+        Route::get('/tenant/notifications/get-notifications', [App\Http\Controllers\Admin\NotificationController::class, 'getTenantNotifications']);
+        Route::post('/tenant/notifications/{id}/mark-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsReadTenant']);
+    });
 });
