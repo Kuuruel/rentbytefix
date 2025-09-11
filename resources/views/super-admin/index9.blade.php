@@ -624,11 +624,11 @@
                                                 Environment <span class="text-danger-600">*</span>
                                             </label>
                                             <select
-                                                class="form-control rounded-lg form-select @error('environment') border-danger-600 @enderror"
+                                                class="form-control bg-rounded-lg form-select @error('environment') border-danger-600 @enderror"
                                                 id="environment" name="environment"
                                                 {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
-                                                <option value="">Pilih Environment</option>
-                                                <option value="sandbox"
+                                                <option value="">Select Environment</option>
+                                                <option  value="sandbox"
                                                     {{ old('environment', $midtrans_settings->environment ?? '') == 'sandbox' ? 'selected' : '' }}>
                                                     Sandbox (Testing)
                                                 </option>

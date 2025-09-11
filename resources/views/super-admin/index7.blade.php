@@ -74,6 +74,17 @@
                                 All Notifications
                             </button>
                         </li>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Cek URL untuk mengaktifkan tab yang tepat
+                                if (window.location.hash === '#change-password' ||
+                                    new URLSearchParams(window.location.search).get('tab') === 'all-notifications') {
+
+                                    // Klik tab All Notifications
+                                    document.getElementById('change-password-tab').click();
+                                }
+                            });
+                        </script>
                     </ul>
                     <div id="default-tab-content">
                         <div class="hidden" id="edit-profile" role="tabpanel" aria-labelledby="edit-profile-tab">
@@ -498,7 +509,7 @@
                                 <div class="col-span-1">
                                     <div class="mb-0">
                                         <label
-                                            class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-3">
+                                            class="inline-block font-semibold text-neutral-600 dark:text-neutral-200  text-sm mb-3">
                                             Default Delivery Method
                                         </label>
                                         <div class="dropdown-container-settings" style="position: relative; width: 100%;">
@@ -507,7 +518,8 @@
                                                 style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; background-color: white; border: 1px solid #d1d5db;">
                                                 <span id="settings-selected-text">Select delivery methods...</span>
                                             </button>
-                                            <div id="settings-dropdown-content" class="hidden settings-dropdown"
+                                            <div id="settings-dropdown-content"
+                                                class="hidden settings-dropdown dark:bg-gray-900"
                                                 style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 1000; max-height: 200px; overflow-y: auto;">
                                                 <div class="dropdown-item"
                                                     onclick="toggleSettingsOption('settings-dashboard')"

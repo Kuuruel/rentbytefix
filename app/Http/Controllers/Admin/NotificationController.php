@@ -15,6 +15,75 @@ use Illuminate\Support\Facades\Validator;
 class NotificationController extends Controller
 {
     // Halaman utama notifications (sama seperti index7)
+    // ========== TAMBAH METHOD BARU UNTUK TENANT ==========
+
+    // Get notifications khusus untuk tenant
+    public function getTenantNotifications(Request $request)
+    {
+        // Pastikan tenant yang sedang login
+        if (!Auth::guard('tenant')->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $tenantId = Auth::guard('tenant')->id();
+        $settings = NotificationSetting::getCurrentSettings();
+        $limit = $settings->dashboard_display_count;
+
+        $notifications = Notification::getForTenant($tenantId, $limit);
+        $unreadCount = Notification::getUnreadCountForTenant($tenantId);
+
+        $notificationData = $notifications->map(function ($notification) use ($tenantId) {
+            return [
+                'id' => $notification->id,
+                'title' => $notification->title,
+                'message' => strlen($notification->message) > 60
+                    ? substr($notification->message, 0, 60) . '...'
+                    : $notification->message,
+                'priority' => $notification->priority,
+                'priority_badge' => $notification->priority_badge,
+                'created_at' => $notification->created_at->diffForHumans(),
+                'is_read' => $notification->isReadByTenant($tenantId)
+            ];
+        });
+
+        return response()->json([
+            'notifications' => $notificationData,
+            'unread_count' => $unreadCount,
+            'total_count' => $notifications->count()
+        ]);
+    }
+
+    // Mark notification sebagai read untuk tenant
+    public function markAsReadTenant(Request $request, $id)
+    {
+        if (!Auth::guard('tenant')->check()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $notification = Notification::findOrFail($id);
+        $tenantId = Auth::guard('tenant')->id();
+
+        // Verifikasi notifikasi ini untuk tenant ini
+        if (!$notification->isForTenant($tenantId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notification not found'
+            ], 404);
+        }
+
+        $notification->markAsReadByTenant($tenantId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification marked as read'
+        ]);
+    }
     public function index()
     {
         $settings = NotificationSetting::getCurrentSettings();

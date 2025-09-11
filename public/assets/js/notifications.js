@@ -459,6 +459,9 @@ function loadNotifications(page = 1) {
         target: targetFilter
     });
 
+    // Show loading state
+    showLoadingState();
+
     fetch(`${endpoint}?${params}`)
         .then(response => response.json())
         .then(data => {
@@ -470,7 +473,68 @@ function loadNotifications(page = 1) {
         .catch(error => {
             console.error('Error loading notifications:', error);
             showAlert('Error loading notifications', 'error');
+            showErrorState();
+        })
+        .finally(() => {
+            hideLoadingState();
         });
+}
+
+function showLoadingState() {
+    const tbodyId = currentTab === 'active' ? 'tableBody' : 'archivedTableBody';
+    let tbody = document.querySelector(`#${tbodyId}`);
+
+    if (!tbody) {
+        const activeTabContent = document.querySelector(currentTab === 'active' ? '#styled-todoList' : '#styled-recentLead');
+        if (activeTabContent) {
+            tbody = activeTabContent.querySelector('tbody');
+        }
+    }
+
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-12">
+                    <div class="flex flex-col items-center justify-center space-y-3">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                        <p class="text-neutral-500 text-sm">Loading notifications...</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+function hideLoadingState() {
+    // Loading akan otomatis hilang ketika populateTable() dipanggil
+}
+
+function showErrorState() {
+    const tbodyId = currentTab === 'active' ? 'tableBody' : 'archivedTableBody';
+    let tbody = document.querySelector(`#${tbodyId}`);
+
+    if (!tbody) {
+        const activeTabContent = document.querySelector(currentTab === 'active' ? '#styled-todoList' : '#styled-recentLead');
+        if (activeTabContent) {
+            tbody = activeTabContent.querySelector('tbody');
+        }
+    }
+
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="text-center py-12">
+                    <div class="flex flex-col items-center justify-center space-y-3">
+                        <iconify-icon icon="lucide:alert-circle" class="text-4xl text-red-500"></iconify-icon>
+                        <p class="text-neutral-500 text-sm">Failed to load notifications</p>
+                        <button onclick="loadNotifications()" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                            Try Again
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
 }
 
 function populateTable(notifications) {
@@ -646,8 +710,8 @@ function createPageButton(text, page, isActive = false) {
     const button = document.createElement('button');
     button.textContent = text;
     button.className = `px-3 py-1 rounded-lg text-sm transition-colors ${isActive
-            ? 'bg-primary-600 text-white'
-            : 'bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-50'
+        ? 'bg-primary-600 text-white'
+        : 'bg-white text-neutral-700 border border-neutral-200 hover:bg-neutral-50'
         }`;
 
     if (!isActive) {
@@ -1251,16 +1315,37 @@ function showAlert(message, type = 'info', duration = 4000) {
 }
 
 // ======================== URL Parameter Handling =====================
+// ======================== URL Parameter Handling =====================
 document.addEventListener('DOMContentLoaded', function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeTab = urlParams.get('tab');
+    // Tunggu lebih lama untuk memastikan semua script tab sudah loaded
+    setTimeout(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab');
 
-    if (activeTab === 'all-notifications') {
-        const allNotificationsTab = document.getElementById('change-password-tab');
-        if (allNotificationsTab) {
-            allNotificationsTab.click();
+        console.log('URL Params:', activeTab); // Debug
+
+        if (activeTab === 'all-notifications') {
+            const allNotificationsTab = document.getElementById('change-password-tab');
+            console.log('Tab element found:', allNotificationsTab); // Debug
+
+            if (allNotificationsTab) {
+                // Coba beberapa cara untuk memastikan tab aktif
+                allNotificationsTab.click();
+
+                // Jika click pertama tidak berhasil, coba lagi
+                setTimeout(() => {
+                    allNotificationsTab.click();
+                    console.log('Second click attempt'); // Debug
+                }, 100);
+
+                // Force trigger event jika masih belum berhasil
+                setTimeout(() => {
+                    allNotificationsTab.dispatchEvent(new Event('click', { bubbles: true }));
+                    console.log('Force event trigger'); // Debug
+                }, 200);
+            }
         }
-    }
+    }, 10); // Delay 1 detik untuk memastikan semua sudah loaded
 });
 
 // ======================== Real-time Settings Sync =====================

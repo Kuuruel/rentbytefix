@@ -177,4 +177,57 @@ class Notification extends Model
             return !$notification->isReadBy($userId, $tenantId);
         })->count();
     }
+    // ========== TAMBAH METHOD BARU UNTUK TENANT ==========
+
+    // Get notifications khusus untuk tenant
+    public static function getForTenant($tenantId, $limit = 5)
+    {
+        return self::active()
+            ->where(function ($query) use ($tenantId) {
+                // Notifikasi untuk semua tenant
+                $query->where('target_type', 'all');
+
+                // Atau notifikasi khusus untuk tenant ini
+                $query->orWhere(function ($q) use ($tenantId) {
+                    $q->where('target_type', 'specific')
+                        ->whereJsonContains('target_tenant_ids', (int)$tenantId);
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    // Get unread count khusus untuk tenant
+    public static function getUnreadCountForTenant($tenantId)
+    {
+        $notifications = self::getForTenant($tenantId, 100);
+
+        return $notifications->filter(function ($notification) use ($tenantId) {
+            return !$notification->isReadByTenant($tenantId);
+        })->count();
+    }
+
+    // Cek apakah sudah dibaca oleh tenant
+    public function isReadByTenant($tenantId)
+    {
+        return $this->reads()
+            ->where('tenant_id', $tenantId)
+            ->whereNull('user_id') // Khusus untuk tenant saja
+            ->exists();
+    }
+
+    // Mark sebagai dibaca oleh tenant
+    public function markAsReadByTenant($tenantId)
+    {
+        return $this->reads()->updateOrCreate(
+            [
+                'user_id' => null,  // Null untuk tenant
+                'tenant_id' => $tenantId
+            ],
+            [
+                'read_at' => now()
+            ]
+        );
+    }
 }

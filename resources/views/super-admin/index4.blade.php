@@ -42,14 +42,14 @@
                             <div
                                 class="relative border border-neutral-200 dark:border-neutral-600 rounded-2xl overflow-hidden">
                                 {{-- Tenant info --}}
-                             <div class="pe-6 pb-4 ps-6 text-center mt--50 pt-5">
-                                @if($tenant->avatar && $tenant->avatar !== 'NULL')
-                                    <img src="{{ asset('assets/images/tenants/' . $tenant->avatar) }}"
+                                <div class="pe-6 pb-4 ps-6 text-center mt--50 pt-5">
+                                    @if ($tenant->avatar && $tenant->avatar !== 'NULL')
+                                        <img src="{{ asset('assets/images/tenants/' . $tenant->avatar) }}"
                                             class="w-[120px] h-[120px] ms-auto me-auto rounded-full object-cover object-center border-white border-[8px]">
-                                @else
-                                    <img src="{{ asset('assets/abu-profile.jpg') }}"
+                                    @else
+                                        <img src="{{ asset('assets/abu-profile.jpg') }}"
                                             class="w-[120px] h-[120px] ms-auto me-auto rounded-full object-cover object-center border-white border-[8px]">
-                                @endif
+                                    @endif
 
                                     <h6 class="text-lg mb-1 mt-2">{{ $tenant->name }}</h6>
                                     <div class="text-center w-full mb-4">
@@ -57,7 +57,7 @@
                                             <span
                                                 class="bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 px-8 py-1.5 rounded-full font-medium text-sm">
                                                 Active
-                                             </span>
+                                            </span>
                                         @else
                                             <span
                                                 class="bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400 px-4 py-1 rounded-full font-medium text-sm">
@@ -86,15 +86,16 @@
                                             </div>
 
                                             <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
-                                                <div class="text-center p-2 bg-gray-50 rounded">
-                                                    <div class="font-semibold text-gray-800">
+                                                <div
+                                                    class="text-center p-2 border border-0 bg-gray-50 dark:bg-neutral-600 rounded dark:text-white dark:border-neutral-500 rounded-lg">
+                                                    <div class="font-semibold text-gray-800 dark:text-white">
                                                         {{ number_format($tenant->monthly_revenue) }}</div>
-                                                    <div class="text-gray-500">This Month's Income</div>
+                                                    <div class="text-gray-500 dark:text-white">This Month's Income</div>
                                                 </div>
-                                                <div class="text-center p-2 bg-gray-50 rounded">
-                                                    <div class="font-semibold text-gray-800">{{ $tenant->bills_count }}
+                                                <div class="text-center p-2 border border-0 bg-gray-50 dark:bg-neutral-600 rounded dark:text-white dark:border-neutral-500 rounded-lg">
+                                                    <div class="font-semibold text-gray-800 dark:text-white">{{ $tenant->bills_count }}
                                                     </div>
-                                                    <div class="text-gray-500">Total Bills</div>
+                                                    <div class="text-gray-500 dark:text-white">Total Bills</div>
                                                 </div>
                                             </div>
                                         @else
