@@ -1,185 +1,237 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use App\Models\Bill;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Tenants;
-use App\Models\Renter;
-use App\Models\Property;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
-class BillController extends Controller
+class Bill extends Model
 {
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'tenant_id' => 'required|exists:tenants,id',
-            'renter_id' => 'required|exists:renters,id',
-            'property_id' => 'required|exists:properties,id',
-            'amount' => 'required|numeric|min:0',
-            'due_date' => 'required|date|after:today',
-        ]);
+    use HasFactory;
 
-        try {
-            // ✅ DUPLICATE PREVENTION: Check for existing bill
-            $existingBill = Bill::where('tenant_id', $validated['tenant_id'])
-                ->where('renter_id', $validated['renter_id'])
-                ->where('property_id', $validated['property_id'])
-                ->where('amount', $validated['amount'])
-                ->where('due_date', $validated['due_date'])
-                ->whereDate('created_at', today()) // Same day check
+    protected $fillable = [
+        'tenant_id',
+        'renter_id', 
+        'order_id',
+        'property_id',
+        'amount',
+        'due_date',
+        'payment_link',
+        'status'
+    ];
+
+    protected $casts = [
+        'due_date' => 'date',
+        'amount' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    // 🔥 ANTI-DUPLICATE: Validation sebelum save
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($bill) {
+            // Generate order_id jika kosong
+            if (empty($bill->order_id)) {
+                $bill->order_id = 'BILL-' . uniqid();
+            }
+            
+            // 🎯 CEK DUPLICATE SEBELUM INSERT
+            $existingBill = static::where('tenant_id', $bill->tenant_id)
+                ->where('renter_id', $bill->renter_id)
+                ->where('property_id', $bill->property_id)
+                ->where('amount', $bill->amount)
+                ->whereDate('due_date', Carbon::parse($bill->due_date)->format('Y-m-d'))
+                ->whereIn('status', ['pending', 'paid']) // Cek yang belum expired/failed
                 ->first();
 
             if ($existingBill) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Duplicate bill detected. A similar bill already exists for today.',
-                    'existing_bill_id' => $existingBill->id
-                ], 422);
+                // 🚨 JANGAN INSERT DUPLICATE!
+                throw new \Exception("Duplicate bill detected for tenant {$bill->tenant_id}. Existing bill ID: {$existingBill->id}");
             }
+        });
 
-            // ✅ ADDITIONAL CHECK: Same tenant, property, and due_date
-            $duplicateCheck = Bill::where('tenant_id', $validated['tenant_id'])
-                ->where('property_id', $validated['property_id'])
-                ->where('due_date', $validated['due_date'])
-                ->where('status', '!=', 'paid') // Exclude already paid bills
-                ->exists();
+        static::updating(function ($bill) {
+            // Cek duplicate saat update juga (kecuali untuk record yang sama)
+            $existingBill = static::where('tenant_id', $bill->tenant_id)
+                ->where('renter_id', $bill->renter_id)
+                ->where('property_id', $bill->property_id)
+                ->where('amount', $bill->amount)
+                ->whereDate('due_date', Carbon::parse($bill->due_date)->format('Y-m-d'))
+                ->whereIn('status', ['pending', 'paid'])
+                ->where('id', '!=', $bill->id) // Exclude current record
+                ->first();
 
-            if ($duplicateCheck) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'A bill for this property and due date already exists and is unpaid.',
-                ], 422);
+            if ($existingBill) {
+                throw new \Exception("Duplicate bill detected during update for tenant {$bill->tenant_id}. Existing bill ID: {$existingBill->id}");
             }
+        });
+    }
 
-            // Create new bill
-            $bill = Bill::create([
-                'tenant_id' => $validated['tenant_id'],
-                'renter_id' => $validated['renter_id'],
-                'property_id' => $validated['property_id'],
-                'amount' => $validated['amount'],
-                'due_date' => $validated['due_date'],
-                'order_id' => 'BILL-' . uniqid(),
-                'status' => 'pending'
-            ]);
+    // 🎯 STATIC METHOD: Cek duplicate sebelum create (untuk controller)
+    public static function checkDuplicate($tenantId, $renterId, $propertyId, $amount, $dueDate)
+    {
+        return static::where('tenant_id', $tenantId)
+            ->where('renter_id', $renterId)
+            ->where('property_id', $propertyId)
+            ->where('amount', $amount)
+            ->whereDate('due_date', Carbon::parse($dueDate)->format('Y-m-d'))
+            ->whereIn('status', ['pending', 'paid'])
+            ->exists();
+    }
 
-            Log::info('Bill created successfully', [
-                'bill_id' => $bill->id,
-                'tenant_id' => $bill->tenant_id,
-                'amount' => $bill->amount,
-                'due_date' => $bill->due_date
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Bill created successfully',
-                'data' => $bill->load(['tenant', 'renter', 'property'])
-            ], 201);
-        } catch (\Exception $e) {
-            Log::error('Bill creation error', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $validated
-            ]);
-
-            return response()->json([
+    // 🎯 STATIC METHOD: Create dengan validasi duplicate
+    public static function createSafely(array $data)
+    {
+        if (static::checkDuplicate(
+            $data['tenant_id'],
+            $data['renter_id'] ?? null,
+            $data['property_id'] ?? null,
+            $data['amount'],
+            $data['due_date']
+        )) {
+            return [
                 'success' => false,
-                'message' => 'Error creating bill: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Duplicate bill detected. Bill with same details already exists.',
+                'bill' => null
+            ];
+        }
+
+        try {
+            $bill = static::create($data);
+            return [
+                'success' => true,
+                'message' => 'Bill created successfully.',
+                'bill' => $bill
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error creating bill: ' . $e->getMessage(),
+                'bill' => null
+            ];
         }
     }
 
-    public function bulkCreate(Request $request)
+    public function tenant()
     {
-        $validated = $request->validate([
-            'bills' => 'required|array|min:1',
-            'bills.*.tenant_id' => 'required|exists:tenants,id',
-            'bills.*.renter_id' => 'required|exists:renters,id',
-            'bills.*.property_id' => 'required|exists:properties,id',
-            'bills.*.amount' => 'required|numeric|min:0',
-            'bills.*.due_date' => 'required|date|after:today',
-        ]);
-
-        $createdBills = [];
-        $duplicates = [];
-        $errors = [];
-
-        foreach ($validated['bills'] as $index => $billData) {
-            try {
-                // ✅ DUPLICATE CHECK for each bill
-                $existingBill = Bill::where('tenant_id', $billData['tenant_id'])
-                    ->where('renter_id', $billData['renter_id'])
-                    ->where('property_id', $billData['property_id'])
-                    ->where('due_date', $billData['due_date'])
-                    ->where('status', '!=', 'paid')
-                    ->first();
-
-                if ($existingBill) {
-                    $duplicates[] = [
-                        'index' => $index,
-                        'existing_bill_id' => $existingBill->id,
-                        'message' => 'Duplicate bill detected'
-                    ];
-                    continue;
-                }
-
-                // Create bill if no duplicate
-                $bill = Bill::create([
-                    'tenant_id' => $billData['tenant_id'],
-                    'renter_id' => $billData['renter_id'],
-                    'property_id' => $billData['property_id'],
-                    'amount' => $billData['amount'],
-                    'due_date' => $billData['due_date'],
-                    'order_id' => 'BILL-' . uniqid(),
-                    'status' => 'pending'
-                ]);
-
-                $createdBills[] = $bill;
-            } catch (\Exception $e) {
-                $errors[] = [
-                    'index' => $index,
-                    'message' => $e->getMessage()
-                ];
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Bulk bill creation completed',
-            'data' => [
-                'created' => count($createdBills),
-                'duplicates' => count($duplicates),
-                'errors' => count($errors),
-                'created_bills' => $createdBills,
-                'duplicate_details' => $duplicates,
-                'error_details' => $errors
-            ]
-        ]);
+        return $this->belongsTo(Tenants::class, 'tenant_id', 'id');
     }
 
-    public function checkDuplicate(Request $request)
+    public function renter()
     {
-        $validated = $request->validate([
-            'tenant_id' => 'required|exists:tenants,id',
-            'renter_id' => 'required|exists:renters,id',
-            'property_id' => 'required|exists:properties,id',
-            'amount' => 'required|numeric',
-            'due_date' => 'required|date',
-        ]);
+        return $this->belongsTo(Renter::class, 'renter_id');
+    }
 
-        $existingBill = Bill::where('tenant_id', $validated['tenant_id'])
-            ->where('renter_id', $validated['renter_id'])
-            ->where('property_id', $validated['property_id'])
-            ->where('due_date', $validated['due_date'])
-            ->where('status', '!=', 'paid')
-            ->first();
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
 
-        return response()->json([
-            'success' => true,
-            'has_duplicate' => $existingBill !== null,
-            'existing_bill' => $existingBill ? $existingBill->load(['tenant', 'renter', 'property']) : null
-        ]);
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    // 🎯 HELPER: Cari transaction yang berhasil
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
+
+    public function getRenterNameAttribute()
+    {
+        return $this->renter ? $this->renter->name : null;
+    }
+
+    public function getRenterEmailAttribute()
+    {
+        return $this->renter ? $this->renter->email : null;
+    }
+ 
+    public function getRenterPhoneAttribute()
+    {
+        return $this->renter ? $this->renter->phone : null;
+    }
+
+    public function scopePaid($query)
+    {
+        return $query->where('status', 'paid');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeByTenant($query, $tenantId)
+    {
+        return $query->where('tenant_id', $tenantId);
+    }
+
+    public function getFormattedAmountAttribute()
+    {
+        return 'Rp ' . number_format($this->amount, 0, ',', '.');
+    }
+
+    public function getIsExpiredAttribute()
+    {
+        return $this->due_date < now() && $this->status !== 'paid';
+    }
+
+    public function latestTransaction()
+    {
+        return $this->hasOne(Transaction::class)->latestOfMany();
+    }
+
+    public function successfulTransaction()
+    {
+        return $this->hasOne(Transaction::class)->where('status', Transaction::STATUS_SUCCESS);
+    }
+
+    public static function getTransactionsByTenant($tenantId)
+    {
+        return Transaction::with(['bill.renter', 'bill.property'])
+            ->whereHas('bill', function ($q) use ($tenantId) {
+                $q->where('tenant_id', Auth::user()->tenant_id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    // 🎯 SCOPE: Untuk debugging duplicate bills
+    public function scopeDuplicates($query)
+    {
+        return $query->select('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
+            ->selectRaw('COUNT(*) as duplicate_count')
+            ->groupBy('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
+            ->having('duplicate_count', '>', 1);
+    }
+
+    // 🎯 METHOD: Clean existing duplicates
+    public static function cleanDuplicates()
+    {
+        $duplicates = static::select('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
+            ->selectRaw('COUNT(*) as duplicate_count, GROUP_CONCAT(id) as ids')
+            ->groupBy('tenant_id', 'renter_id', 'property_id', 'amount', 'due_date')
+            ->having('duplicate_count', '>', 1)
+            ->get();
+
+        $deletedCount = 0;
+        foreach ($duplicates as $duplicate) {
+            $ids = explode(',', $duplicate->ids);
+            $keepId = array_shift($ids); // Keep first one
+            
+            // Delete the rest
+            static::whereIn('id', $ids)->delete();
+            $deletedCount += count($ids);
+        }
+
+        return $deletedCount;
     }
 }
