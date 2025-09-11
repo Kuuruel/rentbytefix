@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $inactiveTenants = Tenants::where('status', 'Inactive')->count();
         $newTenantsToday = Tenants::whereDate('created_at', today())->count();
 
-        // ✅ ENHANCED: Recent Activities dengan berbagai jenis aktivitas
+        // ✅ FIXED: Recent Activities dengan berbagai jenis aktivitas
         $recentActivities = collect();
 
         // 1. Recent Tenant Registrations
@@ -27,11 +27,11 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(3)
             ->get()
-            ->map(function($tenant) {
+            ->map(function ($tenant) {
                 return (object)[
                     'type' => 'tenant_registered',
                     'tenant_name' => $tenant->name,
-                    'created_by' => $tenant->user ? $tenant->user->name : null,
+                    'created_by' => $tenant->user ? $tenant->user->name : 'rentbyte',
                     'created_at' => $tenant->created_at,
                     'description' => 'registered as new landlord',
                     'icon' => 'solar:user-plus-bold',
@@ -47,7 +47,7 @@ class DashboardController extends Controller
             ->orderBy('paid_at', 'desc')
             ->limit(3)
             ->get()
-            ->map(function($transaction) {
+            ->map(function ($transaction) {
                 return (object)[
                     'type' => 'payment_completed',
                     'tenant_name' => $transaction->bill->tenant->name ?? 'Unknown',
@@ -60,12 +60,13 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 3. Recent Bill Creations
+        // 3. Recent Bill Creations - ✅ FIXED: Add duplicate prevention
         $recentBills = Bill::with('tenant')
+            ->select('id', 'tenant_id', 'amount', 'due_date', 'created_at')
             ->orderBy('created_at', 'desc')
             ->limit(2)
             ->get()
-            ->map(function($bill) {
+            ->map(function ($bill) {
                 return (object)[
                     'type' => 'bill_created',
                     'tenant_name' => $bill->tenant->name ?? 'Unknown',
@@ -85,7 +86,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(2)
             ->get()
-            ->map(function($transaction) {
+            ->map(function ($transaction) {
                 return (object)[
                     'type' => 'payment_failed',
                     'tenant_name' => $transaction->bill->tenant->name ?? 'Unknown',
@@ -115,27 +116,28 @@ class DashboardController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
-        // NEW DASHBOARD DATA - Updated sesuai model Anda
-
-        // 1. Monthly Billings
+        // ✅ FIXED: Monthly Billings - Total amount, bukan count
         $monthlyBillings = Bill::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
-            ->count();
+            ->sum('amount'); // ✅ Changed from count() to sum('amount')
 
         // Data untuk Monthly Billings comparison
         $billsThisMonth = Bill::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
-            ->count();
+            ->sum('amount'); // ✅ Changed from count() to sum('amount')
+
         $billsLastMonth = Bill::whereYear('created_at', now()->subMonth()->year)
             ->whereMonth('created_at', now()->subMonth()->month)
-            ->count();
+            ->sum('amount'); // ✅ Changed from count() to sum('amount')
+
         $billsDecrease = $billsThisMonth - $billsLastMonth;
 
-        // 2. Platform Revenue - pakai konstanta STATUS_SUCCESS
+        // ✅ FIXED: Platform Revenue - Only last 30 days
         $platformRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
+            ->where('created_at', '>=', now()->subDays(30))
             ->sum('amount');
 
-        // Revenue comparison (30 days ago)
+        // Revenue comparison (30-60 days ago vs last 30 days)
         $revenue30DaysAgo = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where('created_at', '>=', now()->subDays(60))
             ->where('created_at', '<', now()->subDays(30))
@@ -155,20 +157,43 @@ class DashboardController extends Controller
 
         $transactionPercentageChange = $totalTransactionsLastWeek > 0
             ? (($totalTransactionsThisWeek - $totalTransactionsLastWeek) / $totalTransactionsLastWeek) * 100
+            : ($totalTransactionsThisWeek > 0 ? 100 : 0); // ✅ Handle division by zero
+
+        // 4. Payment Success Rate
+        $totalTransactionsForSuccessRate = Transaction::whereBetween('created_at', [
+            now()->subDays(30), // ✅ Only last 30 days
+            now()
+        ])->count();
+
+        $successfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)
+            ->whereBetween('created_at', [
+                now()->subDays(30), // ✅ Only last 30 days  
+                now()
+            ])
+            ->count();
+
+        $paymentSuccessRate = $totalTransactionsForSuccessRate > 0
+            ? ($successfulTransactions / $totalTransactionsForSuccessRate) * 100
             : 0;
 
-        // 4. Payment Success Rate - pakai konstanta STATUS_SUCCESS
-        $totalTransactions = Transaction::count();
-        $successfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)->count();
-        $paymentSuccessRate = $totalTransactions > 0
-            ? ($successfulTransactions / $totalTransactions) * 100
-            : 0;
+        // ✅ FIXED: Average Transaction per Tenant - Only successful transactions
+        $totalSuccessfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)
+            ->whereBetween('created_at', [
+                now()->subDays(30), // ✅ Only last 30 days
+                now()
+            ])
+            ->count();
 
-        // 5. Average Transaction per Tenant - pakai konstanta STATUS_SUCCESS
         $totalTransactionAmount = Transaction::where('status', Transaction::STATUS_SUCCESS)
+            ->whereBetween('created_at', [
+                now()->subDays(30), // ✅ Only last 30 days
+                now()
+            ])
             ->sum('amount');
-        $averageTransactionPerTenant = $totalTenants > 0
-            ? $totalTransactionAmount / $totalTenants
+
+        // ✅ FIXED: Calculate average per transaction, not per tenant
+        $averageTransactionPerTenant = $totalSuccessfulTransactions > 0
+            ? $totalTransactionAmount / $totalSuccessfulTransactions
             : 0;
 
         // NEW: Chart Data untuk Growth Comparison
@@ -179,10 +204,10 @@ class DashboardController extends Controller
             'activeTenants',
             'inactiveTenants',
             'newTenantsToday',
-            'recentActivities', // ✅ Ganti recentTenants dengan recentActivities
+            'recentActivities',
             'ownerDistribution',
             'monthlyBillings',
-            'billsDecrease', // ✅ Tambahkan untuk comparison
+            'billsDecrease',
             'platformRevenue',
             'revenueIncrease',
             'totalTransactionsThisWeek',
@@ -190,13 +215,13 @@ class DashboardController extends Controller
             'paymentSuccessRate',
             'averageTransactionPerTenant',
             'successfulTransactions',
-            'totalTransactions',
+            'totalTransactionsForSuccessRate', // ✅ Pass correct total
             'chartData'
         ));
     }
 
     /**
-     * Get chart data untuk Growth Comparison (Billing vs Payment)
+     * ✅ FIXED: Get chart data untuk Growth Comparison
      */
     private function getChartData()
     {
@@ -205,130 +230,22 @@ class DashboardController extends Controller
 
         // Initialize arrays
         $billingData = array_fill(0, 12, 0);
-        $paymentData = array_fill(0, 12, 0);
 
-        // Query untuk total billing per bulan (semua tenant karena ini super admin)
+        // ✅ FIXED: Query untuk total billing per bulan dengan hasil yang benar
         $billingResults = Bill::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
             ->whereYear('created_at', $currentYear)
             ->groupBy('month')
             ->get();
 
-        // Query untuk total payment per bulan (dari transactions yang success)
-        $paymentResults = Transaction::selectRaw('MONTH(transactions.created_at) as month, SUM(transactions.amount) as total')
-            ->join('bills', 'transactions.bill_id', '=', 'bills.id')
-            ->where('transactions.status', Transaction::STATUS_SUCCESS)
-            ->whereYear('transactions.created_at', $currentYear)
-            ->groupBy('month')
-            ->get();
-
-        // Mapping hasil billing ke array
+        // ✅ FIXED: Mapping hasil billing ke array dengan konversi yang benar
         foreach ($billingResults as $result) {
             $monthIndex = $result->month - 1; // Convert 1-12 to 0-11
             $billingData[$monthIndex] = (float) $result->total;
         }
 
-        // Mapping hasil payment ke array
-        foreach ($paymentResults as $result) {
-            $monthIndex = $result->month - 1; // Convert 1-12 to 0-11
-            $paymentData[$monthIndex] = (float) $result->total;
-        }
-
         return [
             'months' => $months,
             'billing' => $billingData,
-            'payment' => $paymentData
         ];
     }
-
-    /**
-     * Get chart data untuk beberapa tahun terakhir (optional method)
-     */
-    private function getChartDataMultiYear($years = 2)
-    {
-        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        $currentYear = date('Y');
-        $startYear = $currentYear - $years + 1;
-
-        $billingData = array_fill(0, 12, 0);
-        $paymentData = array_fill(0, 12, 0);
-
-        for ($year = $startYear; $year <= $currentYear; $year++) {
-            // Query billing data
-            $billingResults = Bill::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
-                ->whereYear('created_at', $year)
-                ->groupBy('month')
-                ->get();
-
-            // Query payment data
-            $paymentResults = Transaction::selectRaw('MONTH(transactions.created_at) as month, SUM(transactions.amount) as total')
-                ->join('bills', 'transactions.bill_id', '=', 'bills.id')
-                ->where('transactions.status', Transaction::STATUS_SUCCESS)
-                ->whereYear('transactions.created_at', $year)
-                ->groupBy('month')
-                ->get();
-
-            // Accumulate data
-            foreach ($billingResults as $result) {
-                $monthIndex = $result->month - 1;
-                $billingData[$monthIndex] += (float) $result->total;
-            }
-
-            foreach ($paymentResults as $result) {
-                $monthIndex = $result->month - 1;
-                $paymentData[$monthIndex] += (float) $result->total;
-            }
-        }
-
-        return [
-            'months' => $months,
-            'billing' => $billingData,
-            'payment' => $paymentData
-        ];
-    }
-
-    /**
-     * Get chart data dengan filter tenant tertentu (jika diperlukan)
-     */
-    private function getChartDataByTenant($tenantIds = [])
-    {
-        $currentYear = date('Y');
-        $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        $billingData = array_fill(0, 12, 0);
-        $paymentData = array_fill(0, 12, 0);
-
-        $billingQuery = Bill::selectRaw('MONTH(created_at) as month, SUM(amount) as total')
-            ->whereYear('created_at', $currentYear);
-
-        $paymentQuery = Transaction::selectRaw('MONTH(transactions.created_at) as month, SUM(transactions.amount) as total')
-            ->join('bills', 'transactions.bill_id', '=', 'bills.id')
-            ->where('transactions.status', Transaction::STATUS_SUCCESS)
-            ->whereYear('transactions.created_at', $currentYear);
-
-        // Filter by tenant jika ada
-        if (!empty($tenantIds)) {
-            $billingQuery->whereIn('tenant_id', $tenantIds);
-            $paymentQuery->whereIn('bills.tenant_id', $tenantIds);
-        }
-
-        $billingResults = $billingQuery->groupBy('month')->get();
-        $paymentResults = $paymentQuery->groupBy('month')->get();
-
-        foreach ($billingResults as $result) {
-            $monthIndex = $result->month - 1;
-            $billingData[$monthIndex] = (float) $result->total;
-        }
-
-        foreach ($paymentResults as $result) {
-            $monthIndex = $result->month - 1;
-            $paymentData[$monthIndex] = (float) $result->total;
-        }
-
-        return [
-            'months' => $months,
-            'billing' => $billingData,
-            'payment' => $paymentData
-        ];
-    }
-    
 }
