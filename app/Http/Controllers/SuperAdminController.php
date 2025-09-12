@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SuperAdminController extends Controller
 {
@@ -499,7 +500,7 @@ class SuperAdminController extends Controller
                 $revenueData[$monthIndex] = (float) ($percentageFee + $flatFees);
             }
         } catch (\Exception $e) {
-            \Log::error('Error getting chart data: ' . $e->getMessage());
+            Log::error('Error getting chart data: ' . $e->getMessage());
         }
 
         return [
@@ -528,7 +529,7 @@ class SuperAdminController extends Controller
                 $data[$monthIndex] = (float) ($result->total / 1000);
             }
         } catch (\Exception $e) {
-            \Log::error('Error getting tenant chart data: ' . $e->getMessage());
+            Log::error('Error getting tenant chart data: ' . $e->getMessage());
         }
 
         return [
@@ -599,7 +600,7 @@ class SuperAdminController extends Controller
 
             return $tenantClone;
         } catch (\Exception $e) {
-            \Log::error('Error calculating tenant stats for tenant ' . $tenant->id . ': ' . $e->getMessage());
+            Log::error('Error calculating tenant stats for tenant ' . $tenant->id . ': ' . $e->getMessage());
 
             $tenantClone = clone $tenant;
             $tenantClone->monthly_revenue = 0;
@@ -646,7 +647,7 @@ class SuperAdminController extends Controller
 
             return $data;
         } catch (\Exception $e) {
-            \Log::error('Error generating chart data for tenant ' . $tenantId . ': ' . $e->getMessage());
+            Log::error('Error generating chart data for tenant ' . $tenantId . ': ' . $e->getMessage());
             return [35, 40, 38, 42, 39, 44, 41, 45, 43];
         }
     }
