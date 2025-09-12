@@ -44,7 +44,7 @@ class TransactionController extends Controller
                     $q->where('order_id', 'like', "%$search%")
                       ->orWhere('id', 'like', "%$search%")
                       ->orWhereHas('bill', function($billQuery) use ($search) {
-                          $billQuery->where('id', 'like', "%$search%")
+                          $billQuery->where('order_id', 'like', "%$search%") // Changed from 'id' to 'order_id'
                                    ->orWhereHas('renter', function($renterQuery) use ($search) {
                                        $renterQuery->where('name', 'like', "%$search%");
                                    })
@@ -77,6 +77,7 @@ class TransactionController extends Controller
                     'property_id' => $tx->bill?->property?->id ?? null,
                     'property_name' => $tx->bill?->property?->name ?? 'Unknown Property',
                     'order_id'    => $tx->order_id,
+                    'bill_order_id' => $tx->bill?->order_id ?? null, // Added for reference
                     'renter_name' => $tx->bill?->renter?->name ?? 'Unknown',
                     'reciept_name' => $tx->bill?->renter?->name ?? 'Unknown',
                     'amount'      => $tx->amount,
@@ -266,11 +267,29 @@ class TransactionController extends Controller
         }
     }
 
-    public function printTransaction($billId)
+    // Updated print transaction method - now accepts order_id instead of bill_id
+    public function printTransaction($orderId)
     {
         try {
-            $bill = Bill::with(['renter', 'property', 'transaction'])
-                ->findOrFail($billId);
+            // Find bill by order_id instead of bill_id
+            $bill = Bill::where('order_id', $orderId)
+                ->with(['renter', 'property', 'transaction'])
+                ->firstOrFail();
+            
+            return view('landlord.transactions.print', compact('bill'));
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Transaction not found');
+        }
+    }
+
+    // Alternative method if you still need to print by bill_id
+    public function printTransactionByBillId($billId)
+    {
+        try {
+            $bill = Bill::where('id', $billId)
+                ->with(['renter', 'property', 'transaction'])
+                ->firstOrFail();
             
             return view('landlord.transactions.print', compact('bill'));
             

@@ -110,6 +110,9 @@ class RentalController extends BaseController
                 $amount = $property->price * max(1, $years);
             }
 
+            // Generate unique order ID with timestamp format
+            $orderId = 'BILL-' . rand(10, 99) . '-' . time();
+
             $bill = Bill::create([
                 'tenant_id' => $currentTenant->id,
                 'renter_id' => $renter->id,
@@ -117,9 +120,10 @@ class RentalController extends BaseController
                 'amount' => $amount,
                 'due_date' => $startDate->copy()->addDays(3),
                 'status' => 'pending',
+                'order_id' => $orderId,
             ]);
 
-            $snapToken = $this->midtransService->createPayment($bill);
+            $snapToken = $this->midtransService->createPayment($bill, $orderId);
             $paymentLink = "https://app.sandbox.midtrans.com/snap/v2/vtweb/{$snapToken}";
 
             $bill->update([
@@ -128,14 +132,14 @@ class RentalController extends BaseController
             ]);
 
             Transaction::create([
-            'bill_id' => $bill->id,
-            'tenant_id' => $currentTenant->id,
-            'amount' => $amount,
-            'status' => 'pending',
-            'order_id' => 'BILL-' . $bill->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+                'bill_id' => $bill->id,
+                'tenant_id' => $currentTenant->id,
+                'amount' => $amount,
+                'status' => 'pending',
+                'order_id' => $orderId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
             DB::commit();
 
@@ -144,6 +148,7 @@ class RentalController extends BaseController
                 'tenant_name' => $currentTenant->name,
                 'property_id' => $property->id,
                 'bill_id' => $bill->id,
+                'order_id' => $orderId,
                 'amount' => $amount,
                 'status_changed' => 'Available -> Processing'
             ]);
@@ -153,6 +158,7 @@ class RentalController extends BaseController
                 'message' => 'Payment link berhasil dibuat! Properti dalam status processing.',
                 'data' => [
                     'bill_id' => $bill->id,
+                    'order_id' => $orderId,
                     'payment_link' => $paymentLink,
                     'amount' => $bill->formatted_amount,
                     'property_name' => $property->name,
@@ -248,119 +254,122 @@ class RentalController extends BaseController
         }
     }
 
-public function webhook(Request $request)
-{
-    try {
-        Log::info('=== WEBHOOK RECEIVED ===', [
-            'order_id' => $request->order_id,
-            'transaction_status' => $request->transaction_status,
-            'gross_amount' => $request->gross_amount,
-            'payment_type' => $request->payment_type
-        ]);
-        
-        $serverKey = config('midtrans.server_key');
-        $hashed = hash('sha512', 
-            $request->order_id . 
-            $request->status_code . 
-            $request->gross_amount . 
-            $serverKey
-        );
-        
-        if ($hashed !== $request->signature_key) {
-            Log::error('WEBHOOK SIGNATURE INVALID', [
-                'order_id' => $request->order_id
+    public function webhook(Request $request)
+    {
+        try {
+            Log::info('=== WEBHOOK RECEIVED ===', [
+                'order_id' => $request->order_id,
+                'transaction_status' => $request->transaction_status,
+                'gross_amount' => $request->gross_amount,
+                'payment_type' => $request->payment_type
             ]);
-            return response()->json(['message' => 'Invalid signature'], 400);
-        }
-        
-        $orderId = $request->order_id;
-        $transactionStatus = $request->transaction_status;
-        
-        $bill = Bill::with(['property', 'renter', 'tenant'])->find($orderId);
-        
-        if (!$bill) {
-            Log::error('BILL NOT FOUND', ['order_id' => $orderId]);
-            return response()->json(['message' => 'Bill not found'], 404);
-        }
-        
-        DB::beginTransaction();
-        
-        $transactionData = [
-            'bill_id' => $bill->id,
-            'midtrans_response' => $request->all(),
-        ];
-        
-        switch ($transactionStatus) {
-            case 'capture':
-            case 'settlement':
-                Log::info('PAYMENT SUCCESS - UPDATING TO PAID/RENTED');
-                
-                $transactionData['status'] = Transaction::STATUS_SUCCESS;
-                $transactionData['paid_at'] = now();
-                
-                $bill->update([
-                    'status' => 'paid',
-                    'payment_date' => now()
+            
+            $serverKey = config('midtrans.server_key');
+            $hashed = hash('sha512', 
+                $request->order_id . 
+                $request->status_code . 
+                $request->gross_amount . 
+                $serverKey
+            );
+            
+            if ($hashed !== $request->signature_key) {
+                Log::error('WEBHOOK SIGNATURE INVALID', [
+                    'order_id' => $request->order_id
                 ]);
-                
-                $bill->property->update(['status' => 'Rented']);
-                
-                $this->createPaymentNotification($bill, 'success', $transactionStatus, [
-                    'payment_type' => $request->payment_type ?? 'Unknown'
-                ]);
-                
-                break;
-                
-            case 'pending':
-                Log::info('PAYMENT PENDING - MAINTAINING PROCESSING');
-                
-                $transactionData['status'] = Transaction::STATUS_PENDING;
-                $bill->update(['status' => 'pending']);
+                return response()->json(['message' => 'Invalid signature'], 400);
+            }
+            
+            $orderId = $request->order_id;
+            $transactionStatus = $request->transaction_status;
+            
+            // Find bill by order_id instead of id
+            $bill = Bill::where('order_id', $orderId)
+                ->with(['property', 'renter', 'tenant'])
+                ->first();
+            
+            if (!$bill) {
+                Log::error('BILL NOT FOUND', ['order_id' => $orderId]);
+                return response()->json(['message' => 'Bill not found'], 404);
+            }
+            
+            DB::beginTransaction();
+            
+            $transactionData = [
+                'bill_id' => $bill->id,
+                'midtrans_response' => $request->all(),
+            ];
+            
+            switch ($transactionStatus) {
+                case 'capture':
+                case 'settlement':
+                    Log::info('PAYMENT SUCCESS - UPDATING TO PAID/RENTED');
+                    
+                    $transactionData['status'] = Transaction::STATUS_SUCCESS;
+                    $transactionData['paid_at'] = now();
+                    
+                    $bill->update([
+                        'status' => 'paid',
+                        'payment_date' => now()
+                    ]);
+                    
+                    $bill->property->update(['status' => 'Rented']);
+                    
+                    $this->createPaymentNotification($bill, 'success', $transactionStatus, [
+                        'payment_type' => $request->payment_type ?? 'Unknown'
+                    ]);
+                    
+                    break;
+                    
+                case 'pending':
+                    Log::info('PAYMENT PENDING - MAINTAINING PROCESSING');
+                    
+                    $transactionData['status'] = Transaction::STATUS_PENDING;
+                    $bill->update(['status' => 'pending']);
 
-                $this->createPaymentNotification($bill, 'pending', $transactionStatus, [
-                    'payment_type' => $request->payment_type ?? 'Unknown'
-                ]);
-                
-                break;
-                
-            case 'deny':
-            case 'cancel':
-            case 'expire':
-            case 'failure':
-                Log::info('PAYMENT FAILED - REVERTING TO AVAILABLE');
-                
-                $transactionData['status'] = Transaction::STATUS_FAILED;
-                
-                $bill->update(['status' => 'failed']);
-                $bill->property->update(['status' => 'Available']);
-                
-                $this->createPaymentNotification($bill, 'failed', $transactionStatus, [
-                    'payment_type' => $request->payment_type ?? 'Unknown',
-                    'failure_reason' => $this->getFailureReason($transactionStatus)
-                ]);
-                
-                break;
+                    $this->createPaymentNotification($bill, 'pending', $transactionStatus, [
+                        'payment_type' => $request->payment_type ?? 'Unknown'
+                    ]);
+                    
+                    break;
+                    
+                case 'deny':
+                case 'cancel':
+                case 'expire':
+                case 'failure':
+                    Log::info('PAYMENT FAILED - REVERTING TO AVAILABLE');
+                    
+                    $transactionData['status'] = Transaction::STATUS_FAILED;
+                    
+                    $bill->update(['status' => 'failed']);
+                    $bill->property->update(['status' => 'Available']);
+                    
+                    $this->createPaymentNotification($bill, 'failed', $transactionStatus, [
+                        'payment_type' => $request->payment_type ?? 'Unknown',
+                        'failure_reason' => $this->getFailureReason($transactionStatus)
+                    ]);
+                    
+                    break;
+            }
+            
+            $transaction = Transaction::updateOrCreate(
+                ['order_id' => $orderId], // Update based on order_id
+                $transactionData
+            );
+            
+            DB::commit();
+            
+            return response()->json(['status' => 'success']);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('=== WEBHOOK ERROR ===', [
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ]);
+            return response()->json(['status' => 'error'], 500);
         }
-        
-        $transaction = Transaction::updateOrCreate(
-            ['bill_id' => $bill->id],
-            $transactionData
-        );
-        
-        DB::commit();
-        
-        return response()->json(['status' => 'success']);
-        
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error('=== WEBHOOK ERROR ===', [
-            'error' => $e->getMessage(),
-            'line' => $e->getLine(),
-            'file' => $e->getFile()
-        ]);
-        return response()->json(['status' => 'error'], 500);
     }
-}
 
     public function testWebhookSettlement($billId)
     {
@@ -374,6 +383,7 @@ public function webhook(Request $request)
             Log::info('MANUAL TEST - Before Settlement', [
                 'bill_id' => $bill->id,
                 'tenant_id' => $bill->tenant_id,
+                'order_id' => $bill->order_id,
                 'bill_status' => $bill->status,
                 'property_status' => $bill->property->status
             ]);
@@ -387,19 +397,22 @@ public function webhook(Request $request)
             
             $bill->property->update(['status' => 'Rented']);
             
-            Transaction::create([
-                'bill_id' => $bill->id,
-                'status' => Transaction::STATUS_SUCCESS,
-                'paid_at' => now(),
-                'midtrans_response' => [
-                    'transaction_status' => 'settlement',
-                    'order_id' => $bill->id,
-                    'gross_amount' => $bill->amount,
-                    'payment_type' => 'bank_transfer',
-                    'settlement_time' => now()->toISOString(),
-                    'test_mode' => true
+            Transaction::updateOrCreate(
+                ['order_id' => $bill->order_id],
+                [
+                    'bill_id' => $bill->id,
+                    'status' => Transaction::STATUS_SUCCESS,
+                    'paid_at' => now(),
+                    'midtrans_response' => [
+                        'transaction_status' => 'settlement',
+                        'order_id' => $bill->order_id,
+                        'gross_amount' => $bill->amount,
+                        'payment_type' => 'bank_transfer',
+                        'settlement_time' => now()->toISOString(),
+                        'test_mode' => true
+                    ]
                 ]
-            ]);
+            );
             
             DB::commit();
             
@@ -409,6 +422,7 @@ public function webhook(Request $request)
             Log::info('MANUAL TEST - After Settlement', [
                 'bill_id' => $updatedBill->id,
                 'tenant_id' => $updatedBill->tenant_id,
+                'order_id' => $updatedBill->order_id,
                 'bill_status' => $updatedBill->status,
                 'property_status' => $updatedProperty->status
             ]);
@@ -419,6 +433,7 @@ public function webhook(Request $request)
                 'data' => [
                     'bill_id' => $updatedBill->id,
                     'tenant_id' => $updatedBill->tenant_id,
+                    'order_id' => $updatedBill->order_id,
                     'bill_status' => $updatedBill->status,
                     'property_status' => $updatedProperty->status
                 ]
@@ -429,5 +444,29 @@ public function webhook(Request $request)
             Log::error('Manual settlement test error: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    private function createPaymentNotification($bill, $status, $transactionStatus, $additionalData = [])
+    {
+        // Add your notification logic here if needed
+        Log::info('Payment notification created', [
+            'bill_id' => $bill->id,
+            'order_id' => $bill->order_id,
+            'status' => $status,
+            'transaction_status' => $transactionStatus,
+            'additional_data' => $additionalData
+        ]);
+    }
+
+    private function getFailureReason($transactionStatus)
+    {
+        $reasons = [
+            'deny' => 'Payment denied by bank',
+            'cancel' => 'Payment cancelled by user',
+            'expire' => 'Payment expired',
+            'failure' => 'Payment failed'
+        ];
+
+        return $reasons[$transactionStatus] ?? 'Unknown failure reason';
     }
 }

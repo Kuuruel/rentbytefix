@@ -19,8 +19,10 @@ class MidtransService
             $transactionStatus = $notification['transaction_status'];
             $fraudStatus = $notification['fraud_status'] ?? null;
 
-            $billId = str_replace('BILL-', '', $orderId);
-            $bill = Bill::with('property')->find($billId);
+            // Find bill by order_id instead of extracting bill ID
+            $bill = Bill::where('order_id', $orderId)
+                ->with('property')
+                ->first();
             
             if (!$bill) {
                 Log::error("Bill tidak ditemukan untuk order_id: {$orderId}");
@@ -28,8 +30,11 @@ class MidtransService
             }
 
             $transaction = Transaction::updateOrCreate(
-                ['bill_id' => $bill->id],
+                ['order_id' => $orderId], // Find by order_id instead of bill_id
                 [
+                    'bill_id' => $bill->id,
+                    'tenant_id' => $bill->tenant_id,
+                    'amount' => $bill->amount,
                     'midtrans_response' => $notification,
                     'status' => $transactionStatus,
                     'paid_at' => in_array($transactionStatus, ['settlement', 'capture']) ? now() : null
@@ -39,6 +44,7 @@ class MidtransService
             Log::info('Transaction record updated', [
                 'transaction_id' => $transaction->id,
                 'bill_id' => $bill->id,
+                'order_id' => $orderId,
                 'status' => $transactionStatus
             ]);
 
@@ -91,21 +97,25 @@ class MidtransService
 
         Log::info("Pembayaran berhasil!", [
             'bill_id' => $bill->id,
+            'order_id' => $bill->order_id,
             'property_status' => 'Rented',
             'bill_status' => 'paid'
         ]);
     }
 
-    public function createPayment(Bill $bill)
+    public function createPayment(Bill $bill, $orderId = null)
     {
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
         \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized', true);
         \Midtrans\Config::$is3ds = config('midtrans.is_3ds', true);
 
+        // Use the provided orderId or fall back to bill's order_id
+        $orderIdToUse = $orderId ?? $bill->order_id;
+
         $params = [
             'transaction_details' => [
-                'order_id' => 'BILL-' . $bill->id,
+                'order_id' => $orderIdToUse, // Use the new format order_id
                 'gross_amount' => $bill->amount,
             ],
             'customer_details' => [
@@ -132,7 +142,7 @@ class MidtransService
             $snapToken = \Midtrans\Snap::getSnapToken($params);
             Log::info('Snap token created successfully', [
                 'bill_id' => $bill->id,
-                'order_id' => 'BILL-' . $bill->id
+                'order_id' => $orderIdToUse
             ]);
             return $snapToken;
         } catch (\Exception $e) {
