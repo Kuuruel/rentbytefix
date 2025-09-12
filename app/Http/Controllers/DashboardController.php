@@ -17,13 +17,11 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // Data Tenants (existing)
         $totalTenants = Tenants::count();
         $activeTenants = Tenants::where('status', 'Active')->count();
         $inactiveTenants = Tenants::where('status', 'Inactive')->count();
         $newTenantsToday = Tenants::whereDate('created_at', today())->count();
 
-        // Recent Activities
         $recentActivities = collect();
 
         $recentTenants = Tenants::with('user')
@@ -110,7 +108,6 @@ class DashboardController extends Controller
             ->sortByDesc('created_at')
             ->take(5);
 
-        // Owner Distribution
         $ownerDistribution = Tenants::select('country')
             ->selectRaw('COUNT(*) as count')
             ->whereNotNull('country')
@@ -119,7 +116,6 @@ class DashboardController extends Controller
             ->orderBy('count', 'desc')
             ->get();
 
-        // Monthly Billings
         $monthlyBillings = Bill::whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
             ->sum('amount');
@@ -134,7 +130,6 @@ class DashboardController extends Controller
 
         $billsDecrease = $billsThisMonth - $billsLastMonth;
 
-        // 🔥 FIXED: Platform Revenue - BULAN INI dengan fallback
         $successfulTransactionsThisMonth = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where(function($query) {
                 $query->where(function($q) {
@@ -160,7 +155,6 @@ class DashboardController extends Controller
             $platformRevenue += ($percentageFee + $flatFee);
         }
 
-        // Revenue comparison bulan lalu
         $successfulTransactionsLastMonth = Transaction::where('status', Transaction::STATUS_SUCCESS)
             ->where(function($query) {
                 $query->where(function($q) {
@@ -184,7 +178,6 @@ class DashboardController extends Controller
 
         $revenueIncrease = $platformRevenue - $revenue30DaysAgo;
 
-        // Total Transactions This Week
         $totalTransactionsThisWeek = Transaction::whereBetween('created_at', [
             now()->startOfWeek(),
             now()->endOfWeek()
@@ -199,7 +192,6 @@ class DashboardController extends Controller
             ? (($totalTransactionsThisWeek - $totalTransactionsLastWeek) / $totalTransactionsLastWeek) * 100
             : ($totalTransactionsThisWeek > 0 ? 100 : 0);
 
-        // 🔥 FIXED: Payment Success Rate - BULAN INI
         $totalTransactionsForSuccessRate = Transaction::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
@@ -222,18 +214,15 @@ class DashboardController extends Controller
             ? ($successfulTransactions / $totalTransactionsForSuccessRate) * 100
             : 0;
 
-        // 🔥 FIXED: Average Transaction - BULAN INI
         $totalSuccessfulTransactions = $successfulTransactions;
-        $totalTransactionAmount = $totalTransactionValue; // Sudah dihitung di atas
+        $totalTransactionAmount = $totalTransactionValue;
 
         $averageTransactionPerTenant = $totalSuccessfulTransactions > 0
             ? $totalTransactionAmount / $totalSuccessfulTransactions
             : 0;
 
-        // Chart Data
         $chartData = $this->getChartData();
 
-        // Debug Info
         $revenueBreakdown = [
             'total_transaction_value_this_month' => $totalTransactionValue,
             'platform_revenue_this_month' => $platformRevenue,

@@ -4,8 +4,8 @@
     </button>
     <div>
         <a href="{{ route('landlord.index') }}" class="sidebar-logo">
-            <img src="{{ asset('assets/images/renbyte-logos.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ asset('assets/images/renbyte-logos.png') }}" alt="site logo" class="dark-logo">
+            <img src="{{ asset('assets/images/rentbyte-logo.png') }}" alt="site logo" class="light-logo">
+            <img src="{{ asset('assets/images/rentbyte-logo.png') }}" alt="site logo" class="dark-logo">
             <img src="{{ asset('assets/images/r-logos.png') }}" alt="site logo" class="logo-icon">
         </a>
     </div>
