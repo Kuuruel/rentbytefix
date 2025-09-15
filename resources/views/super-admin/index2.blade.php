@@ -151,42 +151,40 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">Country
+                        <label class="block text-sm text-neutral-600 dark:text-neutral-400 mb-1 font-medium">City
                             *</label>
                         <select id="formCountry" required
                             class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="">Select Country</option>
-                            <option value="Afghanistan">Afghanistan</option>
-                            <option value="Albania">Albania</option>
-                            <option value="Algeria">Algeria</option>
-                            <option value="Argentina">Argentina</option>
-                            <option value="Australia">Australia</option>
-                            <option value="Austria">Austria</option>
-                            <option value="Belgium">Belgium</option>
-                            <option value="Brazil">Brazil</option>
-                            <option value="Canada">Canada</option>
-                            <option value="China">China</option>
-                            <option value="Denmark">Denmark</option>
-                            <option value="Egypt">Egypt</option>
-                            <option value="Finland">Finland</option>
-                            <option value="France">France</option>
-                            <option value="Germany">Germany</option>
-                            <option value="Indonesia">Indonesia</option>
-                            <option value="Italy">Italy</option>
-                            <option value="Japan">Japan</option>
-                            <option value="Malaysia">Malaysia</option>
-                            <option value="Netherlands">Netherlands</option>
-                            <option value="Norway">Norway</option>
-                            <option value="Philippines">Philippines</option>
-                            <option value="Singapore">Singapore</option>
-                            <option value="South Korea">South Korea</option>
-                            <option value="Spain">Spain</option>
-                            <option value="Sweden">Sweden</option>
-                            <option value="Switzerland">Switzerland</option>
-                            <option value="Thailand">Thailand</option>
-                            <option value="United Kingdom">United Kingdom</option>
-                            <option value="United States">United States</option>
-                            <option value="Vietnam">Vietnam</option>
+                            <option value="">Pilih Kota</option>
+                            <option value="Jakarta">Jakarta</option>
+                            <option value="Surabaya">Surabaya</option>
+                            <option value="Bandung">Bandung</option>
+                            <option value="Medan">Medan</option>
+                            <option value="Semarang">Semarang</option>
+                            <option value="Makassar">Makassar</option>
+                            <option value="Palembang">Palembang</option>
+                            <option value="Denpasar">Denpasar</option>
+                            <option value="Yogyakarta">Yogyakarta</option>
+                            <option value="Malang">Malang</option>
+                            <option value="Batam">Batam</option>
+                            <option value="Pekanbaru">Pekanbaru</option>
+                            <option value="Balikpapan">Balikpapan</option>
+                            <option value="Banjarmasin">Banjarmasin</option>
+                            <option value="Pontianak">Pontianak</option>
+                            <option value="Manado">Manado</option>
+                            <option value="Padang">Padang</option>
+                            <option value="Samarinda">Samarinda</option>
+                            <option value="Bandar Lampung">Bandar Lampung</option>
+                            <option value="Bogor">Bogor</option>
+                            <option value="Bekasi">Bekasi</option>
+                            <option value="Depok">Depok</option>
+                            <option value="Tangerang">Tangerang</option>
+                            <option value="Solo">Solo (Surakarta)</option>
+                            <option value="Cirebon">Cirebon</option>
+                            <option value="Kupang">Kupang</option>
+                            <option value="Jayapura">Jayapura</option>
+                            <option value="Ambon">Ambon</option>
+                            <option value="Mataram">Mataram</option>
                         </select>
                     </div>
 

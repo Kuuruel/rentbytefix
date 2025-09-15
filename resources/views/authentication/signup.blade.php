@@ -53,38 +53,37 @@
 
                         <select id="formCountry" name="country" required
                             class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl w-full text-neutral-900 dark:text-white">
-                            <option value="" {{ $selectedCountry === '' ? 'selected' : '' }}>Select Country</option>
-                            <option value="Afghanistan" @selected($selectedCountry === 'Afghanistan')>Afghanistan</option>
-                            <option value="Albania" @selected($selectedCountry === 'Albania')>Albania</option>
-                            <option value="Algeria" @selected($selectedCountry === 'Algeria')>Algeria</option>
-                            <option value="Argentina" @selected($selectedCountry === 'Argentina')>Argentina</option>
-                            <option value="Australia" @selected($selectedCountry === 'Australia')>Australia</option>
-                            <option value="Austria" @selected($selectedCountry === 'Austria')>Austria</option>
-                            <option value="Belgium" @selected($selectedCountry === 'Belgium')>Belgium</option>
-                            <option value="Brazil" @selected($selectedCountry === 'Brazil')>Brazil</option>
-                            <option value="Canada" @selected($selectedCountry === 'Canada')>Canada</option>
-                            <option value="China" @selected($selectedCountry === 'China')>China</option>
-                            <option value="Denmark" @selected($selectedCountry === 'Denmark')>Denmark</option>
-                            <option value="Egypt" @selected($selectedCountry === 'Egypt')>Egypt</option>
-                            <option value="Finland" @selected($selectedCountry === 'Finland')>Finland</option>
-                            <option value="France" @selected($selectedCountry === 'France')>France</option>
-                            <option value="Germany" @selected($selectedCountry === 'Germany')>Germany</option>
-                            <option value="Indonesia" @selected($selectedCountry === 'Indonesia')>Indonesia</option>
-                            <option value="Italy" @selected($selectedCountry === 'Italy')>Italy</option>
-                            <option value="Japan" @selected($selectedCountry === 'Japan')>Japan</option>
-                            <option value="Malaysia" @selected($selectedCountry === 'Malaysia')>Malaysia</option>
-                            <option value="Netherlands" @selected($selectedCountry === 'Netherlands')>Netherlands</option>
-                            <option value="Norway" @selected($selectedCountry === 'Norway')>Norway</option>
-                            <option value="Philippines" @selected($selectedCountry === 'Philippines')>Philippines</option>
-                            <option value="Singapore" @selected($selectedCountry === 'Singapore')>Singapore</option>
-                            <option value="South Korea" @selected($selectedCountry === 'South Korea')>South Korea</option>
-                            <option value="Spain" @selected($selectedCountry === 'Spain')>Spain</option>
-                            <option value="Sweden" @selected($selectedCountry === 'Sweden')>Sweden</option>
-                            <option value="Switzerland" @selected($selectedCountry === 'Switzerland')>Switzerland</option>
-                            <option value="Thailand" @selected($selectedCountry === 'Thailand')>Thailand</option>
-                            <option value="United Kingdom" @selected($selectedCountry === 'United Kingdom')>United Kingdom</option>
-                            <option value="United States" @selected($selectedCountry === 'United States')>United States</option>
-                            <option value="Vietnam" @selected($selectedCountry === 'Vietnam')>Vietnam</option>
+                            <option value="" {{ $selectedCountry === '' ? 'selected' : '' }}>Pilih Kota</option>
+                            
+                            <option value="Jakarta" @selected($selectedCountry === 'Jakarta')>Jakarta</option>
+                            <option value="Surabaya" @selected($selectedCountry === 'Surabaya')>Surabaya</option>
+                            <option value="Bandung" @selected($selectedCountry === 'Bandung')>Bandung</option>
+                            <option value="Medan" @selected($selectedCountry === 'Medan')>Medan</option>
+                            <option value="Semarang" @selected($selectedCountry === 'Semarang')>Semarang</option>
+                            <option value="Makassar" @selected($selectedCountry === 'Makassar')>Makassar</option>
+                            <option value="Palembang" @selected($selectedCountry === 'Palembang')>Palembang</option>
+                            <option value="Denpasar" @selected($selectedCountry === 'Denpasar')>Denpasar</option>
+                            <option value="Yogyakarta" @selected($selectedCountry === 'Yogyakarta')>Yogyakarta</option>
+                            <option value="Malang" @selected($selectedCountry === 'Malang')>Malang</option>
+                            <option value="Batam" @selected($selectedCountry === 'Batam')>Batam</option>
+                            <option value="Pekanbaru" @selected($selectedCountry === 'Pekanbaru')>Pekanbaru</option>
+                            <option value="Balikpapan" @selected($selectedCountry === 'Balikpapan')>Balikpapan</option>
+                            <option value="Banjarmasin" @selected($selectedCountry === 'Banjarmasin')>Banjarmasin</option>
+                            <option value="Pontianak" @selected($selectedCountry === 'Pontianak')>Pontianak</option>
+                            <option value="Manado" @selected($selectedCountry === 'Manado')>Manado</option>
+                            <option value="Padang" @selected($selectedCountry === 'Padang')>Padang</option>
+                            <option value="Samarinda" @selected($selectedCountry === 'Samarinda')>Samarinda</option>
+                            <option value="Bandar Lampung" @selected($selectedCountry === 'Bandar Lampung')>Bandar Lampung</option>
+                            <option value="Bogor" @selected($selectedCountry === 'Bogor')>Bogor</option>
+                            <option value="Bekasi" @selected($selectedCountry === 'Bekasi')>Bekasi</option>
+                            <option value="Depok" @selected($selectedCountry === 'Depok')>Depok</option>
+                            <option value="Tangerang" @selected($selectedCountry === 'Tangerang')>Tangerang</option>
+                            <option value="Solo" @selected($selectedCountry === 'Solo')>Solo (Surakarta)</option>
+                            <option value="Cirebon" @selected($selectedCountry === 'Cirebon')>Cirebon</option>
+                            <option value="Kupang" @selected($selectedCountry === 'Kupang')>Kupang</option>
+                            <option value="Jayapura" @selected($selectedCountry === 'Jayapura')>Jayapura</option>
+                            <option value="Ambon" @selected($selectedCountry === 'Ambon')>Ambon</option>
+                            <option value="Mataram" @selected($selectedCountry === 'Mataram')>Mataram</option>
                         </select>
                     </div>
 

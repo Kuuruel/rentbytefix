@@ -131,8 +131,8 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 mt-6">
-        <div class="xl:col-span-12 2xl:col-span-6">
+    <div class="grid grid-cols-1 gap-6 mt-6">
+        <div class="xl:col-span-12">
             <div class="card h-full rounded-lg border-0">
                 <div class="card-body">
                     <div class="flex flex-wrap items-center justify-between">
@@ -159,40 +159,6 @@
             </div>
         </div>
         
-        <div class="xl:col-span-12 2xl:col-span-6">
-            <div class="card h-full rounded-lg border-0">
-                <div class="card-body">
-                    <div class="flex flex-wrap items-center justify-between">
-                        <h6 class="text-lg mb-0">Property Status</h6>
-                    </div>
-                    <div class="mt-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="text-center">
-                                <h4 class="text-2xl font-bold text-purple-600">{{ $statistics['totalProperties'] ?? 0 }}</h4>
-                                <p class="text-sm text-neutral-600 dark:text-neutral-400">Total Properties</p>
-                            </div>
-                            <div class="text-center">
-                                <h4 class="text-2xl font-bold text-cyan-600">{{ $statistics['totalRenters'] ?? 0 }}</h4>
-                                <p class="text-sm text-neutral-600 dark:text-neutral-400">Active Renters</p>
-                            </div>
-                        </div>
-                        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-neutral-600">
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="text-sm text-neutral-600 dark:text-neutral-400">Occupancy Rate</span>
-                                <span class="text-sm font-semibold">
-                                    {{ $statistics['totalProperties'] > 0 ? round(($statistics['totalRenters'] / $statistics['totalProperties']) * 100, 1) : 0 }}%
-                                </span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                                <div class="bg-gradient-to-r from-cyan-600 to-purple-600 h-2 rounded-full" 
-                                     style="width: {{ $statistics['totalProperties'] > 0 ? min(100, round(($statistics['totalRenters'] / $statistics['totalProperties']) * 100, 1)) : 0 }}%">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
 @endsection
