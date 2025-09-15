@@ -1453,7 +1453,7 @@ function showBulkActions() {
     } else {
         bulkBar.innerHTML = `
             <div class="flex justify-between items-center">
-                <span class="font-medium text-green-800">${bulkSelectedIds.length} notifikasi dipilih</span>
+                <span class="font-medium text-green-800">${bulkSelectedIds.length} notifications selected</span>
                 <div class="space-x-2">
                     <button onclick="doBulkRestore()" class="rounded-lg bg-success-100 text-success-600 hover:bg-success-200 dark:bg-success-600/25 dark:text-success-400 transition-colors px-4 py-2   text-sm">
                         Restore
