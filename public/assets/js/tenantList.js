@@ -448,7 +448,7 @@
                 </td>
                 <td class="px-4 py-4 text-center align-middle">
                     <span class="${status === 'Active' ? 
-                        'bg-success-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                        'bg-success-100 dark:bg-success-600/20 text-success-700 dark:text-success-700 border' : 
                         'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
                     } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
                         ${status}
@@ -457,17 +457,17 @@
                 <td class="px-4 py-4 text-center align-middle">
                     <div class="flex items-center gap-1.5 justify-center">
                         <button type="button" title="View Details" 
-                                class="bg-info-100 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-info-100 dark:bg-info-600/20 hover:bg-success-100 dark:hover:bg-info-600/30 text-info-600 dark:text-info-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="viewTenant(${t.id})">
                             <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
                         </button>
                         <button type="button" title="Edit Tenant" 
-                                class="bg-warning-100 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-warning-100 dark:bg-warning-600/20 hover:bg-warning-100 dark:hover:bg-warning-600/30 text-warning-600 dark:text-warning-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="editTenant(${t.id})">
                             <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
                         </button>
                         <button type="button" title="Delete Tenant" 
-                                class="bg-danger-100 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-danger-100 dark:bg-danger-600/20 hover:bg-danger-100 dark:hover:bg-danger-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="confirmDelete(${t.id})">
                             <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                         </button>
@@ -1063,17 +1063,17 @@
             if (!bulkActionsContainer) {
                 bulkActionsContainer = document.createElement('div');
                 bulkActionsContainer.id = 'bulkActionsContainer';
-                bulkActionsContainer.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
+                bulkActionsContainer.className = 'bg-info-50 dark:bg-info-900/20 border border-info-200 dark:border-info-800 rounded-lg p-4 mb-4';
                 bulkActionsContainer.innerHTML = `
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
-                        <iconify-icon icon="ph:check-square" class="text-blue-600 dark:text-blue-400 text-xl"></iconify-icon>
-                        <span class="text-sm font-medium text-blue-900 dark:text-blue-100">
+                        <iconify-icon icon="ph:check-square" class="text-info-600 dark:text-info-400 text-xl"></iconify-icon>
+                        <span class="text-sm font-medium text-info-900 dark:text-info-100">
                             <span id="selectedCount">${selectedCount}</span> tenant(s) selected
                         </span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button id="bulkDeleteBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
+                        <button id="bulkDeleteBtn" class="bg-danger-600 hover:bg-danger-700 text-white px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-colors">
                             <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                             Delete Selected
                         </button>
