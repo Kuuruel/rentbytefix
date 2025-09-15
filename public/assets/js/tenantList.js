@@ -448,7 +448,7 @@
                 </td>
                 <td class="px-4 py-4 text-center align-middle">
                     <span class="${status === 'Active' ? 
-                        'bg-success-100 dark:bg-success-600/20 text-success-700 dark:text-success-700 border' : 
+                        'bg-success-100 dark:bg-success-600/20 text-success-600 dark:text-success-700 border' : 
                         'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
                     } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
                         ${status}
@@ -467,7 +467,7 @@
                             <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
                         </button>
                         <button type="button" title="Delete Tenant" 
-                                class="bg-danger-100 dark:bg-danger-600/20 hover:bg-danger-100 dark:hover:bg-danger-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-danger-100 dark:bg-danger-600/20 hover:bg-danger-100 dark:hover:bg-danger-600/30 text-danger-600 dark:text-danger-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="confirmDelete(${t.id})">
                             <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                         </button>
