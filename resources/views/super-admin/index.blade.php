@@ -159,38 +159,7 @@
                         30 days income
                     </p>
 
-                    @if (isset($revenueBreakdown))
-                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
-                            <details class="group">
-                                <summary
-                                    class="cursor-pointer text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300">
-                                    <span class="inline-flex items-center gap-1">
-                                        <iconify-icon icon="solar:info-circle-linear" class="text-sm"></iconify-icon>
-                                        Revenue Details
-                                        <iconify-icon icon="solar:alt-arrow-down-linear"
-                                            class="text-xs group-open:rotate-180 transition-transform"></iconify-icon>
-                                    </span>
-                                </summary>
-                                <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
-                                    <div class="flex justify-between">
-                                        <span>Total Transactions:</span>
-                                        <span
-                                            class="font-medium">{{ $revenueBreakdown['successful_transactions_count'] ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Transaction Value:</span>
-                                        <span class="font-medium">Rp
-                                            {{ number_format($revenueBreakdown['total_transaction_value_30_days'] ?? 0) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Revenue Rate:</span>
-                                        <span
-                                            class="font-medium">{{ number_format($revenueBreakdown['revenue_percentage_of_total'] ?? 0, 1) }}%</span>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                    @endif
+        
 
 
                     @if (($platformRevenue ?? 0) == 0)
