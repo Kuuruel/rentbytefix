@@ -448,7 +448,7 @@
                 </td>
                 <td class="px-4 py-4 text-center align-middle">
                     <span class="${status === 'Active' ? 
-                        'bg-emerald-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
+                        'bg-success-100 dark:bg-emerald-600/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-600/30' : 
                         'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
                     } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
                         ${status}
@@ -457,17 +457,17 @@
                 <td class="px-4 py-4 text-center align-middle">
                     <div class="flex items-center gap-1.5 justify-center">
                         <button type="button" title="View Details" 
-                                class="bg-blue-50 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-info-100 dark:bg-blue-600/20 hover:bg-blue-100 dark:hover:bg-blue-600/30 text-blue-600 dark:text-blue-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="viewTenant(${t.id})">
                             <iconify-icon icon="ph:eye" class="text-sm"></iconify-icon>
                         </button>
                         <button type="button" title="Edit Tenant" 
-                                class="bg-amber-50 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-warning-100 dark:bg-amber-600/20 hover:bg-amber-100 dark:hover:bg-amber-600/30 text-amber-600 dark:text-amber-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="editTenant(${t.id})">
                             <iconify-icon icon="ph:pencil-simple" class="text-sm"></iconify-icon>
                         </button>
                         <button type="button" title="Delete Tenant" 
-                                class="bg-red-50 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
+                                class="bg-danger-100 dark:bg-red-600/20 hover:bg-red-100 dark:hover:bg-red-600/30 text-red-600 dark:text-red-400 w-8 h-8 flex justify-center items-center rounded-lg transition-all duration-200 hover:scale-105" 
                                 onclick="confirmDelete(${t.id})">
                             <iconify-icon icon="ph:trash" class="text-sm"></iconify-icon>
                         </button>
