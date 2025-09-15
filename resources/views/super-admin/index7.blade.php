@@ -101,7 +101,9 @@
                                             <label for="desig"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Priority
                                                 <span class="text-danger-600">*</span> </label>
-                                            <select class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg form-select" id="desig">
+                                            <select
+                                                class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg form-select"
+                                                id="desig">
                                                 <option>Normal</option>
                                                 <option>Important</option>
                                                 <option>Critical</option>
@@ -493,7 +495,7 @@
                                             Default Priority
                                             <span class="text-danger-600">*</span>
                                         </label>
-                                        <select class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg"
+                                        <select class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg form-select" id="default-priority">
                                             <option>Normal</option>
                                             <option>Important</option>
                                             <option>Critical</option>
