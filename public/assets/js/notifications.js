@@ -542,11 +542,14 @@ function populateTable(notifications) {
 function populateTableRows(tbody, notifications) {
     if (notifications.length === 0) {
         tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="text-center py-8 text-neutral-500">
-                    No notifications found
-                </td>
-            </tr>
+         <tr>
+    <td colspan="7" class="text-center py-8 text-neutral-500 align-middle">
+        <div class="flex flex-col items-center justify-center min-h-[100px]">
+            <p class="text-lg font-medium text-neutral-500 ">No notifications found</p>
+            <p class="text-sm text-neutral-400 dark:text-neutral-400">There are no notifications to display</p>
+        </div>
+    </td>
+</tr>
         `;
         return;
     }
@@ -559,7 +562,7 @@ function populateTableRows(tbody, notifications) {
 
 function createTableRow(notif, index) {
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-neutral-50 dark:hover:bg-neutral-800';
+    tr.className = 'hover:bg-neutral-50 dark:hover:bg-gray-800 transition-colors';
 
     const rowNumber = ((currentPage - 1) * 10) + index + 1;
     const checkboxClass = currentTab === 'active' ? 'notification-checkbox' : 'archived-notification-checkbox';
@@ -1359,3 +1362,388 @@ function checkFilterElements() {
 
 setTimeout(debugFilterElements, 2000);
 setTimeout(checkFilterElements, 1000);
+
+
+// HAPUS SEMUA KODE BULK ACTIONS YANG ADA
+// GANTI DENGAN KODE SIMPLE INI
+
+// Variabel global
+let bulkSelectedIds = [];
+
+// GANTI FUNGSI updateSelectedNotifications YANG SUDAH ADA
+function updateSelectedNotifications() {
+    // Cari checkbox yang checked berdasarkan tab
+    let checkedBoxes;
+    let selectAllId;
+
+    if (currentTab === 'active') {
+        checkedBoxes = document.querySelectorAll('#styled-todoList input[type="checkbox"]:checked:not(#selectAll)');
+        selectAllId = 'selectAll';
+    } else {
+        checkedBoxes = document.querySelectorAll('#styled-recentLead input[type="checkbox"]:checked:not(#archivedSelectAll)');
+        selectAllId = 'archivedSelectAll';
+    }
+
+    // Update selectedNotifications (untuk compatibility dengan kode existing)
+    selectedNotifications = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+
+    // Update bulkSelectedIds
+    bulkSelectedIds = selectedNotifications;
+
+    // Update select all checkbox
+    const selectAllBox = document.getElementById(selectAllId);
+    const allBoxes = currentTab === 'active'
+        ? document.querySelectorAll('#styled-todoList input[type="checkbox"]:not(#selectAll)')
+        : document.querySelectorAll('#styled-recentLead input[type="checkbox"]:not(#archivedSelectAll)');
+
+    if (selectAllBox && allBoxes.length > 0) {
+        if (bulkSelectedIds.length === 0) {
+            selectAllBox.indeterminate = false;
+            selectAllBox.checked = false;
+        } else if (bulkSelectedIds.length === allBoxes.length) {
+            selectAllBox.indeterminate = false;
+            selectAllBox.checked = true;
+        } else {
+            selectAllBox.indeterminate = true;
+        }
+    }
+
+    // Show/hide bulk actions
+    showBulkActions();
+}
+
+// FUNGSI UNTUK SHOW BULK ACTIONS
+function showBulkActions() {
+    // Hapus bulk action yang sudah ada
+    document.querySelectorAll('.bulk-action-bar').forEach(bar => bar.remove());
+
+    if (bulkSelectedIds.length === 0) return;
+
+    // Tentukan container
+    let container;
+    if (currentTab === 'active') {
+        container = document.querySelector('#styled-todoList .card-body');
+    } else {
+        container = document.querySelector('#styled-recentLead .card-body');
+    }
+
+    if (!container) return;
+
+    // Buat bulk action bar
+    const bulkBar = document.createElement('div');
+    bulkBar.className = 'bulk-action-bar bg-blue-50 border border-blue-300 rounded-lg p-3 mb-4';
+
+    if (currentTab === 'active') {
+        bulkBar.innerHTML = `
+            <div class="flex justify-between items-center">
+                <span class="font-medium text-blue-800">${bulkSelectedIds.length} notifications selected</span>
+                <div class="space-x-2">
+                    <button onclick="doBulkArchive()" class="rounded-lg bg-warning-100 text-warning-600 hover:bg-warning-200 dark:bg-warning-600/25 dark:text-warning-400 transition-colors px-4 py-2   text-sm">
+                        Archive
+                    </button>
+                    <button onclick="doBulkDelete()" class="rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 dark:bg-danger-600/25 dark:text-danger-400 transition-colors px-4 py-2   text-sm">
+                        Delete 
+                    </button>
+                    <button onclick="clearSelection()"  class="rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-600/25 dark:text-neutral-400 transition-colors px-4 py-2   text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+    } else {
+        bulkBar.innerHTML = `
+            <div class="flex justify-between items-center">
+                <span class="font-medium text-green-800">${bulkSelectedIds.length} notifikasi dipilih</span>
+                <div class="space-x-2">
+                    <button onclick="doBulkRestore()" class="rounded-lg bg-success-100 text-success-600 hover:bg-success-200 dark:bg-success-600/25 dark:text-success-400 transition-colors px-4 py-2   text-sm">
+                        Restore
+                    </button>
+                    <button onclick="doBulkDelete()"class="rounded-lg bg-danger-100 text-danger-600 hover:bg-danger-200 dark:bg-danger-600/25 dark:text-danger-400 transition-colors px-4 py-2   text-sm">
+                        Delete
+                    </button>
+                    <button onclick="clearSelection()" class="rounded-lg bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-600/25 dark:text-neutral-400 transition-colors px-4 py-2   text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    container.insertBefore(bulkBar, container.firstChild);
+}
+
+
+function clearSelection() {
+    if (currentTab === 'active') {
+        document.querySelectorAll('#styled-todoList input[type="checkbox"]').forEach(cb => cb.checked = false);
+    } else {
+        document.querySelectorAll('#styled-recentLead input[type="checkbox"]').forEach(cb => cb.checked = false);
+    }
+
+    bulkSelectedIds = [];
+    selectedNotifications = [];
+    showBulkActions();
+}
+// BULK MODAL FUNCTIONS - MATCHING EXISTING PATTERN
+function showBulkArchiveModal() {
+    const modal = document.getElementById('bulkArchiveModal');
+    const content = document.getElementById('bulkArchiveModalContent');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeBulkArchiveModal() {
+    const modal = document.getElementById('bulkArchiveModal');
+    const content = document.getElementById('bulkArchiveModalContent');
+    content.classList.add('scale-95', 'opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+function showBulkDeleteModal() {
+    const modal = document.getElementById('bulkDeleteModal');
+    const content = document.getElementById('bulkDeleteModalContent');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeBulkDeleteModal() {
+    const modal = document.getElementById('bulkDeleteModal');
+    const content = document.getElementById('bulkDeleteModalContent');
+    content.classList.add('scale-95', 'opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+function showBulkRestoreModal() {
+    const modal = document.getElementById('bulkRestoreModal');
+    const content = document.getElementById('bulkRestoreModalContent');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        content.classList.remove('scale-95', 'opacity-0');
+        content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+function closeBulkRestoreModal() {
+    const modal = document.getElementById('bulkRestoreModal');
+    const content = document.getElementById('bulkRestoreModalContent');
+    content.classList.add('scale-95', 'opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+// UPDATED BULK FUNCTIONS
+function doBulkArchive() {
+    if (bulkSelectedIds.length === 0) {
+        alert('Please select notifications first');
+        return;
+    }
+    document.getElementById('bulkArchiveCount').textContent = `${bulkSelectedIds.length} notifications`;
+    showBulkArchiveModal();
+}
+
+function confirmBulkArchive() {
+    const spinner = document.getElementById('bulkArchiveLoadingSpinner');
+    const buttonText = document.getElementById('bulkArchiveButtonText');
+
+    spinner.classList.remove('hidden');
+    buttonText.textContent = 'Archiving...';
+
+    fetch('/admin/notifications/bulk-archive', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            notification_ids: bulkSelectedIds
+        })
+    })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Successfully archived', 'success');
+                clearSelection();
+                loadNotifications();
+            } else {
+                showAlert('Failed to archive', 'error');
+            }
+            closeBulkArchiveModal();
+        })
+        .catch(e => {
+            showAlert('Error: ' + e.message, 'error');
+            closeBulkArchiveModal();
+        })
+        .finally(() => {
+            spinner.classList.add('hidden');
+            buttonText.textContent = 'Archive All';
+        });
+}
+
+function doBulkDelete() {
+    if (bulkSelectedIds.length === 0) {
+        alert('Please select notifications first');
+        return;
+    }
+    document.getElementById('bulkDeleteCount').textContent = `${bulkSelectedIds.length} notifications`;
+    showBulkDeleteModal();
+}
+
+function confirmBulkDelete() {
+    fetch('/admin/notifications/bulk-delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            notification_ids: bulkSelectedIds
+        })
+    })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Successfully deleted', 'success');
+                clearSelection();
+                loadNotifications();
+            } else {
+                showAlert('Failed to delete', 'error');
+            }
+            closeBulkDeleteModal();
+        })
+        .catch(e => {
+            showAlert('Error: ' + e.message, 'error');
+            closeBulkDeleteModal();
+        });
+}
+
+function doBulkRestore() {
+    console.log('doBulkRestore called with IDs:', bulkSelectedIds);
+
+    if (bulkSelectedIds.length === 0) {
+        alert('Please select notifications first');
+        return;
+    }
+
+    document.getElementById('bulkRestoreCount').textContent = `${bulkSelectedIds.length} notifications`;
+    showBulkRestoreModal();
+}
+
+function confirmBulkRestore() {
+    closeBulkRestoreModal();
+
+    // Show loading in bulk bar
+    const bulkBar = document.querySelector('.bulk-action-bar');
+    if (bulkBar) {
+        bulkBar.innerHTML = `
+            <div class="flex justify-center items-center">
+                <span class="text-blue-600">Processing...</span>
+            </div>
+        `;
+    }
+
+    fetch('/admin/notifications/bulk-restore', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            notification_ids: bulkSelectedIds
+        })
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.text();
+        })
+        .then(responseText => {
+            console.log('Raw response text:', responseText);
+
+            if (!responseText || responseText.trim() === '') {
+                throw new Error('Server returned empty response');
+            }
+
+            if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+                console.error('Server returned HTML:', responseText);
+                throw new Error('Server error - returned HTML instead of JSON');
+            }
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error('Response is not valid JSON: ' + responseText.substring(0, 100));
+            }
+
+            if (data.success) {
+                showAlert('Successfully restored', 'success');
+                clearSelection();
+                loadNotifications();
+            } else {
+                showAlert(data.message || 'Failed to restore', 'error');
+                showBulkActions();
+            }
+        })
+        .catch(error => {
+            console.error('Full error object:', error);
+            showAlert('Error: ' + error.message, 'error');
+            showBulkActions();
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Setup select all untuk active tab
+    setTimeout(() => {
+        const activeSelectAll = document.getElementById('selectAll');
+        if (activeSelectAll) {
+            activeSelectAll.addEventListener('change', function () {
+                const allBoxes = document.querySelectorAll('#styled-todoList input[type="checkbox"]:not(#selectAll)');
+                allBoxes.forEach(cb => cb.checked = this.checked);
+                updateSelectedNotifications();
+            });
+        }
+
+        const archivedSelectAll = document.getElementById('archivedSelectAll');
+        if (archivedSelectAll) {
+            archivedSelectAll.addEventListener('change', function () {
+                const allBoxes = document.querySelectorAll('#styled-recentLead input[type="checkbox"]:not(#archivedSelectAll)');
+                allBoxes.forEach(cb => cb.checked = this.checked);
+                updateSelectedNotifications();
+            });
+        }
+    }, 1000);
+});
+
+// UPDATE FUNGSI setupTabSwitching YANG ADA
+function setupTabSwitching() {
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-tabs-target="#styled-todoList"]')) {
+            currentTab = 'active';
+            resetFilters();
+            clearSelection();
+            loadNotifications();
+        }
+        if (e.target.closest('[data-tabs-target="#styled-recentLead"]')) {
+            currentTab = 'archived';
+            resetFilters();
+            clearSelection();
+            loadNotifications();
+        }
+    });
+}
+
+console.log('Simple bulk actions loaded (with fixed restore)');

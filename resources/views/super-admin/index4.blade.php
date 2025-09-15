@@ -35,8 +35,8 @@
         </div>
 
         <div class="card-body p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-6" id="tenantGrid">
-                @if ($tenantsWithStats->count() > 0)
+            @if ($tenantsWithStats->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-6" id="tenantGrid">
                     @foreach ($tenantsWithStats as $tenant)
                         <div class="user-grid-card">
                             <div
@@ -141,12 +141,13 @@
                             </div>
                         </div>
                     @endforeach
-                @else
-                    <div class="col-span-full text-center py-8">
-                        <p class="text-gray-500 dark:text-gray-400">Belum ada Landlord yang terdaftar</p>
-                    </div>
-                @endif
-            </div>
+                </div>
+            @else
+                <div class="flex flex-col items-center justify-center min-h-[400px] w-full">
+                    <p class="text-lg font-medium text-neutral-500">No data available</p>
+                    <p class="text-sm text-neutral-400 dark:text-neutral-400">There are currently no tenant records</p>
+                </div>
+            @endif
 
             <div class="flex items-center justify-between flex-wrap gap-2 mt-6">
                 <span id="paginationInfo">
@@ -195,7 +196,6 @@
                 @endif
             </div>
         </div>
-
     </div>
 
 

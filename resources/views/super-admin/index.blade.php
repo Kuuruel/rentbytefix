@@ -19,7 +19,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Total Users</p>
-                            <h6 class="mb-0 dark:text-white mt-2">{{ $totalTenants }}</h6>
+                            <h6 class="mb-0 dark:text-white mt-2 p-2">{{ $totalTenants }}</h6>
                         </div>
 
                         <div class="w-[50px] h-[50px] bg-cyan-600 rounded-full flex justify-center items-center">
@@ -28,12 +28,13 @@
                     </div>
                     <span
                         class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium 
-         bg-neutral-100 text-neutral-500 
-         dark:bg-neutral-600 dark:text-neutral-300">
+        text-neutral-500 
+        dark:text-neutral-300">
                         All registered accounts
                     </span>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                        <span
+                            class="inline-flex items-center gap-1 text-success-600 dark:text-success-400 bg-success-100 dark:bg-success-600/25 rounded-full px-2 py-1">
                             <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +{{ $newTenantsToday }}
                         </span>
                         Added today
@@ -50,18 +51,19 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Active Users</p>
-                            <h6 class="mb-0 dark:text-white mt-2">{{ $activeTenants }}</h6>
+                            <h6 class="mb-0 dark:text-white mt-2 p-2">{{ $activeTenants }}</h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-blue-600 rounded-full flex justify-center items-center">
                             <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl"></iconify-icon>
                         </div>
                     </div>
                     <span
-                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-neutral-600 dark:text-white">
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-neutral-600 dark:text-white">
                         Currently logged-in or active status
                     </span>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                        <span
+                            class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400 bg-danger-100 dark:bg-danger-600/25 rounded-full px-2 py-1">
                             <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -{{ $inactiveTenants }}
                         </span>
                         Inactive Users
@@ -77,7 +79,8 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Monthly Billings</p>
-                            <h6 class="mb-0 dark:text-white mt-2">Rp{{ number_format($monthlyBillings ?? 0) }}</h6>
+                            <h6 class="mb-0 dark:text-white mt-2 p-2">Rp {{ number_format($monthlyBillings, 0, ',', '.') }}
+                            </h6>
                         </div>
                         <div class="w-[50px] h-[50px] bg-purple-600 rounded-full flex justify-center items-center ">
 
@@ -86,28 +89,32 @@
                     </div>
                     <div class="mt-2">
                         <span
-                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-600 dark:bg-neutral-600 dark:text-white">
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium  text-neutral-600 dark:text-white">
                             Currently logged-in or active status
                         </span>
                     </div>
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @if (($billsDecrease ?? 0) < 0)
-                            <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                            <span
+                                class="inline-flex items-center gap-1 text-danger-600 bg-danger-100 dark:bg-danger-600/25 rounded-full px-2 py-1 dark:text-danger-400">
                                 <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon>
                                 {{ $billsDecrease ?? 0 }}
                             </span>
                         @elseif(($billsDecrease ?? 0) > 0)
-                            <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                            <span
+                                class="inline-flex items-center gap-1 text-success-600 bg-success-100 dark:bg-success-600/25 dark:text-success-400 rounded-full px-2 py-1">
                                 <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
                                 +Rp{{ number_format(abs($billsDecrease ?? 0)) }}
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1 text-info-600 dark:text-info-400">
-                                <iconify-icon icon="bxs:minus" class="text-xs"></iconify-icon> {{ $billsDecrease ?? 0 }}
+                            <span
+                                class="inline-flex items-center gap-1 text-info-600 bg-info-100 dark:bg-info-600/25 rounded-full px-2 py-1 dark:text-info-400">
+                                <iconify-icon icon="bxs:minus" class="text-xs"></iconify-icon>Rp {{ $billsDecrease ?? 0 }}
                             </span>
+                            Last 30 days
                         @endif
-                        Last 30 days
-                    </p>
+                        {{-- <p class="font-medium text-sm text-neutral-600 dark:text-white p-2"> Last 30 days</p>
+                    </p> --}}
                 </div>
             </div>
         </div>
@@ -137,12 +144,14 @@
 
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @if (($revenueIncrease ?? 0) >= 0)
-                            <span class="inline-flex items-center gap-1 text-success-600 dark:text-success-400">
+                            <span
+                                class="inline-flex items-center gap-1 text-success-600 bg-success-100 dark:bg-success-600/25 rounded-full px-2 py-1 dark:text-success-400">
                                 <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
                                 +Rp {{ number_format(abs($revenueIncrease ?? 0)) }}
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1 text-danger-600 dark:text-danger-400">
+                            <span
+                                class="inline-flex items-center gap-1 text-danger-600 bg-danger-100 dark:bg-danger-600/25 rounded-full px-2 py-1 dark:text-danger-400">
                                 <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon>
                                 -Rp {{ number_format(abs($revenueIncrease ?? 0)) }}
                             </span>
@@ -344,7 +353,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="flex items-center justify-center w-full py-8">
+                            {{-- <div class="flex items-center justify-center w-full py-8">
                                 <div class="text-center">
                                     <svg class="w-12 h-12 mx-auto text-neutral-300 dark:text-neutral-600 mb-2"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -354,7 +363,7 @@
                                     </svg>
                                     <span class="text-neutral-400 dark:text-neutral-500 text-sm">No data available</span>
                                 </div>
-                            </div>
+                            </div> --}}
                         @endif
                     </div>
                 </div>
@@ -420,7 +429,6 @@
 
 
 
-
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <div
                 class="card shadow-none border border-gray-200 dark:border-neutral-600 dark:bg-neutral-700 rounded-lg h-full bg-gradient-to-r from-primary-600/10 to-bg-white w-full">
@@ -429,26 +437,42 @@
                         <div>
                             <p class="font-medium text-neutral-900 dark:text-white mb-1">Average Transaction</p>
 
-
                             <h6 class="mb-0 dark:text-white mt-2">
                                 @if (($averageTransactionPerTenant ?? 0) > 0)
-                                    Rp {{ number_format($averageTransactionPerTenant) }}
+                                    Rp {{ number_format($averageTransactionPerTenant, 0, ',', '.') }}
                                 @else
                                     <span class="text-neutral-400">No Data</span>
                                 @endif
                             </h6>
 
-                            <div class="mt-2">
+
+                            <div class="mt-2 space-y-1">
                                 @php
                                     $totalTransactions = $successfulTransactions ?? 0;
-                                    $contextText =
+                                    $totalRevenue =
                                         $totalTransactions > 0
-                                            ? "Based on {$totalTransactions} successful transactions"
-                                            : 'No successful transactions in last 30 days';
+                                            ? ($averageTransactionPerTenant ?? 0) * $totalTransactions
+                                            : 0;
                                 @endphp
-                                <span class="text-xs text-neutral-500 dark:text-neutral-400">
-                                    {{ $contextText }}
-                                </span>
+
+                                @if ($totalTransactions > 0)
+                                    <div class="text-xs text-neutral-600 dark:text-neutral-200  p-2 rounded-md">
+
+                                        <div class="pl-4 space-y-0.5">
+                                            <div>Total Revenue : Rp {{ number_format($totalRevenue, 0, ',', '.') }}</div>
+                                            <div>÷ {{ $totalTransactions }} successful transactions</div>
+                                            {{-- <div
+                                                class="border-t border-neutral-200 dark:border-neutral-600 pt-0.5 font-medium">
+                                                = Rp {{ number_format($averageTransactionPerTenant ?? 0, 0, ',', '.') }}
+                                                per transaction
+                                            </div> --}}
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        No successful transactions found
+                                    </span>
+                                @endif
                             </div>
                         </div>
                         <div class="w-[50px] h-[50px] bg-primary-600 rounded-full flex justify-center items-center">
@@ -458,7 +482,6 @@
 
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3 flex items-center gap-2">
                         @php
-
                             $currentValue = $averageTransactionPerTenant ?? 0;
                             $isPositive = $currentValue > 0;
                             $trendClass = $isPositive
@@ -470,43 +493,13 @@
                         <span class="inline-flex items-center gap-1 {{ $trendClass }}">
                             <iconify-icon icon="{{ $trendIcon }}" class="text-xs"></iconify-icon>
                             @if ($currentValue > 0)
-                                Active transactions
+                                {{ $totalTransactions }} successful transactions
                             @else
                                 No recent activity
                             @endif
                         </span>
-                        last 30 days
+                    <p class="font-medium text-sm text-neutral-600 dark:text-white ">this month</p>
                     </p>
-                    {{-- 
-                    @if (config('app.debug') && isset($averageTransactionPerTenant))
-                        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
-                            <details class="group">
-                                <summary
-                                    class="cursor-pointer text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300">
-                                    <span class="inline-flex items-center gap-1">
-                                        <iconify-icon icon="solar:bug-linear" class="text-sm"></iconify-icon>
-                                        Debug Info
-                                        <iconify-icon icon="solar:alt-arrow-down-linear"
-                                            class="text-xs group-open:rotate-180 transition-transform"></iconify-icon>
-                                    </span>
-                                </summary>
-                                <div class="mt-2 text-xs text-neutral-600 dark:text-neutral-400 space-y-1">
-                                    <div class="flex justify-between">
-                                        <span>Successful Transactions:</span>
-                                        <span class="font-medium">{{ $successfulTransactions ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Total Trans. for Success Rate:</span>
-                                        <span class="font-medium">{{ $totalTransactionsForSuccessRate ?? 0 }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Raw Average Value:</span>
-                                        <span class="font-medium">{{ $averageTransactionPerTenant ?? 0 }}</span>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                    @endif --}}
 
                     @if (($averageTransactionPerTenant ?? 0) > 0 && ($averageTransactionPerTenant ?? 0) < 100000)
                         <div class="mt-3 pt-3 border-t border-gray-200 dark:border-neutral-600">
@@ -539,7 +532,7 @@
                                     $successRate = $paymentSuccessRate ?? 0;
                                     $badgeClass =
                                         $successRate >= 80
-                                            ? 'bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-200'
+                                            ? 'bg-success-100 text-success-600 dark:bg-success-600/25 dark:text-success-400'
                                             : ($successRate >= 60
                                                 ? 'bg-warning-100 text-warning-600 dark:bg-warning-900 dark:text-warning-600'
                                                 : 'bg-danger-100 text-danger-600 dark:bg-danger-600/25 dark:text-danger-400');
@@ -566,26 +559,33 @@
 
 
                     <p class="font-medium text-sm text-neutral-600 dark:text-white mt-3">
-                        <span class="inline-flex items-center gap-2">
+                        <span class="flex flex-col gap-2">
+
                             <span class="inline-flex items-center gap-1">
                                 <span class="w-2 h-2 bg-success-500 rounded-full"></span>
                                 {{ $successfulTransactions ?? 0 }} successful
                             </span>
-                            <span class="text-neutral-400">/</span>
+
                             <span class="inline-flex items-center gap-1">
-                                <span class="w-2 h-2 bg-neutral-400 rounded-full"></span>
+                                <span class="w-2 h-2 bg-danger-600 rounded-full"></span>
+                                @php
+                                    $failedCount =
+                                        ($totalTransactionsForSuccessRate ?? 0) - ($successfulTransactions ?? 0);
+                                @endphp
+                                {{ $failedCount }} pending
+                            </span>
+
+                            <span class="inline-flex items-center gap-1">
+                                <span class="w-2 h-2 bg-primary-600 rounded-full"></span>
                                 {{ $totalTransactionsForSuccessRate ?? 0 }} total
                             </span>
                         </span>
                     </p>
-
+                    {{-- 
                     <div class="mt-3 text-xs text-neutral-500 dark:text-neutral-400">
-                        Last 30 days •
-                        @php
-                            $failedCount = ($totalTransactionsForSuccessRate ?? 0) - ($successfulTransactions ?? 0);
-                        @endphp
-                        {{ $failedCount }} failed/pending
-                    </div>
+                        Last 30 days
+
+                    </div> --}}
 
 
                     {{-- @if (($paymentSuccessRate ?? 0) < 70)
@@ -635,7 +635,6 @@
                             <div
                                 class="flex items-start justify-between gap-3 py-3 border-b border-neutral-200 dark:border-neutral-600 last:border-b-0">
                                 <div class="flex items-start gap-3 flex-1">
-                                    <!-- Dynamic Icon -->
                                     <div
                                         class="w-10 h-10 rounded-full {{ $activity->bg_color }} flex items-center justify-center shrink-0">
                                         <iconify-icon icon="{{ $activity->icon }}"
@@ -643,7 +642,6 @@
                                     </div>
 
                                     <div class="flex-1 min-w-0">
-                                        <!-- Activity Description -->
                                         @if ($activity->type == 'tenant_registered')
                                             <div class="flex items-center gap-2 flex-wrap">
                                                 <span
@@ -690,7 +688,6 @@
                                                 Amount: Rp{{ number_format($activity->amount, 0, ',', '.') }}
                                             </p>
                                         @else
-                                            <!-- Fallback for unknown activity types -->
                                             <div class="flex items-center gap-2 flex-wrap">
                                                 <span
                                                     class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">{{ $activity->tenant_name ?? 'Unknown' }}</span>
@@ -742,7 +739,7 @@
                 if (!ownerData || !Array.isArray(ownerData) || ownerData.length === 0) {
                     console.log('No owner distribution data available');
                     chartElement.innerHTML =
-                        '<div class="flex items-center justify-center h-64"><div class="text-center text-gray-500">No data available</div></div>';
+                        '<div style="padding-top: 50%;"><div class="flex items-center justify-center h-64"><div class="text-center text-gray-500 dark:text-neutral-400">No country data available</div></div>';
                     return;
                 }
 

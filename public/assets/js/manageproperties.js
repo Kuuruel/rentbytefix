@@ -78,18 +78,18 @@
         rentBackdrop: document.getElementById('rentNow'),
         closeRentBtn: document.getElementById('closeRentBtn'),
         closeRentFooterBtn: document.getElementById('closeRentFooterBtn'),
-        
+
         rentPropertyName: document.getElementById('rentPropertyName'),
         rentPropertyPrice: document.getElementById('rentPropertyPrice'),
         rentPropertyId: document.getElementById('rentPropertyId'),
-        
+
         renterName: document.getElementById('renterName'),
         renterPhone: document.getElementById('renterPhone'),
         renterEmail: document.getElementById('renterEmail'),
         renterAddress: document.getElementById('renterAddress'),
         startDate: document.getElementById('startDate'),
         endDate: document.getElementById('endDate'),
-        
+
         rentForm: document.getElementById('rentForm'),
         generatePaymentBtn: document.getElementById('generatePaymentBtn'),
 
@@ -169,7 +169,7 @@
 
     function showNotification(message, type = 'success') {
         document.querySelectorAll('.notification-toast').forEach(n => n.remove());
-        
+
         const notification = document.createElement('div');
         notification.className = 'notification-toast';
         notification.style.cssText = `
@@ -184,7 +184,7 @@
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             pointer-events: auto;
         `;
-        
+
         const colors = {
             success: {
                 bg: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
@@ -202,9 +202,9 @@
                 icon: 'ph:warning-circle-fill'
             }
         };
-        
+
         const config = colors[type] || colors.success;
-        
+
         notification.innerHTML = `
             <div style="
                 background: ${config.bg};
@@ -278,7 +278,7 @@
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(notification);
 
         setTimeout(() => {
@@ -309,9 +309,9 @@
 
     function showErrors(errors) {
         if (!DOM.errorMessages) return;
-        
+
         let errorHtml = '<div class="text-sm"><strong>Please fix the following errors:</strong><ul class="list-disc list-inside mt-2">';
-        
+
         if (typeof errors === 'object') {
             Object.values(errors).forEach(errorArray => {
                 if (Array.isArray(errorArray)) {
@@ -325,7 +325,7 @@
         } else {
             errorHtml += `<li>${escapeHtml(errors)}</li>`;
         }
-        
+
         errorHtml += '</ul></div>';
         DOM.errorMessages.innerHTML = errorHtml;
         DOM.errorMessages.classList.remove('hidden');
@@ -351,20 +351,20 @@
     }
 
     function formatDate(dateString) {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
 
     function showRentModal(visible) {
         if (!DOM.rentBackdrop) return;
-        
+
         if (visible) {
             DOM.rentBackdrop.classList.remove('hidden');
             DOM.rentBackdrop.classList.add('flex');
@@ -383,16 +383,16 @@
     function showBulkDeleteModal() {
         const checkedBoxes = document.querySelectorAll('.property-checkbox:checked');
         const selectedCount = checkedBoxes.length;
-        
+
         if (selectedCount === 0) {
             showNotification('Please select properties to delete', 'error');
             return;
         }
-        
+
         if (DOM.bulkDeleteCount) {
             DOM.bulkDeleteCount.textContent = selectedCount;
         }
-        
+
         if (DOM.bulkDeleteModal) {
             DOM.bulkDeleteModal.classList.remove('hidden');
             DOM.bulkDeleteModal.classList.add('flex');
@@ -414,7 +414,7 @@
         if (DOM.paymentAmount) DOM.paymentAmount.textContent = data.amount;
         if (DOM.paymentDueDate) DOM.paymentDueDate.textContent = data.due_date;
         if (DOM.generatedPaymentLink) DOM.generatedPaymentLink.value = data.payment_link;
-        
+
         if (DOM.paymentLinkModal) {
             DOM.paymentLinkModal.classList.remove('hidden');
             DOM.paymentLinkModal.classList.add('flex');
@@ -434,16 +434,16 @@
         const linkInput = DOM.generatedPaymentLink;
         const copyText = DOM.copyPaymentLink?.querySelector('.copy-text');
         const copySuccess = DOM.copyPaymentLink?.querySelector('.copy-success');
-        
+
         if (linkInput) {
             linkInput.select();
             linkInput.setSelectionRange(0, 99999);
             document.execCommand('copy');
-            
+
             if (copyText && copySuccess) {
                 copyText.classList.add('hidden');
                 copySuccess.classList.remove('hidden');
-                
+
                 setTimeout(() => {
                     copyText.classList.remove('hidden');
                     copySuccess.classList.add('hidden');
@@ -456,7 +456,7 @@
         const paymentLink = DOM.generatedPaymentLink?.value;
         const propertyName = DOM.paymentPropertyName?.textContent;
         const amount = DOM.paymentAmount?.textContent;
-        
+
         if (paymentLink && propertyName && amount) {
             const message = `Hi! Silakan lakukan pembayaran untuk penyewaan properti "${propertyName}" dengan total ${amount}. Link pembayaran: ${paymentLink}`;
             const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -518,7 +518,6 @@
                             <span class="text-sm font-semibold text-neutral-900 dark:text-white">#${paymentData.bill_id}</span>
                         </div>
                     </div>
-
                     <!-- Action Buttons -->
                     <div class="flex flex-col gap-3">
                         <button onclick="window.open('${paymentData.payment_link}', '_blank')" 
@@ -539,7 +538,7 @@
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
 
@@ -561,14 +560,14 @@
     async function checkPaymentStatus(billId) {
         try {
             const { data } = await apiRequest(API_ENDPOINTS.PAYMENT_STATUS(billId));
-            
+
             if (data.success) {
                 const bill = data.data.bill;
                 const transaction = data.data.transaction;
-                
+
                 let message = '';
                 let type = 'info';
-                
+
                 switch (bill.status) {
                     case 'paid':
                         message = 'Pembayaran berhasil! Properti sudah disewa.';
@@ -595,7 +594,7 @@
                         message = `Status: ${bill.status}`;
                         type = 'info';
                 }
-                
+
                 showNotification(message, type);
             } else {
                 throw new Error(data.message || 'Failed to check payment status');
@@ -609,7 +608,7 @@
     async function handleBulkDelete() {
         const checkedBoxes = document.querySelectorAll('.property-checkbox:checked');
         const selectedIds = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
-        
+
         if (selectedIds.length === 0) {
             showNotification('No properties selected for deletion', 'error');
             return;
@@ -625,7 +624,7 @@
             if (confirmBtn) confirmBtn.disabled = true;
 
             let response, data;
-            
+
             try {
                 const idsParam = selectedIds.join(',');
                 const result = await apiRequest(`${API_ENDPOINTS.BULK_DELETE}?ids=${idsParam}`, {
@@ -645,7 +644,7 @@
                     console.log('Bulk delete not available, deleting individually...');
                     let successCount = 0;
                     let errors = [];
-                    
+
                     for (const id of selectedIds) {
                         try {
                             await apiRequest(API_ENDPOINTS.DELETE(id), {
@@ -656,12 +655,12 @@
                             errors.push(`Property ${id}: ${individualError.message}`);
                         }
                     }
-                    
+
                     if (successCount > 0) {
                         closeBulkDeleteModal();
                         loadProperties();
                         clearAllSelections();
-                        
+
                         if (errors.length > 0) {
                             showNotification(`${successCount} properties deleted successfully. ${errors.length} failed.`, 'error');
                             console.error('Individual delete errors:', errors);
@@ -693,9 +692,9 @@
         }
     }
 
-    window.rentNow = function(id) {
+    window.rentNow = function (id) {
         console.log('Rent Now clicked for ID:', id);
-        
+
         const property = properties.find(p => p.id === id);
         if (!property) {
             console.error('Property not found:', id);
@@ -707,40 +706,40 @@
         if (DOM.rentPropertyName) {
             DOM.rentPropertyName.textContent = property.name || '-';
         }
-        
+
         if (DOM.rentPropertyPrice) {
             const rentType = property.rent_type;
             let periodText = '';
-            
+
             if (rentType === 'Monthly') {
                 periodText = '/Month';
             } else if (rentType === 'Yearly') {
                 periodText = '/Year';
             }
-            
+
             DOM.rentPropertyPrice.textContent = `Rp ${formatNumber(property.price)}${periodText}`;
         }
-        
+
         if (DOM.rentPropertyId) {
             DOM.rentPropertyId.value = property.id;
         }
-        
+
         window.currentRentType = property.rent_type;
-        
+
         if (DOM.renterName) DOM.renterName.value = '';
         if (DOM.renterPhone) DOM.renterPhone.value = '';
         if (DOM.renterEmail) DOM.renterEmail.value = '';
         if (DOM.renterAddress) DOM.renterAddress.value = '';
         if (DOM.startDate) DOM.startDate.value = '';
         if (DOM.endDate) DOM.endDate.value = '';
-        
+
         console.log('Showing rent modal...');
         showRentModal(true);
-        
+
         setTimeout(() => DOM.renterName?.focus(), 100);
     };
 
-    window.rentNowFromDetails = function() {
+    window.rentNowFromDetails = function () {
         const propertyId = DOM.detailId?.textContent?.replace('#', '');
         if (propertyId) {
             closeDetailsModal();
@@ -754,37 +753,37 @@
         const startDateInput = DOM.startDate;
         const endDateInput = DOM.endDate;
         const rentType = window.currentRentType;
-        
+
         if (!startDateInput || !endDateInput || !startDateInput.value) {
             if (endDateInput) endDateInput.value = '';
             return;
         }
-        
+
         const startDate = new Date(startDateInput.value);
         let endDate = new Date(startDate);
-        
+
         if (rentType === 'Monthly') {
             endDate.setMonth(endDate.getMonth() + 1);
         } else if (rentType === 'Yearly') {
             endDate.setFullYear(endDate.getFullYear() + 1);
         }
-        
+
         const formattedEndDate = endDate.toISOString().split('T')[0];
         endDateInput.value = formattedEndDate;
     }
 
     async function handleRentSubmit(e) {
         e.preventDefault();
-        
+
         const generateBtn = DOM.generatePaymentBtn;
         const btnText = generateBtn?.querySelector('.btn-text');
         const btnLoading = generateBtn?.querySelector('.submit-loading');
-        
+
         try {
             if (btnText) btnText.classList.add('hidden');
             if (btnLoading) btnLoading.classList.remove('hidden');
             if (generateBtn) generateBtn.disabled = true;
-            
+
             const rentData = {
                 property_id: DOM.rentPropertyId?.value,
                 renter_name: DOM.renterName?.value.trim(),
@@ -794,12 +793,12 @@
                 start_date: DOM.startDate?.value,
                 end_date: DOM.endDate?.value
             };
-            
+
             const { data } = await apiRequest(API_ENDPOINTS.RENTALS, {
                 method: 'POST',
                 body: JSON.stringify(rentData)
             });
-            
+
             if (data.success) {
                 closeRentModal();
 
@@ -808,13 +807,13 @@
                 } else {
                     showPaymentModal(data.data);
                 }
-                
+
                 loadProperties();
                 showNotification('Payment link generated successfully!', 'success');
             } else {
                 throw new Error(data.message || 'Failed to create rental');
             }
-            
+
         } catch (error) {
             console.error('Rent submit error:', error);
             showNotification('Error creating rental: ' + error.message, 'error');
@@ -826,7 +825,7 @@
     }
 
     async function loadProperties() {
-        renderSpinnerRow(); 
+        renderSpinnerRow();
 
         try {
             const params = new URLSearchParams({
@@ -837,7 +836,7 @@
             });
 
             const { data } = await apiRequest(`${API_ENDPOINTS.DATA}?${params}`);
-            
+
             if (data.success) {
                 properties = data.data.data;
                 renderTable(data.data.data);
@@ -853,13 +852,13 @@
         }
     }
 
-function renderTable(properties) {
-    if (!DOM.tableBody) return;
+    function renderTable(properties) {
+        if (!DOM.tableBody) return;
 
-    DOM.tableBody.innerHTML = '';
+        DOM.tableBody.innerHTML = '';
 
-    if (properties.length === 0) {
-        DOM.tableBody.innerHTML = `
+        if (properties.length === 0) {
+            DOM.tableBody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center py-4 text-neutral-500">
                     <div class="flex flex-col items-center gap-4">
@@ -870,32 +869,32 @@ function renderTable(properties) {
                     </div>
                 </td>
             </tr>`;
-        return;
-    }
+            return;
+        }
 
-    properties.forEach(property => {
-        const row = document.createElement('tr');
+        properties.forEach(property => {
+            const row = document.createElement('tr');
 
-        let actionButtons = '';
+            let actionButtons = '';
 
-        const viewButton = `
+            const viewButton = `
             <button onclick="viewProperty(${property.id})" class="w-8 h-8 bg-primary-50 dark:bg-primary-600/10 text-primary-600 dark:text-primary-400 rounded-full inline-flex items-center justify-center">
                <iconify-icon icon="iconamoon:eye-light"></iconify-icon>
             </button>
         `;
 
-        let rentButton = '';
-        if (property.status === 'Rented') {
-            rentButton = `
+            let rentButton = '';
+            if (property.status === 'Rented') {
+                rentButton = `
                 <button onclick="showRenterDetails(${property.id})" class="w-8 h-8 bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400 rounded-full inline-flex items-center justify-center" title="View Renter Details">
                     <iconify-icon icon="ph:user-circle" class="text-sm"></iconify-icon>
                 </button>
             `;
-        }
+            }
 
-        let editDeleteButtons = '';
-        if (property.status === 'Available') {
-            editDeleteButtons = `
+            let editDeleteButtons = '';
+            if (property.status === 'Available') {
+                editDeleteButtons = `
                 <button onclick="editProperty(${property.id})" class="w-8 h-8 bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 rounded-full inline-flex items-center justify-center">
                     <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
                 </button>
@@ -903,8 +902,8 @@ function renderTable(properties) {
                     <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
                 </button>
             `;
-        } else {
-            editDeleteButtons = `
+            } else {
+                editDeleteButtons = `
                 <button disabled class="w-8 h-8 bg-neutral-100 dark:bg-neutral-600/25 text-neutral-400 rounded-full inline-flex items-center justify-center cursor-not-allowed" title="Cannot edit ${property.status.toLowerCase()} property">
                     <iconify-icon icon="lucide:edit" class="text-sm"></iconify-icon>
                 </button>
@@ -912,11 +911,11 @@ function renderTable(properties) {
                     <iconify-icon icon="mingcute:delete-2-line"></iconify-icon>
                 </button>
             `;
-        }
-        
-        actionButtons = viewButton + rentButton + editDeleteButtons;
+            }
 
-        row.innerHTML = `
+            actionButtons = viewButton + rentButton + editDeleteButtons;
+
+            row.innerHTML = `
             <td>
                 <div class="flex items-center gap-0">
                     <div class="form-check style-check flex items-center">
@@ -962,32 +961,32 @@ function renderTable(properties) {
                 </div>
             </td>
         `;
-        DOM.tableBody.appendChild(row);
-    });
-}
+            DOM.tableBody.appendChild(row);
+        });
+    }
 
 
     function getStatusClass(status) {
-    switch(status) {
-        case 'Available':
-            return 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400';
-        case 'Processing':
-            return 'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400';
-        case 'Rented':
-            return 'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400';
-        default:
-            return 'bg-neutral-100 dark:bg-neutral-600/25 text-neutral-600 dark:text-neutral-400';
+        switch (status) {
+            case 'Available':
+                return 'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400';
+            case 'Processing':
+                return 'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400';
+            case 'Rented':
+                return 'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400';
+            default:
+                return 'bg-neutral-100 dark:bg-neutral-600/25 text-neutral-600 dark:text-neutral-400';
+        }
     }
-}
 
     function toggleSelectAll() {
         const checkboxes = document.querySelectorAll('.property-checkbox');
         const isChecked = DOM.selectAll?.checked || false;
-        
+
         checkboxes.forEach(checkbox => {
             checkbox.checked = isChecked;
         });
-        
+
         updateSelectActions();
     }
 
@@ -1070,19 +1069,19 @@ function renderTable(properties) {
                 DOM.selectAll.indeterminate = false;
             }
         }
-        
+
         updateSelectActions();
     }
 
     function clearAllSelections() {
         const checkboxes = document.querySelectorAll('.property-checkbox');
         checkboxes.forEach(checkbox => checkbox.checked = false);
-        
+
         if (DOM.selectAll) {
             DOM.selectAll.checked = false;
             DOM.selectAll.indeterminate = false;
         }
-        
+
         updateSelectActions();
     }
 
@@ -1102,23 +1101,22 @@ function renderTable(properties) {
         DOM.paginationInfo.textContent = `Showing ${data.from || 0} to ${data.to || 0} of ${data.total} entries`;
 
         DOM.pageNumbers.innerHTML = '';
-        
+
         const startPage = Math.max(1, state.page - 2);
         const endPage = Math.min(data.last_page, startPage + 4);
 
         for (let i = startPage; i <= endPage; i++) {
             const pageBtn = document.createElement('button');
-            pageBtn.className = `page-link h-8 w-8 flex items-center justify-center rounded-lg border-0 text-base font-semibold ${
-                i === state.page 
-                    ? 'bg-primary-600 text-white' 
+            pageBtn.className = `page-link h-8 w-8 flex items-center justify-center rounded-lg border-0 text-base font-semibold ${i === state.page
+                    ? 'bg-primary-600 text-white'
                     : 'bg-neutral-300 dark:bg-neutral-600 text-secondary-light hover:bg-primary-100'
-            }`;
+                }`;
             pageBtn.textContent = i;
             pageBtn.onclick = () => {
                 state.page = i;
                 loadProperties();
             };
-            
+
             const li = document.createElement('li');
             li.className = 'page-item';
             li.appendChild(pageBtn);
@@ -1137,7 +1135,7 @@ function renderTable(properties) {
 
         const submitText = DOM.formSubmit?.querySelector('.submit-text');
         if (submitText) submitText.textContent = 'Add Property';
-        
+
         hideErrors();
         showModal(true);
 
@@ -1146,7 +1144,7 @@ function renderTable(properties) {
 
     function showModal(visible) {
         if (!DOM.modalBackdrop) return;
-        
+
         if (visible) {
             DOM.modalBackdrop.classList.remove('hidden');
             DOM.modalBackdrop.classList.add('flex');
@@ -1166,7 +1164,7 @@ function renderTable(properties) {
 
     function showDetailsModal(visible) {
         if (!DOM.detailsBackdrop) return;
-        
+
         if (visible) {
             DOM.detailsBackdrop.classList.remove('hidden');
             DOM.detailsBackdrop.classList.add('flex');
@@ -1184,7 +1182,7 @@ function renderTable(properties) {
 
     function showDeleteModal(visible) {
         if (!DOM.deleteBackdrop) return;
-        
+
         if (visible) {
             DOM.deleteBackdrop.classList.remove('hidden');
             DOM.deleteBackdrop.classList.add('flex');
@@ -1249,9 +1247,9 @@ function renderTable(properties) {
                     return;
                 }
             } catch (parseError) {
-                
+
             }
-            
+
             showNotification(error.message || `Failed to ${state.isEditing ? 'update' : 'add'} property`, 'error');
         } finally {
             if (submitText) submitText.classList.remove('hidden');
@@ -1293,165 +1291,165 @@ function renderTable(properties) {
         }
     }
 
-   window.viewProperty = function(id) {
-    const property = properties.find(p => p.id === id);
-    if (!property) return;
+    window.viewProperty = function (id) {
+        const property = properties.find(p => p.id === id);
+        if (!property) return;
 
-    const status = property.status || 'Available';
+        const status = property.status || 'Available';
 
-    if (DOM.detailName) DOM.detailName.textContent = property.name || '-';
-    
-    if (DOM.detailStatus) {
-        DOM.detailStatus.innerHTML = `
-            <span class="${status === 'Available' ? 
-                'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400' : 
-                status === 'Processing' ? 
-                'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400' : 
-                'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400'
-            } px-5 py-1 rounded-full text-xs font-semibold">
+        if (DOM.detailName) DOM.detailName.textContent = property.name || '-';
+
+        if (DOM.detailStatus) {
+            DOM.detailStatus.innerHTML = `
+            <span class="${status === 'Available' ?
+                    'bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400' :
+                    status === 'Processing' ?
+                        'bg-info-100 dark:bg-info-600/25 text-info-600 dark:text-info-400' :
+                        'bg-warning-100 dark:bg-warning-600/25 text-warning-600 dark:text-warning-400'
+                } px-5 py-1 rounded-full text-xs font-semibold">
                 ${status.toUpperCase()}
             </span>
         `;
-    }
-
-    if (DOM.detailId) DOM.detailId.textContent = `#${property.id}`;
-    if (DOM.detailType) DOM.detailType.textContent = property.type || '-';
-    if (DOM.detailAddress) DOM.detailAddress.textContent = property.address || '-';
-    if (DOM.detailPrice) DOM.detailPrice.textContent = `Rp ${formatNumber(property.price)}`;
-    if (DOM.detailRentType) DOM.detailRentType.textContent = property.rent_type || '-';
-    if (DOM.detailCreatedAt) DOM.detailCreatedAt.textContent = formatDate(property.created_at);
-
-    const rentNowBtn = document.getElementById('rentNowBtn');
-    const renterDetailBtn = document.getElementById('renterDetailBtn');
-    
-    if (status === 'Rented') {
-        if (rentNowBtn) rentNowBtn.classList.add('hidden');
-        if (renterDetailBtn) {
-            renterDetailBtn.classList.remove('hidden');
-            renterDetailBtn.onclick = () => {
-                closeDetailsModal();
-                setTimeout(() => showRenterDetails(id), 100);
-            };
         }
-    } else if (status === 'Processing') {
-        if (rentNowBtn) rentNowBtn.classList.add('hidden');
-        if (renterDetailBtn) renterDetailBtn.classList.add('hidden');
-    } else {
-        if (rentNowBtn) rentNowBtn.classList.remove('hidden');
-        if (renterDetailBtn) renterDetailBtn.classList.add('hidden');
-    }
 
-    showDetailsModal(true);
-};
+        if (DOM.detailId) DOM.detailId.textContent = `#${property.id}`;
+        if (DOM.detailType) DOM.detailType.textContent = property.type || '-';
+        if (DOM.detailAddress) DOM.detailAddress.textContent = property.address || '-';
+        if (DOM.detailPrice) DOM.detailPrice.textContent = `Rp ${formatNumber(property.price)}`;
+        if (DOM.detailRentType) DOM.detailRentType.textContent = property.rent_type || '-';
+        if (DOM.detailCreatedAt) DOM.detailCreatedAt.textContent = formatDate(property.created_at);
+
+        const rentNowBtn = document.getElementById('rentNowBtn');
+        const renterDetailBtn = document.getElementById('renterDetailBtn');
+
+        if (status === 'Rented') {
+            if (rentNowBtn) rentNowBtn.classList.add('hidden');
+            if (renterDetailBtn) {
+                renterDetailBtn.classList.remove('hidden');
+                renterDetailBtn.onclick = () => {
+                    closeDetailsModal();
+                    setTimeout(() => showRenterDetails(id), 100);
+                };
+            }
+        } else if (status === 'Processing') {
+            if (rentNowBtn) rentNowBtn.classList.add('hidden');
+            if (renterDetailBtn) renterDetailBtn.classList.add('hidden');
+        } else {
+            if (rentNowBtn) rentNowBtn.classList.remove('hidden');
+            if (renterDetailBtn) renterDetailBtn.classList.add('hidden');
+        }
+
+        showDetailsModal(true);
+    };
 
 
     function showRenterDetailsModal(visible) {
-    if (!DOM.renterDetailsModal) return;
-    
-    if (visible) {
-        DOM.renterDetailsModal.classList.remove('hidden');
-        DOM.renterDetailsModal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-    } else {
-        DOM.renterDetailsModal.classList.add('hidden');
-        DOM.renterDetailsModal.classList.remove('flex');
-        document.body.style.overflow = '';
-    }
-}
+        if (!DOM.renterDetailsModal) return;
 
-function closeRenterDetailsModal() {
-    showRenterDetailsModal(false);
-}
-
-window.showRenterDetails = async function(propertyId) {
-    try {
-        const property = properties.find(p => p.id === propertyId);
-        if (!property) {
-            showNotification('Property not found', 'error');
-            return;
-        }
-
-        if (DOM.renterDetailPropertyName) {
-            DOM.renterDetailPropertyName.textContent = property.name;
-        }
-
-        if (DOM.renterDetailName) DOM.renterDetailName.textContent = 'Loading...';
-        if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = 'Loading...';
-        if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = 'Loading...';
-        if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = 'Loading...';
-        if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = 'Loading...';
-        if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = 'Loading...';
-
-        showRenterDetailsModal(true);
-
-        console.log('Fetching renter details from:', API_ENDPOINTS.RENTER_DETAILS(propertyId));
-
-        const { data } = await apiRequest(API_ENDPOINTS.RENTER_DETAILS(propertyId));
-
-        console.log('Renter details response:', data);
-        
-        if (data.success && data.data) {
-            const renterData = data.data;
-
-            console.log('Renter data structure:', renterData);
-
-            if (DOM.renterDetailName) {
-                DOM.renterDetailName.textContent = renterData.renter_name || renterData.name || 'No name provided';
-            }
-            if (DOM.renterDetailPhone) {
-                DOM.renterDetailPhone.textContent = renterData.renter_phone || renterData.phone || 'No phone provided';
-            }
-            if (DOM.renterDetailEmail) {
-                DOM.renterDetailEmail.textContent = renterData.renter_email || renterData.email || 'No email provided';
-            }
-            if (DOM.renterDetailAddress) {
-                DOM.renterDetailAddress.textContent = renterData.renter_address || renterData.address || 'No address provided';
-            }
-            if (DOM.renterDetailStartDate) {
-                const startDate = renterData.start_date || renterData.rental_start || renterData.created_at;
-                DOM.renterDetailStartDate.textContent = startDate ? formatDate(startDate) : 'No start date';
-            }
-            if (DOM.renterDetailEndDate) {
-                const endDate = renterData.end_date || renterData.rental_end;
-                DOM.renterDetailEndDate.textContent = endDate ? formatDate(endDate) : 'No end date';
-            }
+        if (visible) {
+            DOM.renterDetailsModal.classList.remove('hidden');
+            DOM.renterDetailsModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
         } else {
-            console.error('API returned success but no renter data:', data);
-
-            if (data.renter) {
-                const renterData = data.renter;
-                console.log('Using alternative data structure:', renterData);
-                
-                if (DOM.renterDetailName) DOM.renterDetailName.textContent = renterData.name || 'No name provided';
-                if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = renterData.phone || 'No phone provided';
-                if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = renterData.email || 'No email provided';
-                if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = renterData.address || 'No address provided';
-                if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = renterData.start_date ? formatDate(renterData.start_date) : 'No start date';
-                if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = renterData.end_date ? formatDate(renterData.end_date) : 'No end date';
-            } else {
-                throw new Error(data.message || 'No renter data found for this property');
-            }
+            DOM.renterDetailsModal.classList.add('hidden');
+            DOM.renterDetailsModal.classList.remove('flex');
+            document.body.style.overflow = '';
         }
-    } catch (error) {
-        console.error('Error loading renter details:', error);
-        showNotification('Error loading renter details: ' + error.message, 'error');
-
-        const errorMsg = 'Error loading data';
-        if (DOM.renterDetailName) DOM.renterDetailName.textContent = errorMsg;
-        if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = errorMsg;
-        if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = errorMsg;
-        if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = errorMsg;
-        if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = errorMsg;
-        if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = errorMsg;
     }
-};
 
-    window.editProperty = async function(id) {
+    function closeRenterDetailsModal() {
+        showRenterDetailsModal(false);
+    }
+
+    window.showRenterDetails = async function (propertyId) {
+        try {
+            const property = properties.find(p => p.id === propertyId);
+            if (!property) {
+                showNotification('Property not found', 'error');
+                return;
+            }
+
+            if (DOM.renterDetailPropertyName) {
+                DOM.renterDetailPropertyName.textContent = property.name;
+            }
+
+            if (DOM.renterDetailName) DOM.renterDetailName.textContent = 'Loading...';
+            if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = 'Loading...';
+            if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = 'Loading...';
+            if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = 'Loading...';
+            if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = 'Loading...';
+            if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = 'Loading...';
+
+            showRenterDetailsModal(true);
+
+            console.log('Fetching renter details from:', API_ENDPOINTS.RENTER_DETAILS(propertyId));
+
+            const { data } = await apiRequest(API_ENDPOINTS.RENTER_DETAILS(propertyId));
+
+            console.log('Renter details response:', data);
+
+            if (data.success && data.data) {
+                const renterData = data.data;
+
+                console.log('Renter data structure:', renterData);
+
+                if (DOM.renterDetailName) {
+                    DOM.renterDetailName.textContent = renterData.renter_name || renterData.name || 'No name provided';
+                }
+                if (DOM.renterDetailPhone) {
+                    DOM.renterDetailPhone.textContent = renterData.renter_phone || renterData.phone || 'No phone provided';
+                }
+                if (DOM.renterDetailEmail) {
+                    DOM.renterDetailEmail.textContent = renterData.renter_email || renterData.email || 'No email provided';
+                }
+                if (DOM.renterDetailAddress) {
+                    DOM.renterDetailAddress.textContent = renterData.renter_address || renterData.address || 'No address provided';
+                }
+                if (DOM.renterDetailStartDate) {
+                    const startDate = renterData.start_date || renterData.rental_start || renterData.created_at;
+                    DOM.renterDetailStartDate.textContent = startDate ? formatDate(startDate) : 'No start date';
+                }
+                if (DOM.renterDetailEndDate) {
+                    const endDate = renterData.end_date || renterData.rental_end;
+                    DOM.renterDetailEndDate.textContent = endDate ? formatDate(endDate) : 'No end date';
+                }
+            } else {
+                console.error('API returned success but no renter data:', data);
+
+                if (data.renter) {
+                    const renterData = data.renter;
+                    console.log('Using alternative data structure:', renterData);
+
+                    if (DOM.renterDetailName) DOM.renterDetailName.textContent = renterData.name || 'No name provided';
+                    if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = renterData.phone || 'No phone provided';
+                    if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = renterData.email || 'No email provided';
+                    if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = renterData.address || 'No address provided';
+                    if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = renterData.start_date ? formatDate(renterData.start_date) : 'No start date';
+                    if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = renterData.end_date ? formatDate(renterData.end_date) : 'No end date';
+                } else {
+                    throw new Error(data.message || 'No renter data found for this property');
+                }
+            }
+        } catch (error) {
+            console.error('Error loading renter details:', error);
+            showNotification('Error loading renter details: ' + error.message, 'error');
+
+            const errorMsg = 'Error loading data';
+            if (DOM.renterDetailName) DOM.renterDetailName.textContent = errorMsg;
+            if (DOM.renterDetailPhone) DOM.renterDetailPhone.textContent = errorMsg;
+            if (DOM.renterDetailEmail) DOM.renterDetailEmail.textContent = errorMsg;
+            if (DOM.renterDetailAddress) DOM.renterDetailAddress.textContent = errorMsg;
+            if (DOM.renterDetailStartDate) DOM.renterDetailStartDate.textContent = errorMsg;
+            if (DOM.renterDetailEndDate) DOM.renterDetailEndDate.textContent = errorMsg;
+        }
+    };
+
+    window.editProperty = async function (id) {
         try {
             const { data } = await apiRequest(`${API_ENDPOINTS.INDEX}/${id}`);
             if (data.success) {
                 const property = data.data;
-                
+
                 state.isEditing = true;
                 if (DOM.modalTitle) DOM.modalTitle.textContent = 'Edit Property';
                 if (DOM.formId) DOM.formId.value = property.id;
@@ -1465,7 +1463,7 @@ window.showRenterDetails = async function(propertyId) {
 
                 const submitText = DOM.formSubmit?.querySelector('.submit-text');
                 if (submitText) submitText.textContent = 'Update Property';
-                
+
                 hideErrors();
                 showModal(true);
             }
@@ -1475,7 +1473,7 @@ window.showRenterDetails = async function(propertyId) {
         }
     };
 
-    window.confirmDelete = function(id) {
+    window.confirmDelete = function (id) {
         const property = properties.find(p => p.id === id);
         if (!property) return;
 
@@ -1528,7 +1526,7 @@ window.showRenterDetails = async function(propertyId) {
         DOM.rentBackdrop?.addEventListener('click', (e) => {
             if (e.target === DOM.rentBackdrop) closeRentModal();
         });
-        
+
         DOM.rentForm?.addEventListener('submit', handleRentSubmit);
         DOM.startDate?.addEventListener('change', calculateEndDate);
 
@@ -1611,10 +1609,10 @@ window.showRenterDetails = async function(propertyId) {
 
     function init() {
         console.log('Initializing Property Management...');
-        
+
         initEventListeners();
         loadProperties();
-        
+
         console.log('Property Management initialized successfully');
     }
 

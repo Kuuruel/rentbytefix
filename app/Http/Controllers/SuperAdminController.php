@@ -346,7 +346,6 @@ class SuperAdminController extends Controller
     {
         return view('super-admin.index7');
     }
-
     public function index8($tenant_id)
     {
         $tenant = Tenants::select('id', 'name', 'email', 'status', 'created_at', 'avatar', 'country')
@@ -391,26 +390,54 @@ class SuperAdminController extends Controller
         $salesLastMonth = Transaction::where('tenant_id', $tenant->id)
             ->where('status', Transaction::STATUS_SUCCESS)
             ->whereMonth('created_at', now()->subMonth()->month)
-            ->whereYear('created_at', now()->subMonth()->year)
+            ->whereYear('created_at', now()->year)
             ->sum('amount');
 
         $salesChange = $salesLastMonth > 0
             ? (($salesThisMonth - $salesLastMonth) / $salesLastMonth) * 100
             : ($salesThisMonth > 0 ? 100 : 0);
 
-        $averagePerTransaction = $transactionsThisMonth > 0 ? $salesThisMonth / $transactionsThisMonth : 0;
-        $lastMonthAverage = $transactionsLastMonth > 0 ? $salesLastMonth / $transactionsLastMonth : 0;
+        $successfulTransactionsThisMonth = Transaction::where('tenant_id', $tenant->id)
+            ->where('status', Transaction::STATUS_SUCCESS)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $successfulTransactionsLastMonth = Transaction::where('tenant_id', $tenant->id)
+            ->where('status', Transaction::STATUS_SUCCESS)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->count();
+
+        $averagePerTransaction = $successfulTransactionsThisMonth > 0 ? $salesThisMonth / $successfulTransactionsThisMonth : 0;
+        $lastMonthAverage = $successfulTransactionsLastMonth > 0 ? $salesLastMonth / $successfulTransactionsLastMonth : 0;
+
         $avgChange = $lastMonthAverage > 0
             ? (($averagePerTransaction - $lastMonthAverage) / $lastMonthAverage) * 100
             : ($averagePerTransaction > 0 ? 100 : 0);
 
         $chartData = $this->getTenantChartData($tenant->id);
 
+
         $income = $salesThisMonth;
-        $expenses = $income * 0.65;
+
+        $totalTransactionsThisMonth = Transaction::where('tenant_id', $tenant->id)
+            ->where('status', Transaction::STATUS_SUCCESS)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $expenses = ($income * 0.05) + ($totalTransactionsThisMonth * 2500);
 
         $lastMonthIncome = $salesLastMonth;
-        $lastMonthExpenses = $lastMonthIncome * 0.65;
+
+        $totalTransactionsLastMonth = Transaction::where('tenant_id', $tenant->id)
+            ->where('status', Transaction::STATUS_SUCCESS)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $lastMonthExpenses = ($lastMonthIncome * 0.05) + ($totalTransactionsLastMonth * 2500);
 
         $incomeChange = $lastMonthIncome > 0
             ? (($income - $lastMonthIncome) / $lastMonthIncome) * 100
@@ -419,6 +446,14 @@ class SuperAdminController extends Controller
         $expensesChange = $lastMonthExpenses > 0
             ? (($expenses - $lastMonthExpenses) / $lastMonthExpenses) * 100
             : ($expenses > 0 ? 100 : 0);
+
+        $outstandingUnpaid = Transaction::where('tenant_id', $tenant->id)
+            ->where('status', 'pending')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('amount');
+
+        $netIncome = $income - $expenses;
 
         $totalTransactionsThisWeek = Transaction::where('tenant_id', $tenant->id)
             ->where('status', 'success')
@@ -451,9 +486,12 @@ class SuperAdminController extends Controller
             'incomeChange',
             'expensesChange',
             'totalTransactionsThisWeek',
-            'transactionPercentageChange'
+            'transactionPercentageChange',
+            'outstandingUnpaid',
+            'netIncome'
         ));
     }
+
 
     public function index9()
     {
@@ -476,7 +514,7 @@ class SuperAdminController extends Controller
 
             foreach ($billingResults as $result) {
                 $monthIndex = $result->month - 1;
-                $billingData[$monthIndex] = (float) $result->total;
+                $billingData[$monthIndex] = number_format((float) $result->total, 0, '.', '');
             }
 
             $revenueResults = Transaction::selectRaw('
@@ -547,6 +585,7 @@ class SuperAdminController extends Controller
             $lastWeekStart = $now->copy()->subWeek()->startOfWeek();
             $lastWeekEnd = $now->copy()->subWeek()->endOfWeek();
 
+            // Monthly revenue (sudah transaksi sukses saja)
             $monthlyRevenue = Transaction::where('status', Transaction::STATUS_SUCCESS)
                 ->whereHas('bill', function ($q) use ($tenant) {
                     $q->where('tenant_id', $tenant->id);
@@ -591,12 +630,32 @@ class SuperAdminController extends Controller
 
             $chartData = $this->generateChartData($tenant->id);
 
+            // 🔹 Hitung average per transaction dari transaksi sukses saja
+            $successfulTransactions = Transaction::where('status', Transaction::STATUS_SUCCESS)
+                ->whereHas('bill', function ($q) use ($tenant) {
+                    $q->where('tenant_id', $tenant->id);
+                })
+                ->count();
+
+            $totalSales = Transaction::where('status', Transaction::STATUS_SUCCESS)
+                ->whereHas('bill', function ($q) use ($tenant) {
+                    $q->where('tenant_id', $tenant->id);
+                })
+                ->sum('amount');
+
+            $averagePerTransaction = $successfulTransactions > 0
+                ? $totalSales / $successfulTransactions
+                : 0;
+
             $tenantClone = clone $tenant;
             $tenantClone->monthly_revenue = $monthlyRevenue;
             $tenantClone->bills_count = $billsCount;
             $tenantClone->payment_success_rate = $paymentSuccessRate;
             $tenantClone->weekly_change = $weeklyChange;
             $tenantClone->chart_data = $chartData;
+
+            // Tambahan average sukses
+            $tenantClone->average_per_transaction = $averagePerTransaction;
 
             return $tenantClone;
         } catch (\Exception $e) {
@@ -608,10 +667,12 @@ class SuperAdminController extends Controller
             $tenantClone->payment_success_rate = 0;
             $tenantClone->weekly_change = 0;
             $tenantClone->chart_data = [35, 40, 38, 42, 39, 44, 41, 45, 43];
+            $tenantClone->average_per_transaction = 0;
 
             return $tenantClone;
         }
     }
+
 
     private function generateChartData($tenantId)
     {

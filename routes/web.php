@@ -21,12 +21,8 @@ use App\Http\Controllers\RentalController;
 use App\Http\Controllers\MidtransWebhookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\MidtransController;
+use App\Http\Controllers\Admin\NotificationController;
 
-/*
-|--------------------------------------------------------------------------
-| Global Notifications Routes (From File 1)
-|--------------------------------------------------------------------------
-*/
 
 Route::post('admin/midtrans/save-draft', [MidtransController::class, 'saveDraft'])->name('admin.midtrans.save-draft');
 Route::get('admin/midtrans/check-draft', [MidtransController::class, 'checkDraft'])->name('admin.midtrans.check-draft');
@@ -56,6 +52,7 @@ Route::prefix('admin/notifications')->name('admin.notifications.')->group(functi
         Route::post('/update-settings', 'updateSettings')->name('update-settings');
         Route::post('/{id}/archive', 'archive')->name('archive');
         Route::post('/{id}/restore', 'restore')->name('restore');
+        Route::post('/bulk-restore', 'bulkRestore')->name('bulk-restore');
         Route::delete('/{id}', 'destroy')->name('destroy');
         Route::post('/{id}/mark-read', 'markAsRead')->name('mark-read');
 
@@ -65,11 +62,7 @@ Route::prefix('admin/notifications')->name('admin.notifications.')->group(functi
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Default Route
-|--------------------------------------------------------------------------
-*/
+
 Route::get('/', function () {
     // Check for admin user (web guard)
     if (Auth::guard('web')->check()) {
@@ -81,7 +74,6 @@ Route::get('/', function () {
         }
     }
 
-    // Check for tenant guard
     if (Auth::guard('tenant')->check()) {
         return redirect()->route('landlord.index');
     }
@@ -89,11 +81,7 @@ Route::get('/', function () {
     return redirect()->route('showSigninForm');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Routes
-|--------------------------------------------------------------------------
-*/
+
 Route::prefix('authentication')->group(function () {
     Route::controller(AuthenticationController::class)->group(function () {
         Route::get('/forgot-password', 'forgotPassword')->name('forgotPassword');
@@ -105,18 +93,13 @@ Route::prefix('authentication')->group(function () {
     });
 });
 
-// Guest middleware routes (from File 2)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticationController::class, 'showSigninForm'])->name('login');
 });
 
 Route::post('/login', [AuthenticationController::class, 'signin']);
 
-/*
-|--------------------------------------------------------------------------
-| Protected Routes (Auth Required)
-|--------------------------------------------------------------------------
-*/
+
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
 });
@@ -341,17 +324,13 @@ Route::middleware(['auth:web,tenant'])->group(function () {
             ->name('landlord.rentals.payment-status');
     });
 
-    // Midtrans Settings Routes
     Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         Route::get('/midtrans-settings', [MidtransController::class, 'index'])->name('admin.midtrans.index');
         Route::post('/midtrans-settings', [MidtransController::class, 'store'])->name('admin.midtrans.store');
     });
-    // Routes untuk tenant notifications
+
     Route::middleware(['auth:tenant'])->group(function () {
         Route::get('/tenant/notifications/get-notifications', [App\Http\Controllers\Admin\NotificationController::class, 'getTenantNotifications']);
         Route::post('/tenant/notifications/{id}/mark-read', [App\Http\Controllers\Admin\NotificationController::class, 'markAsReadTenant']);
     });
-
-    // routes/web.php
-Route::get('/debug-revenue', [DashboardController::class, 'debugRevenue']);
 });

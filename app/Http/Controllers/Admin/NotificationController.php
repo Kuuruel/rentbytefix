@@ -16,7 +16,7 @@ class NotificationController extends Controller
 {
     public function getTenantNotifications(Request $request)
     {
-        
+
         if (!Auth::guard('tenant')->check()) {
             return response()->json([
                 'success' => false,
@@ -64,7 +64,7 @@ class NotificationController extends Controller
         $notification = Notification::findOrFail($id);
         $tenantId = Auth::guard('tenant')->id();
 
-        
+
         if (!$notification->isForTenant($tenantId)) {
             return response()->json([
                 'success' => false,
@@ -93,8 +93,8 @@ class NotificationController extends Controller
         $tenantId = null;
 
         if (!$user->isAdmin()) {
-            
-            
+
+
             $tenantId = $request->get('tenant_id');
         }
         $settings = NotificationSetting::getCurrentSettings();
@@ -124,14 +124,14 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function getAllNotifications(Request $request)
     {
         $query = Notification::with('creator')
             ->active()
             ->orderBy('created_at', 'desc');
 
-        
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -140,17 +140,17 @@ class NotificationController extends Controller
             });
         }
 
-        
+
         if ($request->has('priority') && $request->priority) {
             $query->byPriority($request->priority);
         }
 
-        
+
         if ($request->has('target_type') && $request->target_type) {
             $query->byTargetType($request->target_type);
         }
 
-        
+
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
 
@@ -185,14 +185,14 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function getArchivedNotifications(Request $request)
     {
         $query = Notification::with('creator')
             ->archived()
-            ->orderBy('updated_at', 'desc'); 
+            ->orderBy('updated_at', 'desc');
 
-        
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -201,7 +201,7 @@ class NotificationController extends Controller
             });
         }
 
-        
+
         if ($request->has('target') && $request->target) {
             if ($request->target === 'all') {
                 $query->where('target_type', 'all');
@@ -210,12 +210,12 @@ class NotificationController extends Controller
             }
         }
 
-        
+
         if ($request->has('priority') && $request->priority) {
             $query->where('priority', $request->priority);
         }
 
-        
+
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page', 1);
 
@@ -250,7 +250,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -288,7 +288,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function archive($id)
     {
         $notification = Notification::findOrFail($id);
@@ -300,7 +300,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function restore($id)
     {
         $notification = Notification::findOrFail($id);
@@ -312,15 +312,15 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function destroy($id)
     {
         $notification = Notification::findOrFail($id);
 
-        
+
         $notification->reads()->delete();
 
-        
+
         $notification->delete();
 
         return response()->json([
@@ -329,7 +329,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function markAsRead(Request $request, $id)
     {
         $notification = Notification::findOrFail($id);
@@ -344,12 +344,12 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function getTenants(Request $request)
     {
         $query = Tenants::select('id', 'name', 'email', 'status');
 
-        
+
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -366,7 +366,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function getSettings()
     {
         $settings = NotificationSetting::getCurrentSettings();
@@ -377,7 +377,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function updateSettings(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -409,7 +409,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function bulkArchive(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -433,7 +433,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    
+
     public function bulkDelete(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -448,15 +448,39 @@ class NotificationController extends Controller
             ], 422);
         }
 
-        
+
         NotificationRead::whereIn('notification_id', $request->notification_ids)->delete();
 
-        
+
         Notification::whereIn('id', $request->notification_ids)->delete();
 
         return response()->json([
             'success' => true,
             'message' => count($request->notification_ids) . ' notifications deleted permanently'
+        ]);
+    }
+    // Tambahkan method ini di NotificationController kamu (setelah bulkDelete method)
+
+    public function bulkRestore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'notification_ids' => 'required|array|min:1',
+            'notification_ids.*' => 'exists:notifications,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        Notification::whereIn('id', $request->notification_ids)
+            ->update(['is_archived' => false]);
+
+        return response()->json([
+            'success' => true,
+            'message' => count($request->notification_ids) . ' notifications restored successfully'
         ]);
     }
 }

@@ -101,7 +101,8 @@
                                             <label for="desig"
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Priority
                                                 <span class="text-danger-600">*</span> </label>
-                                            <select class="form-control rounded-lg form-select" id="desig">
+                                            <select
+                                                class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg"
                                                 <option>Normal</option>
                                                 <option>Important</option>
                                                 <option>Critical</option>
@@ -122,8 +123,9 @@
                                                 class="inline-block font-semibold text-neutral-600 dark:text-neutral-200 text-sm mb-2">Target
                                                 Audience
                                                 <span class="text-danger-600">*</span> </label>
-                                            <select class="form-control rounded-lg form-select" id="depart"
-                                                onchange="toggleTenantList()">
+                                            <select
+                                                class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg"
+                                                id="depart" onchange="toggleTenantList()">
                                                 <option value="all">All Tenants</option>
                                                 <option value="specific">Specific Tenant(s)</option>
                                             </select>
@@ -155,13 +157,15 @@
                                                 Method
                                                 <span class="text-danger-600">*</span> </label>
                                             <div class="dropdown-container" style="position: relative; width: 100%;">
-                                                <button type="button" class="form-control rounded-lg form-select"
+                                                <button type="button"
+                                                    class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600"
                                                     id="depart" onclick="toggleDropdown()"
-                                                    style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; background-color: white; border: 1px solid #d1d5db;">
+                                                    style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                                                     <span id="selected-text">Select delivery methods...</span>
                                                 </button>
-                                                <div id="dropdown-content" class="hidden"
-                                                    style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 1000; max-height: 200px; overflow-y: auto;">
+                                                <div id="dropdown-content"
+                                                    class="hidden border border-gray-300 dark:border-neutral-600"
+                                                    style="position: absolute; top: 100%; left: 0; right: 0;   border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 1000; max-height: 200px; overflow-y: auto;">
                                                     <div class="dropdown-item" onclick="toggleOption('dashboard')"
                                                         style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
                                                         <input type="checkbox" id="dashboard" value="Dashboard"
@@ -247,7 +251,7 @@
                                                                             class="icon"></iconify-icon>
                                                                     </form>
                                                                     <select id="statusFilter"
-                                                                        class="form-select form-select-sm w-auto">
+                                                                        class="dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
                                                                         <option value="">Filter by Priority</option>
                                                                         <option value="Normal">Normal</option>
                                                                         <option value="Important">Important</option>
@@ -370,7 +374,7 @@
                                                                     </form>
 
                                                                     <select id="archivedTargetFilter"
-                                                                        class="form-select form-select-sm w-auto">
+                                                                        class="dark:bg-neutral-600 dark:text-white border-neutral-200 dark:border-neutral-500 rounded-lg">
                                                                         <option value="">Filter by Target</option>
                                                                         <option value="all">All Tenants</option>
                                                                         <option value="specific">Specific Tenants</option>
@@ -491,15 +495,13 @@
                                             Default Priority
                                             <span class="text-danger-600">*</span>
                                         </label>
-                                        <select class="form-control rounded-lg form-select" id="default-priority">
+                                        <select class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg"
                                             <option>Normal</option>
                                             <option>Important</option>
                                             <option>Critical</option>
                                         </select>
                                     </div>
                                 </div>
-
-
 
                                 <div class="col-span-1">
                                     <div class="mb-0">
@@ -508,14 +510,15 @@
                                             Default Delivery Method
                                         </label>
                                         <div class="dropdown-container-settings" style="position: relative; width: 100%;">
-                                            <button type="button" class="form-control rounded-lg form-select"
+                                            <button type="button"
+                                                class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600"
                                                 id="default-delivery-dropdown" onclick="toggleSettingsDropdown()"
-                                                style="display: flex; justify-content: space-between; align-items: center; cursor: pointer; background-color: white; border: 1px solid #d1d5db;">
+                                                style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                                                 <span id="settings-selected-text">Select delivery methods...</span>
                                             </button>
                                             <div id="settings-dropdown-content"
-                                                class="hidden settings-dropdown dark:bg-gray-900"
-                                                style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 1000; max-height: 200px; overflow-y: auto;">
+                                                class="bg-white dark:bg-neutral-700 w-full text-left  rounded-lg border border-gray-300 dark:border-neutral-600"
+                                                style="position: absolute; top: 100%; left: 0; right: 0;  border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); z-index: 1000; max-height: 200px; overflow-y: auto;">
                                                 <div class="dropdown-item"
                                                     onclick="toggleSettingsOption('settings-dashboard')"
                                                     style="padding: 0.5rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
@@ -591,7 +594,7 @@
 
                         <div id="deleteModal"
                             class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                            <div class="bg-white rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
+                            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
                                 id="deleteModalContent">
                                 <div class="px-6 py-4 border-b border-neutral-200">
                                     <h2 class="text-lg font-semibold text-gray-800">Confirm Delete</h2>
@@ -617,7 +620,7 @@
 
                         <div id="restoreModal"
                             class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                            <div class="bg-white rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
+                            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
                                 id="restoreModalContent">
                                 <div class="px-6 py-4 border-b border-neutral-200">
                                     <h2 class="text-lg font-semibold text-gray-800">Confirm Restore</h2>
@@ -644,7 +647,7 @@
 
                         <div id="archiveModal"
                             class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-                            <div class="bg-white rounded-2xl shadow-xl p-6 w-96 transform transition-all scale-95 opacity-0"
+                            <div class="bg-white dark:bg-neutral-800 rounded-2xl dark:bg-neutral-800 shadow-xl p-6 w-96 transform transition-all scale-95 opacity-0"
                                 id="archiveModalContent">
                                 <div class="border-b border-neutral-200 pb-3 mb-4">
                                     <h2 class="text-lg font-semibold text-gray-800">Confirm Archive</h2>
@@ -659,7 +662,7 @@
                                         Cancel
                                     </button>
                                     <button id="confirmArchiveBtn"
-                                        class="px-4 py-2 text-sm rounded-lg bg-warning-100 text-warning-600 hover:bg-gray-300 transition flex items-center justify-center">
+                                        class="px-4 py-2 text-sm rounded-lg bg-warning-100 text-warning-600  dark:bg-warning-600/25 dark:text-warning-400 hover:bg-gray-300 dark:hover:bg-warning-600 transition flex items-center justify-center">
                                         <svg id="archiveLoadingSpinner"
                                             class="animate-spin -ml-1 mr-2 h-4 w-4 text-warning-600 hidden"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -676,6 +679,90 @@
                         </div>
 
                         <div id="toastContainer" class="toast-container"></div>
+
+                        <div id="bulkArchiveModal"
+                            class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl p-6 w-96 transform transition-all scale-95 opacity-0"
+                                id="bulkArchiveModalContent">
+                                <div class="border-b border-neutral-200 pb-3 mb-4">
+                                    <h2 class="text-lg font-semibold text-gray-800">Confirm Bulk Archive</h2>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-5">
+                                    Are you sure you want to archive <span class="font-semibold text-gray-800"
+                                        id="bulkArchiveCount">0 notifications</span>? This action cannot be undone.
+                                </p>
+                                <div class="flex justify-end gap-3">
+                                    <button onclick="closeBulkArchiveModal()"
+                                        class="px-4 py-2 text-sm rounded-lg bg-gray-200 text-neutral-700 hover:bg-gray-300 transition">
+                                        Cancel
+                                    </button>
+                                    <button onclick="confirmBulkArchive()"
+                                        class="px-4 py-2 text-sm rounded-lg bg-warning-100 text-warning-600 dark:bg-warning-600/25 dark:text-warning-400 hover:bg-gray-300 transition flex items-center justify-center">
+                                        <svg id="bulkArchiveLoadingSpinner"
+                                            class="animate-spin -ml-1 mr-2 h-4 w-4 text-warning-600 hidden"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        <span id="bulkArchiveButtonText">Archive All</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bulkDeleteModal"
+                            class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
+                                id="bulkDeleteModalContent">
+                                <div class="px-6 py-4 border-b border-neutral-200">
+                                    <h2 class="text-lg font-semibold text-gray-800">Confirm Bulk Delete</h2>
+                                </div>
+                                <div class="px-6 py-6">
+                                    <p class="text-sm text-gray-600 mb-5">
+                                        Are you sure you want to delete <span class="font-semibold text-gray-800"
+                                            id="bulkDeleteCount">0 notifications</span>? This action cannot be undone.
+                                    </p>
+                                    <div class="flex justify-end gap-3 mt-6">
+                                        <button onclick="closeBulkDeleteModal()"
+                                            class="px-4 py-2 text-sm rounded-lg bg-gray-200 text-neutral-700 hover:bg-gray-300 transition">
+                                            Cancel
+                                        </button>
+                                        <button onclick="confirmBulkDelete()"
+                                            class="px-4 py-2 text-sm rounded-lg bg-danger-500 text-white hover:bg-danger-600 transition">
+                                            Delete All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="bulkRestoreModal"
+                            class="fixed inset-0 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div class="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-96 transform transition-all scale-95 opacity-0 overflow-hidden"
+                                id="bulkRestoreModalContent">
+                                <div class="px-6 py-4 border-b border-neutral-200">
+                                    <h2 class="text-lg font-semibold text-gray-800">Confirm Bulk Restore</h2>
+                                </div>
+                                <div class="px-6 py-6">
+                                    <p class="text-sm text-gray-600 mb-5">
+                                        Are you sure you want to restore <span class="font-semibold text-gray-800"
+                                            id="bulkRestoreCount">0 notifications</span>?
+                                    </p>
+                                    <div class="flex justify-end gap-3 mt-6">
+                                        <button onclick="closeBulkRestoreModal()"
+                                            class="px-4 py-2 text-sm rounded-lg bg-gray-200 text-neutral-700 hover:bg-gray-300 transition">
+                                            Cancel
+                                        </button>
+                                        <button onclick="confirmBulkRestore()"
+                                            class="px-4 py-2 text-sm rounded-lg bg-success-500 text-white hover:bg-success-600 transition">
+                                            Restore All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

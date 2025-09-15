@@ -403,7 +403,7 @@
 
                             <li class="flex items-center gap-1 mb-3">
                                 <span class="w-[30%] text-base font-semibold text-neutral-600 dark:text-neutral-200">
-                                    Country
+                                    City
                                 </span>
                                 <span class="w-[70%] text-secondary-light font-medium">:
                                     {{ $tenant->country ?? '-' }}
@@ -452,6 +452,28 @@
                                 </span>
                             </li>
 
+                            <div class="flex-grow-1 mt-8">
+                                <h6 class="font-semibold mb-0">
+                                    Rp{{ number_format($averagePerTransaction ?? 0, 0, ',', '.') }}
+                                </h6>
+                                <span class="font-medium text-secondary-light text-base">Average per
+                                    Transaction</span>
+                                <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
+                                    @if (($avgChange ?? 0) >= 0)
+                                        <span
+                                            class="bg-success-focus px-1.5 py-0.5 rounded-full font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                            +{{ number_format($avgChange ?? 0, 1) }}%
+                                            <i class="ri-arrow-up-line"></i>
+                                        </span>
+                                    @else
+                                        <span
+                                            class="bg-danger-focus px-1.5 py-0.5 rounded-full font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                            {{ number_format($avgChange ?? 0, 1) }}%
+                                            <i class="ri-arrow-down-line"></i>
+                                        </span>
+                                    @endif
+                                </p>
+                            </div>
 
 
                         </ul>
@@ -460,6 +482,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-span-12 lg:col-span-8">
             <div class="card h-full border-0">
                 <div class="card-body p-6">
@@ -485,13 +508,13 @@
                                                     <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
                                                         @if (($transactionsChange ?? 0) >= 0)
                                                             <span
-                                                                class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                class="bg-success-focus px-1.5 py-0.5 rounded-full font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
                                                                 +{{ number_format($transactionsChange ?? 0, 1) }}%
                                                                 <i class="ri-arrow-up-line"></i>
                                                             </span>
                                                         @else
                                                             <span
-                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-full font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
                                                                 {{ number_format($transactionsChange ?? 0, 1) }}%
                                                                 <i class="ri-arrow-down-line"></i>
                                                             </span>
@@ -524,13 +547,13 @@
                                                     <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
                                                         @if (($salesChange ?? 0) >= 0)
                                                             <span
-                                                                class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                class="bg-success-focus px-1.5 py-0.5 rounded-full font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
                                                                 +{{ number_format($salesChange ?? 0, 1) }}%
                                                                 <i class="ri-arrow-up-line"></i>
                                                             </span>
                                                         @else
                                                             <span
-                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-full font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
                                                                 {{ number_format($salesChange ?? 0, 1) }}%
                                                                 <i class="ri-arrow-down-line"></i>
                                                             </span>
@@ -545,7 +568,7 @@
                             </div>
 
 
-                            <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+                            {{-- <div class="col-span-12 sm:col-span-6 lg:col-span-4">
                                 <div
                                     class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-purple-600/10 to-bg-white">
                                     <div class="card-body p-0">
@@ -565,17 +588,47 @@
                                                     <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
                                                         @if (($avgChange ?? 0) >= 0)
                                                             <span
-                                                                class="bg-success-focus px-1.5 py-0.5 rounded-sm font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                class="bg-success-focus px-1.5 py-0.5 rounded-full font-medium text-success-600 dark:text-success-600 text-sm flex items-center gap-2 shadow-sm">
                                                                 +{{ number_format($avgChange ?? 0, 1) }}%
                                                                 <i class="ri-arrow-up-line"></i>
                                                             </span>
                                                         @else
                                                             <span
-                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-sm font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                                class="bg-danger-focus px-1.5 py-0.5 rounded-full font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
                                                                 {{ number_format($avgChange ?? 0, 1) }}%
                                                                 <i class="ri-arrow-down-line"></i>
                                                             </span>
                                                         @endif
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> --}}
+                            <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+                                <div
+                                    class="card px-4 py-5 shadow-2 rounded-lg border-gray-200 dark:border-neutral-600 h-full bg-gradient-to-t from-red-600/10 to-bg-white">
+                                    <div class="card-body p-0">
+                                        <div class="flex flex-wrap items-center justify-between gap-1">
+                                            <div class="flex items-center flex-wrap gap-4">
+                                                <span
+                                                    class="mb-0 w-[44px] h-[44px] bg-red-600 text-white shrink-0 flex justify-center items-center rounded-full h6">
+                                                    <iconify-icon icon="solar:clock-circle-bold"
+                                                        class="icon"></iconify-icon>
+                                                </span>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="font-semibold mb-0 text-red-600">
+                                                        Rp{{ number_format($outstandingUnpaid ?? 0, 0, ',', '.') }}
+                                                    </h6>
+                                                    <span class="font-medium text-secondary-light text-base">Outstanding
+                                                        (Unpaid)</span>
+                                                    <p class="text-sm mb-0 flex items-center flex-wrap gap-3 mt-3">
+                                                        <span
+                                                            class="bg-danger-focus px-2 py-1 rounded-full font-medium text-danger-600 dark:text-danger-600 text-sm flex items-center gap-2 shadow-sm">
+                                                            <i class="ri-time-line"></i>
+                                                            Not yet paid
+                                                        </span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -591,48 +644,48 @@
                         <div
                             class="card-header border-b border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 py-4 px-6">
                             <h6 class="text-lg font-semibold mb-0">Sales Overview</h6>
-                            {{-- <div class="flex flex-wrap items-center gap-2 mt-2">
-                                <h6 class="mb-0">Rp 15,000,000</h6>
-                                <span
-                                    class="text-sm font-semibold rounded-full bg-success-100 dark:bg-success-600/25 text-success-600 dark:text-success-400 border border-success-200 dark:border-success-600/50 px-2 py-1.5 line-height-1 flex items-center gap-1">
-                                    10% <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
-                                </span>
-                                <span class="text-xs font-medium">vs previous month</span>
-                            </div> --}}
-                            <!-- SALES OVERVIEW - Update bagian Income & Expenses -->
-                            <div class="mt-4 mb-6 flex flex-wrap">
-                                <div class="me-10">
-                                    <span class="text-secondary-light text-sm mb-1">Income</span>
-                                    <div class="">
-                                        <h6 class="font-semibold inline-block mb-0">
-                                            Rp{{ number_format($income ?? 0, 0, ',', '.') }}</h6>
-                                        <span class="!text-success-600 font-bold inline-flex items-center gap-1">
-                                            {{ number_format(abs($incomeChange ?? 0), 1) }}%
-                                            @if (($incomeChange ?? 0) >= 0)
-                                                <iconify-icon icon="iconamoon:arrow-up-2-fill"
-                                                    class="icon"></iconify-icon>
-                                            @else
-                                                <iconify-icon icon="iconamoon:arrow-down-2-fill"
-                                                    class="icon"></iconify-icon>
-                                            @endif
-                                        </span>
+
+                            <div class="mt-4 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <!-- Income -->
+                                    <div class="flex flex-col">
+                                        <span class="text-secondary-light text-sm mb-2 block">Income</span>
+                                        <div class="flex flex-col">
+                                            <h6 class="font-semibold text-xl mb-1">
+                                                Rp{{ number_format($income ?? 0, 0, ',', '.') }}
+                                            </h6>
+                                            <span
+                                                class="!text-success-600 font-bold inline-flex items-center gap-1 text-sm">
+                                                {{ number_format(abs($incomeChange ?? 0), 1) }}%
+                                                @if (($incomeChange ?? 0) >= 0)
+                                                    <iconify-icon icon="iconamoon:arrow-up-2-fill"
+                                                        class="icon text-sm"></iconify-icon>
+                                                @else
+                                                    <iconify-icon icon="iconamoon:arrow-down-2-fill"
+                                                        class="icon text-sm"></iconify-icon>
+                                                @endif
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <span class="text-secondary-light text-sm mb-1">Expenses</span>
-                                    <div class="">
-                                        <h6 class="font-semibold inline-block mb-0">
-                                            Rp{{ number_format($expenses ?? 0, 0, ',', '.') }}</h6>
-                                        <span class="!text-danger-600 font-bold inline-flex items-center gap-1">
-                                            {{ number_format(abs($expensesChange ?? 0), 1) }}%
-                                            @if (($expensesChange ?? 0) >= 0)
-                                                <iconify-icon icon="iconamoon:arrow-up-2-fill"
-                                                    class="icon"></iconify-icon>
-                                            @else
-                                                <iconify-icon icon="iconamoon:arrow-down-2-fill"
-                                                    class="icon"></iconify-icon>
-                                            @endif
-                                        </span>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-secondary-light text-sm mb-2 block">Expenses (Platform
+                                            Fee)</span>
+                                        <div class="flex flex-col">
+                                            <h6 class="font-semibold text-xl mb-1">
+                                                Rp{{ number_format($expenses ?? 0, 0, ',', '.') }}
+                                            </h6>
+                                            <span class="text-xs text-gray-400">5% + Rp2.500 per transaksi</span>
+                                        </div>
+                                    </div>
+                                    <!-- Net Income -->
+                                    <div class="flex flex-col">
+                                        <span class="text-secondary-light text-sm mb-2 block">Net Income</span>
+                                        <div class="flex flex-col">
+                                            <h6 class="font-semibold text-xl mb-1 text-primary-600 dark:text-primary-400">
+                                                Rp{{ number_format($netIncome ?? 0, 0, ',', '.') }}
+                                            </h6>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

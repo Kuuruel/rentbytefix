@@ -598,7 +598,7 @@
                                                 Environment <span class="text-danger-600">*</span>
                                             </label>
                                             <select
-                                                class="form-control bg-rounded-lg form-select @error('environment') border-danger-600 @enderror"
+                                                class="bg-white dark:bg-neutral-700 w-full text-left px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 @error('environment') border-danger-600 @enderror"
                                                 id="environment" name="environment"
                                                 {{ $hasData && !$isEditMode ? 'disabled' : 'required' }}>
                                                 <option value="">Select Environment</option>
@@ -616,8 +616,6 @@
                                             @enderror
                                         </div>
                                     </div>
-
-
                                     <div class="col-span-12">
                                         <div class="mb-5">
                                             <label for="webhook_url"

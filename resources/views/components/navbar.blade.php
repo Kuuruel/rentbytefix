@@ -9,10 +9,10 @@
                 <button type="button" class="sidebar-mobile-toggle d-flex !leading-[0]">
                     <iconify-icon icon="heroicons:bars-3-solid" class="icon !text-[30px]"></iconify-icon>
                 </button>
-                <form class="navbar-search">
+                {{-- <form class="navbar-search">
                     <input type="text" name="search" placeholder="Search">
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
-                </form>
+                </form> --}}
             </div>
         </div>
         <div class="col-auto">
@@ -196,28 +196,28 @@
 <div id="logoutModal"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[50] hidden opacity-0 transition-opacity duration-300 p-4">
     <div id="modalContent"
-        class="bg-white dark:bg-neutral-800 rounded-lg p-4 sm:p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
+        class="bg-white dark:bg-neutral-800 rounded-lg py-4 px-10 sm:p-6 max-w-sm mx-4 shadow-xl transform scale-95 transition-transform duration-300">
         <div class="flex items-center gap-3 mb-4">
             <div
                 class="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center flex-shrink-0">
                 <iconify-icon icon="lucide:log-out" class="text-red-600 text-base sm:text-lg"></iconify-icon>
             </div>
-            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white leading-tight">Konfirmasi Logout
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white leading-tight">Conrfirm Logout
             </h2>
         </div>
 
-        <p class="mb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Apakah kamu yakin ingin
-            keluar dari Rentbyte?</p>
+        <p class="mb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">Are you sure you want to
+            exit Rentbyte? </p>
 
         <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
             <button id="cancelButton" type="button"
                 class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-700 dark:text-white transition-colors text-sm sm:text-base font-medium">
-                Batal
+                Cancel
             </button>
 
             <button id="confirmLogout" type="button"
                 class="w-full sm:w-auto px-4 py-2 sm:py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors text-sm sm:text-base font-medium">
-                Ya, Keluar
+                Logout
             </button>
         </div>
     </div>
@@ -229,7 +229,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
+
         const logoutButton = document.getElementById('logoutButton');
         const logoutModal = document.getElementById('logoutModal');
         const modalContent = document.getElementById('modalContent');
@@ -242,7 +242,7 @@
 
         function openModal() {
             logoutModal.classList.remove('hidden');
-            logoutModal.offsetHeight; 
+            logoutModal.offsetHeight;
             logoutModal.classList.remove('opacity-0');
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
@@ -308,7 +308,7 @@
             }
         });
 
-        
+
 
         function loadNavbarNotifications() {
             const notificationList = document.getElementById('notificationList');
@@ -320,10 +320,10 @@
                 loadingElement.style.display = 'block';
             }
 
-            
+
             let endpoint = '/admin/notifications/get-notifications';
 
-            
+
             @if (Auth::guard('tenant')->check())
                 endpoint = '/tenant/notifications/get-notifications';
             @endif
@@ -339,7 +339,7 @@
                         populateNavbarNotifications(data.notifications);
                     }
 
-                    
+
                     if (notificationCount) {
                         notificationCount.textContent = data.total_count || 0;
                     }
@@ -364,7 +364,7 @@
                     }
                 });
         }
-        
+
         function populateNavbarNotifications(notifications) {
             const notificationList = document.getElementById('notificationList');
 
@@ -388,14 +388,14 @@
             });
         }
 
-        
+
         function createNavbarNotificationItem(notification) {
             const item = document.createElement('div');
 
-            
+
             const priorityColors = getPriorityColor(notification.priority);
 
-            
+
             const backgroundClass = !notification.is_read ? 'bg-gray-100 dark:bg-gray-800' :
                 'bg-white dark:bg-neutral-700';
 
@@ -451,7 +451,7 @@
             return item;
         }
 
-        
+
         function getPriorityColor(priority) {
             switch (priority) {
                 case 'Critical':
@@ -476,7 +476,7 @@
 
 
         function markNotificationAsRead(notificationId) {
-            
+
             const notificationElement = event.target.closest('div[class*="px-4 py-3"]');
             if (notificationElement) {
                 notificationElement.className = notificationElement.className.replace(
@@ -484,7 +484,7 @@
                     'bg-white dark:bg-neutral-700');
             }
 
-            
+
             let endpoint = `/admin/notifications/${notificationId}/mark-read`;
 
             @if (Auth::guard('tenant')->check())
@@ -502,10 +502,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        
+
                         loadNavbarNotifications();
                     } else {
-                        
+
                         if (notificationElement) {
                             notificationElement.className = notificationElement.className.replace(
                                 'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
@@ -514,7 +514,7 @@
                 })
                 .catch(error => {
                     console.error('Error marking notification as read:', error);
-                    
+
                     if (notificationElement) {
                         notificationElement.className = notificationElement.className.replace(
                             'bg-white dark:bg-neutral-700', 'bg-blue-100 dark:bg-blue-900/40');
@@ -522,22 +522,22 @@
                 });
         }
 
-        
+
         function startNotificationAutoRefresh() {
-            
+
             setInterval(() => {
                 loadNavbarNotifications();
-            }, 5000); 
+            }, 5000);
         }
 
-        
+
         function checkForNewNotifications() {
             loadNavbarNotifications();
         }
 
-        
+
         function initializeRealTimeNotifications() {
-            
+
             if (typeof window.Echo !== 'undefined') {
                 window.Echo.channel('notifications')
                     .listen('NewNotification', (e) => {
@@ -545,7 +545,7 @@
                     });
             }
 
-            
+
             if (typeof EventSource !== 'undefined') {
                 const eventSource = new EventSource('/admin/notifications/stream');
                 eventSource.onmessage = function(event) {
@@ -554,18 +554,18 @@
             }
         }
 
-        
 
-        
+
+
         loadNavbarNotifications();
 
-        
+
         startNotificationAutoRefresh();
 
-        
+
         initializeRealTimeNotifications();
 
-        
+
         const notificationButton = document.getElementById('notificationButton');
         if (notificationButton) {
             notificationButton.addEventListener('click', function() {
@@ -573,16 +573,16 @@
             });
         }
 
-        
+
         window.addEventListener('focus', function() {
             checkForNewNotifications();
         });
 
-        
+
         let lastActivity = Date.now();
         document.addEventListener('mousemove', function() {
             const now = Date.now();
-            if (now - lastActivity > 10000) { 
+            if (now - lastActivity > 10000) {
                 checkForNewNotifications();
                 lastActivity = now;
             }
