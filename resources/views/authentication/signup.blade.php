@@ -53,7 +53,7 @@
 
                         <select id="formCountry" name="country" required
                             class="form-control h-[56px] ps-11 border-neutral-300 bg-neutral-50 dark:bg-dark-2 rounded-xl w-full text-neutral-900 dark:text-white">
-                            <option value="" {{ $selectedCountry === '' ? 'selected' : '' }}>Pilih Kota</option>
+                            <option value="" {{ $selectedCountry === '' ? 'selected' : '' }}>Choose City</option>
                             
                             <option value="Jakarta" @selected($selectedCountry === 'Jakarta')>Jakarta</option>
                             <option value="Surabaya" @selected($selectedCountry === 'Surabaya')>Surabaya</option>

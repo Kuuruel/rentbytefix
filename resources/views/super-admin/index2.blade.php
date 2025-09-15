@@ -155,7 +155,7 @@
                             *</label>
                         <select id="formCountry" required
                             class="w-full bg-neutral-50 dark:bg-neutral-600 text-neutral-900 dark:text-white rounded px-3 py-2 border border-neutral-300 dark:border-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="">Pilih Kota</option>
+                            <option value="">Choose City</option>
                             <option value="Jakarta">Jakarta</option>
                             <option value="Surabaya">Surabaya</option>
                             <option value="Bandung">Bandung</option>
