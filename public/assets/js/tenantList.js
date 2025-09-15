@@ -447,13 +447,8 @@
                     <span class="text-sm text-neutral-700 dark:text-neutral-300 break-all">${escapeHtml(t.email)}</span>
                 </td>
                 <td class="px-4 py-4 text-center align-middle">
-<<<<<<< HEAD
                     <span class="${status === 'Active' ?
                         'bg-success-100 dark:bg-success-600/20 text-success-600 dark:text-success-400' :
-=======
-                    <span class="${status === 'Active' ? 
-                        'bg-success-100 dark:bg-success-600/20 text-success-600 dark:text-success-700 border' : 
->>>>>>> 0fa12c79206f66f58bd7b26717e52dd5a32fb29b
                         'bg-neutral-100 dark:bg-neutral-600/20 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-600/30'
                     } px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap">
                         ${status}
